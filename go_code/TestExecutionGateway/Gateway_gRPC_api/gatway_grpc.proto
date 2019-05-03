@@ -1,0 +1,106 @@
+syntax = "proto3";
+package Gateway_gRPC_api;
+
+
+// version 3.6.0
+//~/protobuf/bin/protoc -I Gateway_gRPC_api --go_out=plugins=grpc:Gateway_gRPC_api Gateway_gRPC_api/gateway_grpc_api.proto
+
+
+// Parameter used for Empty inputs
+message EmptyParameter {
+}
+
+// Ack/Nack- Response message with comment
+message AckNackResponse {
+    bool acknack = 1; // True=Ack, False=Nack
+    string comments = 2; //Comments if needed
+}
+
+
+// Request from client that register itself at gateway
+message RegisterClientAddressRequest {
+    string callingSystemId = 1; // The calling systems Id
+    string callingSystemName = 2; // THe name of the Calling System
+    string callingSystemIpAddress = 3; // The ip address for the calling system
+}
+
+// Prefered Port, where the client will called upon
+message RegisterClientAddressResponse {
+    string ClientPort = 1; //The port where the client will called upon
+    bool acknack = 2; // True=Ack, False=Nack
+    string comments = 3; //Comments if needed
+}
+
+message GatewayAddressRequest {
+    string GatewayAddress = 1; // The IP-address of the gateway
+    string GatewayPort = 2; // The Port of the gateway
+    string GatewayId = 3; // The gateways unique Id
+    string GatewayName = 4; //The gateways name
+}
+
+message TestInstruction_RT {
+    string TestInstructionTypeGuid = 1; // TestInstructionTypeGuid tells Plugin what to do, set by Plugin
+    string TestInstructionGuid = 2; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
+    string TestInstructionTypeName = 3; // Name of TestInstruction
+    string TestMainGroupGuid_RT = 4; // Reference to TestManinGroupGuid_RT which is top object
+    repeated TestInstructionAttribute_RT TestInstructionAttributes = 5; // All attributes with values for TestInstruction
+    TestInstructionSendMetaData_RT TestInstructionSendMetaData = 6; // SendMetaData for TestInstruction
+    string ChoosenLandingZone = 7; // Chosen LandingZone for TestInstruction
+}
+
+// Metadata around creation DateTime and SendDateTimes
+message TestInstructionSendMetaData_RT {
+    string TestInstructionCreatedDate = 1; // When the TestInstruction, RunTime-version, was created
+    repeated string TestInstructionSendDate = 2;
+}
+
+message TestInstructionAttribute_RT {
+    string TestInstructionAttributeGuid = 1; // Unique id for the attribute, set by Plugin
+    string TestInstructionAttributeName = 2; // The name of the Attribute
+    TestInstructionAttributeTypeEnum TestInstructionAttributeType = 3 ; // Type of Attribute:  "TextBox", "ComboBox", "FileSelector"
+    string TestInstructionAttributeValue = 4; // The value of the attribute
+    // repeated string FunctionGuid = 4; Not used for now
+
+}
+
+// // The TestInstructionAttribute can be one of the folowing types
+enum TestInstructionAttributeTypeEnum {
+    TextBox = 0; // Normal TextBox
+    ComboBox = 1; // Normal ComboBox
+    FileSelector = 2; // A choosen file (Name of the file)
+    //FunctionSelector = 3; Not used for now
+}
+
+// Response to client when registering itself at gateway
+message
+
+
+
+
+// The Gateservice definition.
+service Gateway {
+
+    // TestInstructions flows from Fenix Inception towards Plugins
+    rpc SendTestInstructionTowardsPlugin () returns (AckNackResponse) {
+    }
+
+    //TestInstructionResults flows from Plugins towards Fenix Inception
+    rpc SendTestInstructionResultTowardsFenix () returns (AckNackResponse) {
+    }
+
+    // Log-posts har sent from Plugins towards Fenix Inception
+    rpc SendTExecutionLogTowardsFenix () returns (AckNackResponse) {
+    }
+
+    // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
+    rpc RegisterClientAddress () returns (RegisterClientAddressResponse)
+
+    // Register a avalible TestInstruction
+    rpc RegisterAvailbleTestInstruction () returns (AckNackResponse)
+    }
+
+    // At startup gateway ask clients to reregister to be able to check which are online
+    rpc PleaseReRegisterClientAddress (GatewayAddressRequest) returns (AckNackResponse) {}
+    }
+}
+
