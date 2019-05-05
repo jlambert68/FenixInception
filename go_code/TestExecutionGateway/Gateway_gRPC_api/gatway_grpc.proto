@@ -5,6 +5,18 @@ package Gateway_gRPC_api;
 // version 3.6.0
 //~/protobuf/bin/protoc -I Gateway_gRPC_api --go_out=plugins=grpc:Gateway_gRPC_api Gateway_gRPC_api/gateway_grpc_api.proto
 
+// Used for defining the current version of the proto-file
+enum CurrentVersion {
+    Version_0_1_0 = 0; // Current Nversion
+
+}
+
+// Used ensure that Fenix, alla Gateways and Plugins are using the samt version of the proto-file
+message GRPCVersion {
+    CurrentVersion gRPCVersion = 1; // The current version of the protofile
+}
+
+
 
 // Parameter used for Empty inputs
 message EmptyParameter {
@@ -19,19 +31,20 @@ message AckNackResponse {
 
 // Request from client that register itself at gateway
 message RegisterClientAddressRequest {
-    string callingSystemId = 1; // The calling systems Id
-    string callingSystemName = 2; // THe name of the Calling System
-    string callingSystemIpAddress = 3; // The ip address for the calling system
+    CurrentVersion gRPCVersion = 1; // The current version of the protofile
+    string callingSystemId = 2; // The calling systems Id, Plugin or a Sub-Gateway,
+    string callingSystemName = 3; // THe name of the Calling System
+    string callingSystemIpAddress = 4; // The ip address for the calling system
 }
 
 // Prefered Port, where the client will called upon
 message RegisterClientAddressResponse {
-    string ClientPort = 1; //The port where the client will called upon
+    string ClientPort = 1; //The port where the client will be called upon
     bool acknack = 2; // True=Ack, False=Nack
     string comments = 3; //Comments if needed
 }
 
-message GatewayAddressRequest {
+message ReRegisterToGatewayMessage {
     string GatewayAddress = 1; // The IP-address of the gateway
     string GatewayPort = 2; // The Port of the gateway
     string GatewayId = 3; // The gateways unique Id
@@ -42,28 +55,26 @@ message TestInstruction_RT {
     string TestInstructionTypeGuid = 1; // TestInstructionTypeGuid tells Plugin what to do, set by Plugin
     string TestInstructionGuid = 2; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
     string TestInstructionTypeName = 3; // Name of TestInstruction
-    string TestMainGroupGuid_RT = 4; // Reference to TestManinGroupGuid_RT which is top object
-    repeated TestInstructionAttribute_RT TestInstructionAttributes = 5; // All attributes with values for TestInstruction
-    TestInstructionSendMetaData_RT TestInstructionSendMetaData = 6; // SendMetaData for TestInstruction
-    string ChoosenLandingZone = 7; // Chosen LandingZone for TestInstruction
+    string PluginId = 4; // The unique id of the plugin
+    string PluginName = 5; // The name of the plugin
+    string TestMainGroupGuid_RT = 6; // Reference to TestManinGroupGuid_RT which is top object ????Needed????
+    repeated TestInstructionAttribute_RT TestInstructionAttributes = 7; // All attributes with values for TestInstruction
+    string TestInstructionCreatedDateTime = 8; // When the TestInstruction, RunTime-version, was created
+    repeated string TestInstructionSentDateTime = 9; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
+    string ChoosenLandingZone = 9; // Chosen LandingZone for TestInstruction
 }
 
-// Metadata around creation DateTime and SendDateTimes
-message TestInstructionSendMetaData_RT {
-    string TestInstructionCreatedDate = 1; // When the TestInstruction, RunTime-version, was created
-    repeated string TestInstructionSendDate = 2;
-}
 
 message TestInstructionAttribute_RT {
     string TestInstructionAttributeGuid = 1; // Unique id for the attribute, set by Plugin
-    string TestInstructionAttributeName = 2; // The name of the Attribute
+    string TestInstructionAttributeName = 2; // The name of the Attribute, set by Plugin
     TestInstructionAttributeTypeEnum TestInstructionAttributeType = 3 ; // Type of Attribute:  "TextBox", "ComboBox", "FileSelector"
     string TestInstructionAttributeValue = 4; // The value of the attribute
     // repeated string FunctionGuid = 4; Not used for now
 
 }
 
-// // The TestInstructionAttribute can be one of the folowing types
+// The TestInstructionAttribute can be one of the folowing types
 enum TestInstructionAttributeTypeEnum {
     TextBox = 0; // Normal TextBox
     ComboBox = 1; // Normal ComboBox
@@ -72,35 +83,94 @@ enum TestInstructionAttributeTypeEnum {
 }
 
 // Response to client when registering itself at gateway
-message
+//message
+
+// The result of the TestInstructionExecution sent towards Fenix Inception
+message TestInstructionResultMessage {
+    string TestInstructionGuid = 1; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
+    string ResultId = 2; // A unique id created by plugin
+    string TimeOut = 3; // The Plugin sends back information about when the TestInstruction, Test Case, can be seen as Ended if no final result has sent back for TestInstruction
+    string TestInstructionResultCreatedDateTime = 4; // The DateTime when the message was created
+    string TestInstructionResultSentDateTime = 5; // The DateTime when the message was sent
+    AvailableTestExecutionResults TestExecutionResult = 6; // THe current execution status
+}
 
 
+enum AvailableTestExecutionResults {
+    Execution_Succeded = 0; // The execution succeded compared to expected result
+    Execution_Failed = 1; // The execution failed compared to expected result
+    Execution_Aborted = 2; // The Plugin Aborted the execution of the TestInstruction
+    Execution_Running = 3; // Status for when TestInstruction is executing and TimeOut-time is sent back
+}
 
+
+// The TestInstruction sent towards plugin
+message TestInstructionMessage {
+    string sfdsd = 1; //
+}
+
+// A log post sent back to Fenix Inception from plugin
+message TexecutionLogMessage {
+    string asfasf = 1; //
+}
+
+// Data and Information regarding a specific TestInstruction offered by a specific plugin
+message AvailbleTestInstructionAtPluginMessage {
+    string asasd = 1; //
+}
+
+//  A TestData question is sent from Fenix towards a Plugin
+message TestDataQuestionMessage {
+    string asdfsdf = 1; //
+}
+
+//  An answer regarding a TestData question is sent from a plugin towards Fenix
+message TestDataAnswerMessage {
+    string asdfsdf = 1; //
+}
 
 // The Gateservice definition.
 service Gateway {
 
+    // ***********************************************************************************
+    // Runtime methods
+
     // TestInstructions flows from Fenix Inception towards Plugins
-    rpc SendTestInstructionTowardsPlugin () returns (AckNackResponse) {
+    rpc SendTestInstructionTowardsPlugin (TestInstructionMessage) returns (AckNackResponse) {
     }
 
     //TestInstructionResults flows from Plugins towards Fenix Inception
-    rpc SendTestInstructionResultTowardsFenix () returns (AckNackResponse) {
+    rpc SendTestInstructionResultTowardsFenix (TestInstructionResultMessage) returns (AckNackResponse) {
     }
 
     // Log-posts har sent from Plugins towards Fenix Inception
-    rpc SendTExecutionLogTowardsFenix () returns (AckNackResponse) {
+    rpc SendTexecutionLogTowardsFenix (TexecutionLogMessage) returns (AckNackResponse) {
     }
 
     // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
-    rpc RegisterClientAddress () returns (RegisterClientAddressResponse)
-
-    // Register a avalible TestInstruction
-    rpc RegisterAvailbleTestInstruction () returns (AckNackResponse)
+    rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse) {
     }
 
-    // At startup gateway ask clients to reregister to be able to check which are online
-    rpc PleaseReRegisterClientAddress (GatewayAddressRequest) returns (AckNackResponse) {}
+    rpc SendTestDataQuestion(TestDataQuestionMessage)returns(AckNackResponse){
     }
+
+
+    rpc SendTestDataAnswer(TestDataAnswerMessage)returns(AckNackResponse) {
+    }
+
+// ***********************************************************************************
+// Registration methods
+
+// Register an avalible TestInstruction
+    rpc RegisterAvailbleTestInstruction(AvailbleTestInstructionAtPluginMessage)returns(AckNackResponse){
+    }
+
+// ***********************************************************************************
+// Administrative methods
+
+// At startup the gateway asks clients, Plugin or Sub-Gateway, to reregister to be able to check which of them that are online
+    rpc PleaseReRegisterClientAddress(ReRegisterToGatewayMessage)returns(AckNackResponse){
+    }
+
 }
 
