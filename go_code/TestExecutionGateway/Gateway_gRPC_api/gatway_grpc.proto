@@ -28,6 +28,11 @@ package Gateway_gRPC_api;
 // Towards Plugin
 // ***********************************
 
+// *********************************************************
+// rpc SendTestInstructionTowardsPlugin (TestInstruction_RT) returns (AckNackResponse) {
+// START
+// **********
+
 //  A RunTime version of the TestInstruction sent from Fenix towards a Plugin
 message TestInstruction_RT {
     string TestInstructionTypeGuid = 1; // TestInstructionTypeGuid tells Plugin what to do, set by Plugin
@@ -60,9 +65,19 @@ enum TestInstructionAttributeTypeEnum {
     //FunctionSelector = 3; Not used for now
 }
 
+// **********
+// END
+// *********************************************************
+
 // ***********************************
 // Towards Fenix
 // ***********************************
+
+// *********************************************************
+//  rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse)
+//
+// START
+// **********
 
 // The result of the TestInstructionExecution sent towards Fenix Inception
 message TestInstructionExecutionResultMessage {
@@ -82,6 +97,15 @@ enum AvailableTestExecutionResultsEnum {
     Execution_Running = 3; // Status for when TestInstruction is executing and TimeOut-time is sent back
 }
 
+// **********
+// END
+// *********************************************************
+
+// *********************************************************
+//  rpc SendTexecutionLogTowardsFenix (TexecutionLogMessage) returns (AckNackResponse)
+//
+// START
+
 // A log post that sent back to Fenix Inception from plugin during test execution
 message TexecutionLogMessage {
     string TestInstructionGuid = 1; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
@@ -97,6 +121,10 @@ enum LogMessageTypeEnum {
     JSON = 0;
     TEXT = 1;
 }
+
+// **********
+// END
+// *********************************************************
 
 // ***********************************************************************************
 // Test Data messages
@@ -131,7 +159,7 @@ message SupportedTestDataDomainsRequest {
 // rpc GetTestDataListFromFilterValues (TestDataListFromFilterValuesRequest) returns (AckNackResponse) {
 // START
 // **********
-}
+
 // Message with filter values to have the testdata plugin retrieve correct testdata to use
 message TestDataListFromFilterValuesRequest {
     string PluginId = 1; // The unique id of the plugin
@@ -180,7 +208,8 @@ message TestDataAnswerMessage {
 }
 
 // *********************************************************
-// rpc xxxxxx
+//  rpc SupportedTestDataDomains (SupportedTestDataDomainsMessage) returns (AckNackResponse)
+//
 // START
 // **********
 
@@ -221,8 +250,18 @@ message TestDataFilterHeaderValue {
     string TestDataFilterHeaderValueName = 2; // The name for the filter value
 }
 
+// **********
+// END
+// *********************************************************
 
+
+// *********************************************************
+//  rpc TestDataListFromFilterValues (TestDataListFromFilterValuesMessage) returns (AckNackResponse)
 //
+// START
+// **********
+
+// Message that contains the filtered testdata that was asked for
 message TestDataListFromFilterValuesMessage {
     string PluginId = 1; // The unique id of the plugin
     string PluginName = 2; // The name of the plugin
@@ -235,40 +274,53 @@ message TestDataListFromFilterValuesMessage {
     TestDataObject TestData = 9; // The object containing the testdata
 }
 
+// Message contining the testdata in a specific form
 message TestDataObject {
-    ListObject TestDataAsList = 1; //
-    JsonObject TestDataAsJson = 2; //
-    XmlObject TestDataAsXml = 3; //
-    OtherFileObject TestDataAsOtherFile = 4; //
+    ListObject TestDataAsList = 1; // Object containing Testdata in Listform
+    JsonObject TestDataAsJson = 2; // Object containing Testdata in json-form
+    XmlObject TestDataAsXml = 3; // Object containing Testdata in xml-form
+    OtherFileObject TestDataAsOtherFile = 4; // Object containing Testdata in a non standard form
 }
 
+// Testdata in listform
 message ListObject {
+    // Message for Header, Key
     message TestDataFIlterHeader {
-        string TestDataFilterHeaderId = 1; //
-        string TestDataFilterHeaderName = 2; //
+        string TestDataFilterHeaderId = 1; // Unique id for the header
+        string TestDataFilterHeaderName = 2; // The Header name/value
     }
-    repeated TestDataFIlterHeader TestDataFIlterHeaders = 1; //
+    repeated TestDataFIlterHeader TestDataFIlterHeaders = 1; // All Headers
+    // Message for row with testdata
     message TestDataRow {
+        // Message for a value in the row
         message TestDataValue {
-            string TestDataRowValueId = 1; //
-            string TestDataFilterRowValue = 2; //
+            string TestDataRowValueId = 1; // A unique id for the value
+            string TestDataFilterRowValue = 2; // The value
         }
-        repeated TestDataValue TestDataValues = 1; //
+        repeated TestDataValue TestDataValues = 1; // All values on a row
     }
-    repeated TestDataRow TestDataRows = 2; //
+    repeated TestDataRow TestDataRows = 2; // All  testdata rows
 }
 
+// Testdata in jsaon-form
 message JsonObject {
 
+
 }
 
+// Testdata in XML-form
 message XmlObject {
 
 }
 
+// Testdata in some "other" form
 message OtherFileObject {
 
 }
+
+// **********
+// END
+// *********************************************************
 
 
 // ***********************************************************************************
@@ -280,6 +332,11 @@ message OtherFileObject {
 // Towards Plugin
 // ***********************************
 
+// *********************************************************
+//  rpc PleaseReRegisterClientAddress(ReRegisterToGatewayMessage)returns(AckNackResponse)
+// START
+// **********
+
 // Used when a Fenix or a Gateway comes online, message is sent to know clients
 message ReRegisterToGatewayMessage {
     string GatewayAddress = 1; // The IP-address of the gateway
@@ -288,9 +345,21 @@ message ReRegisterToGatewayMessage {
     string GatewayName = 4; //The gateways name
 }
 
+// **********
+// END
+// *********************************************************
+
 // ***********************************
 // Towards Fenix
 // ***********************************
+
+
+
+// *********************************************************
+//  rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse)
+//
+// START
+// **********
 
 // Request from client that register itself at gateway
 message RegisterClientAddressRequest {
@@ -307,11 +376,24 @@ message RegisterClientAddressResponse {
     string comments = 3; //Comments if needed
 }
 
+// **********
+//
+// END
+// *********************************************************
+
+// *********************************************************
+//  rpc RegisterAvailbleTestInstruction(AvailbleTestInstructionAtPluginMessage)returns(AckNackResponse)
+// START
+// **********
 
 // Data and Information regarding a specific TestInstruction offered by a specific plugin
 message AvailbleTestInstructionAtPluginMessage {
     string asasd = 1; //
 }
+
+// **********
+// END
+// *********************************************************
 
 // ***********************************************************************************
 // Administrative messages
