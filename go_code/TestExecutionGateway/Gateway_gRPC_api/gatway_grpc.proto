@@ -208,32 +208,32 @@ message TestDataAnswerMessage {
 }
 
 // *********************************************************
-//  rpc SupportedTestDataDomains (SupportedTestDataDomainsMessage) returns (AckNackResponse)
+//  rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse)
 //
 // START
 // **********
 
 // All supported Testdata domains supported by a specific Plugin
-message SupportedTestDataDomainsMessage {
+message SupportedTestDataDomainsWithHeadersMessage {
     string PluginId = 1; // The unique id of the plugin
     string PluginName = 2; // The name of the plugin
     string OriginalMessageId = 3; // A unique id from the request sent from Fenix
     string MessageId = 4; // A unique id generated when sent from Plugin
-    repeated TestDataDomain TestDataDomains = 5; // All supported Testdata domains from plugin
+    repeated TestDataDomainWithHeaders TestDataDomains = 5; // All supported Testdata domains from plugin
 
 }
 
 // Message thats defines a specific domain of testdata, a specific area
-message TestDataDomain {
+message TestDataDomainWithHeaders {
     string TestDataDomainId = 1; // The unique id of the testdata domain
     string TestDataDomainName = 2; // The name of the testdata domain
     string TestDataDomainDescription = 3; // A description of the testdata domain
     string TestDataDomainMouseOver = 4; // A mouse over description of the testdata domain
-    repeated TestDataFilterHeader TestDataFilterHeaders = 5; // All headers, keys, that is used for filter testdata
+    repeated TestDataFilterHeader2 TestDataFilterHeaders = 5; // All headers, keys, that is used for filter testdata
 }
 
 // Message holding one header, key, that is used for filtering testdata
-message TestDataFilterHeader {
+message TestDataFilterHeader2 {
     string TestDataFilterHeaderId = 1; //  A unique id for the header
     string TestDataFilterHeaderName = 2;// A name for the keader
     string TestDataFilterHeaderDescription = 3; // A description of the header
@@ -241,11 +241,11 @@ message TestDataFilterHeader {
     string TestDataFilterHash = 5; // ??????????????????????????????????????????????????????????????????????????
     bool AllowMultipleChoices = 6; // Should multiple chocies be allowed for this header
     bool AllowNoChoice = 7; // Shpuld no choice be allowed for this header
-    repeated TestDataFilterHeaderValue TestDataFilterHeaderValues = 8; // All values for a specific header, key, that can be usen when filtering
+    repeated TestDataFilterHeaderValue2 TestDataFilterHeaderValues = 8; // All values for a specific header, key, that can be usen when filtering
 }
 
 // Message holding a specific value for a header
-message TestDataFilterHeaderValue {
+message TestDataFilterHeaderValue2 {
     string TestDataFilterHeaderValueId = 1; // A unique id for the filter value
     string TestDataFilterHeaderValueName = 2; // The name for the filter value
 }
@@ -285,11 +285,11 @@ message TestDataObject {
 // Testdata in listform
 message ListObject {
     // Message for Header, Key
-    message TestDataFIlterHeader {
+    message TestDataFilterHeader {
         string TestDataFilterHeaderId = 1; // Unique id for the header
         string TestDataFilterHeaderName = 2; // The Header name/value
     }
-    repeated TestDataFIlterHeader TestDataFIlterHeaders = 1; // All Headers
+    repeated TestDataFilterHeader TestDataFIlterHeaders = 1; // All Headers
     // Message for row with testdata
     message TestDataRow {
         // Message for a value in the row
@@ -395,6 +395,31 @@ message AvailbleTestInstructionAtPluginMessage {
 // END
 // *********************************************************
 
+// *********************************************************
+//  rpc RegistrateAAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse){
+// START
+// **********
+
+// All supported Testdata domains supported by a specific Plugin
+message SupportedTestDataDomainsMessage {
+    string PluginId = 1; // The unique id of the plugin
+    string PluginName = 2; // The name of the plugin
+    string MessageId = 3; // A unique id generated when sent from Plugin
+    repeated TestDataDomain TestDataDomains = 4; // All supported Testdata domains from plugin
+}
+
+// Message thats defines a specific domain of testdata, a specific area
+message TestDataDomain {
+    string TestDataDomainId = 1; // The unique id of the testdata domain
+    string TestDataDomainName = 2; // The name of the testdata domain
+    string TestDataDomainDescription = 3; // A description of the testdata domain
+    string TestDataDomainMouseOver = 4; // A mouse over description of the testdata domain
+}
+
+
+// **********
+// END
+// *********************************************************
 // ***********************************************************************************
 // Administrative messages
 // ***********************************************************************************
@@ -457,16 +482,16 @@ service Gateway {
     }
 
     rpc GetTestDataListFromFilterValues (TestDataListFromFilterValuesRequest) returns (AckNackResponse) {
-}
+    }
 
     // ***********************************
     // Towards Fenix
     // ***********************************
 
-    rpc SendTestDataAnswer(TestDataAnswerMessage)returns(AckNackResponse) {
+    rpc SendTestDataAnswer (TestDataAnswerMessage) returns (AckNackResponse) {
     }
 
-    rpc SupportedTestDataDomains (SupportedTestDataDomainsMessage) returns (AckNackResponse) {
+    rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse) {
     }
 
     rpc TestDataListFromFilterValues (TestDataListFromFilterValuesMessage) returns (AckNackResponse) {
@@ -484,9 +509,11 @@ service Gateway {
     // ***********************************
 
     // Register an avalible TestInstruction
-    rpc RegisterAvailbleTestInstruction(AvailbleTestInstructionAtPluginMessage)returns(AckNackResponse){
+    rpc RegisterAvailbleTestInstruction(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
     }
 
+    rpc RegistrateAAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse){
+    }
     // ***********************************************************************************
     // Administrative methods
     // ***********************************************************************************
