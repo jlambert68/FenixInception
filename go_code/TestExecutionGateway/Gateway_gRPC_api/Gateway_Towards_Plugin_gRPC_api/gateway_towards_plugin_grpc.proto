@@ -1,0 +1,203 @@
+syntax = "proto3";
+package Gateway_Towards_Plugin_gRPC_api;
+
+
+// version 3.6.0
+//~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
+
+
+
+
+// ***********************************************************************************
+// Runtime messages
+// ***********************************************************************************
+
+// *********************************************************
+// rpc SendTestInstructionTowardsPlugin (TestInstruction_RT) returns (AckNackResponse) {
+// START
+// **********
+
+//  A RunTime version of the TestInstruction sent from Fenix towards a Plugin
+message TestInstruction_RT {
+    string TestInstructionTypeGuid = 1; // TestInstructionTypeGuid tells Plugin what to do, set by Plugin
+    string TestInstructionGuid = 2; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
+    string TestInstructionTypeName = 3; // Name of TestInstruction
+    string PluginId = 4; // The unique id of the plugin
+    string PluginName = 5; // The name of the plugin
+    string TestMainGroupGuid_RT = 6; // Reference to TestManinGroupGuid_RT which is top object ????Needed????
+    repeated TestInstructionAttribute_RT TestInstructionAttributes = 7; // All attributes with values for TestInstruction
+    string TestInstructionCreatedDateTime = 8; // When the TestInstruction, RunTime-version, was created
+    repeated string TestInstructionSentDateTime = 9; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
+    string ChoosenLandingZone = 10; // Chosen LandingZone for TestInstruction
+}
+
+//  An attribute with its type and value
+message TestInstructionAttribute_RT {
+    string TestInstructionAttributeGuid = 1; // Unique id for the attribute, set by Plugin
+    string TestInstructionAttributeName = 2; // The name of the Attribute, set by Plugin
+    TestInstructionAttributeTypeEnum TestInstructionAttributeType = 3 ; // Type of Attribute:  "TextBox", "ComboBox", "FileSelector"
+    string TestInstructionAttributeValue = 4; // The value of the attribute
+    // repeated string FunctionGuid = 4; Not used for now
+
+}
+
+// The TestInstructionAttribute can be one of the folowing types
+enum TestInstructionAttributeTypeEnum {
+    TextBox = 0; // Normal TextBox
+    ComboBox = 1; // Normal ComboBox
+    FileSelector = 2; // A choosen file (Name of the file)
+    //FunctionSelector = 3; Not used for now
+}
+
+// **********
+// END
+// *********************************************************
+
+
+// ***********************************************************************************
+// Test Data messages
+// ***********************************************************************************
+
+// *********************************************************
+// rpc GetSupportedTestDataDomains (SupportedTestDataDomainsRequest) returns (AckNackResponse)
+// START
+// **********
+
+// Message to get supported TestData-domains from a plugin
+message SupportedTestDataDomainsRequest {
+    string PluginId = 1; // The unique id of the plugin
+    string PluginName = 2; // The name of the plugin
+    string MessageId = 3; // A unique id generated when sent from Fenix
+}
+
+// **********
+// END
+// *********************************************************
+
+// *********************************************************
+// rpc GetTestDataListFromFilterValues (TestDataListFromFilterValuesRequest) returns (AckNackResponse) {
+// START
+// **********
+
+// Message with filter values to have the testdata plugin retrieve correct testdata to use
+message TestDataFilterValuesRequest {
+    string PluginId = 1; // The unique id of the plugin
+    string PluginName = 2; // The name of the plugin
+    string MessageId = 3; // A unique id generated when sent from Fenix
+    string TestDataDomainId = 4; // ???????
+    int64 StartLineOfResultSet = 6; //  This is the first Test Data Row that should be sent back to Fenix
+    int64 MaxNumberOffLinesInResult = 7; // This is the number of Test Data Rows that should be sent back to Fenix
+    TestDataFormatTypeEnum TestDataType = 8; // THe format the testdata will be delivered
+    repeated TestDataFilterHeader TestDataFIlterHeaders = 9; // All column headers for testdata
+}
+
+// Defines the different ways testdata should be formated back to Fenix
+enum TestDataFormatTypeEnum {
+    LIST = 0; // TestData will be delivered as a normal list
+    //JSON_OBJECT = 1; // TestData will be delivered as a json object
+    //XML = 2; // TestData will be delivered as a XML-file
+    //OTHER_FILE = 3; TestData will be delivered as a non standard file
+}
+
+// Message to hold a Testdata header with its chosen testdata values
+message TestDataFilterHeader {
+    string TestDataFilterHeaderId = 1; //
+    repeated TestDataFilterHeaderValue TestDataFilterHeaderValues = 2; //
+}
+
+// Message to hold a specific value (Id and Value)
+message TestDataFilterHeaderValue {
+    string TestDataFilterHeaderValueId = 1; //
+    string TestDataFilterHeaderValueName = 2; //
+}
+
+// **********
+// END
+// *********************************************************
+
+
+// ***********************************************************************************
+// Registration messages
+// ***********************************************************************************
+
+// *********************************************************
+//  rpc PleaseReRegisterClientAddress(ReRegisterToGatewayMessage)returns(AckNackResponse)
+// START
+// **********
+
+// Used when a Fenix or a Gateway comes online, message is sent to know clients
+message ReRegisterToGatewayMessage {
+    string GatewayAddress = 1; // The IP-address of the gateway
+    string GatewayPort = 2; // The Port of the gateway
+    string GatewayId = 3; // The gateways unique Id
+    string GatewayName = 4; //The gateways name
+}
+
+// **********
+// END
+// *********************************************************
+
+// ***********************************************************************************
+// Administrative messages
+// ***********************************************************************************
+
+// Used for defining the current version of the proto-file
+enum CurrentVersionEnum {
+    VERSION_0_1_0 = 0; // Current version
+
+}
+
+// Parameter used for Empty inputs
+message EmptyParameter {
+}
+
+// Ack/Nack- Response message with comment
+message AckNackResponse {
+    bool acknack = 1; // True=Ack, False=Nack
+    string comments = 2; //Comments if needed
+}
+
+
+// The Gateservice definition.
+service Gateway {
+
+    // ***********************************************************************************
+    // Runtime methods
+    // ***********************************************************************************
+
+    // ***********************************
+    // Towards Plugin
+    // ***********************************
+
+    // TestInstructions flows from Fenix Inception towards Plugins
+    rpc SendTestInstructionTowardsPlugin (TestInstruction_RT) returns (AckNackResponse) {
+    }
+
+    // ***********************************************************************************
+    // Test Data methods
+    // ***********************************************************************************
+
+
+    rpc GetSupportedTestDataDomains (SupportedTestDataDomainsRequest) returns (AckNackResponse) {
+    }
+
+    rpc GetTestDataListFromFilterValues (TestDataFilterValuesRequest) returns (AckNackResponse) {
+    }
+
+    // ***********************************************************************************
+    // Registration methods
+    // ***********************************************************************************
+
+    // ***********************************************************************************
+    // Administrative methods
+    // ***********************************************************************************
+
+    // At startup the gateway asks clients, Plugin or Sub-Gateway, to reregister to be able to check which of them that are online
+    rpc PleaseReRegisterClientAddress(ReRegisterToGatewayMessage) returns (AckNackResponse) {
+    }
+
+
+
+
+}
+
