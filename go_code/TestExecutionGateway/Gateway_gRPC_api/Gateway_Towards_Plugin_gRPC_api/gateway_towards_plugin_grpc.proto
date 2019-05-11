@@ -6,6 +6,8 @@ package Gateway_Towards_Plugin_gRPC_api;
 //~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
 
 
+// Import common Gateway messages and services
+import "go_code/TestExecutionGateway/Gateway_gRPC_api/Gatway_Common_gRPC_api/gateway_common_grpc.proto";
 
 
 // ***********************************************************************************
@@ -31,7 +33,7 @@ message TestInstruction_RT {
     string ChoosenLandingZone = 10; // Chosen LandingZone for TestInstruction
 }
 
-//  An attribute with its type and value
+//  An attribute with it's type and value
 message TestInstructionAttribute_RT {
     string TestInstructionAttributeGuid = 1; // Unique id for the attribute, set by Plugin
     string TestInstructionAttributeName = 2; // The name of the Attribute, set by Plugin
@@ -91,13 +93,6 @@ message TestDataFilterValuesRequest {
     repeated TestDataFilterHeader TestDataFIlterHeaders = 9; // All column headers for testdata
 }
 
-// Defines the different ways testdata should be formated back to Fenix
-enum TestDataFormatTypeEnum {
-    LIST = 0; // TestData will be delivered as a normal list
-    //JSON_OBJECT = 1; // TestData will be delivered as a json object
-    //XML = 2; // TestData will be delivered as a XML-file
-    //OTHER_FILE = 3; TestData will be delivered as a non standard file
-}
 
 // Message to hold a Testdata header with its chosen testdata values
 message TestDataFilterHeader {
@@ -141,6 +136,7 @@ message ReRegisterToGatewayMessage {
 // Administrative messages
 // ***********************************************************************************
 
+/*
 // Used for defining the current version of the proto-file
 enum CurrentVersionEnum {
     VERSION_0_1_0 = 0; // Current version
@@ -156,7 +152,7 @@ message AckNackResponse {
     bool acknack = 1; // True=Ack, False=Nack
     string comments = 2; //Comments if needed
 }
-
+*/
 
 // The Gateservice definition.
 service Gateway {

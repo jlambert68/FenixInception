@@ -1,0 +1,24 @@
+syntax = "proto3";
+package Gateway_TCommin_gRPC_api;
+
+
+
+// ***********************************************************************************
+// Administrative messages
+// ***********************************************************************************
+
+// Used for defining the current version of the proto-file
+enum CurrentVersionEnum {
+    VERSION_0_1_0 = 0; // Current version
+
+}
+
+// Parameter used for Empty inputs
+message EmptyParameter {
+}
+
+// Ack/Nack- Response message with comment
+message AckNackResponse {
+    bool acknack = 1; // True=Ack, False=Nack
+    string comments = 2; //Comments if needed
+}
