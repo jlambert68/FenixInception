@@ -1,13 +1,16 @@
 syntax = "proto3";
-package Gateway_Towards_Fenix_gRPC_api;
+package Gateway_gRPC_api;
 
 
 // version 3.6.0
 //~/protobuf/bin/protoc -I Gateway_Towards_Fenix_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Fenix_gRPC_api Gateway_Towards_Fenix_gRPC_api/gateway_towards_fenix_grpc.proto
+//~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
 
-// Import common Gateway messages and services
-import "go_code/TestExecutionGateway/Gateway_gRPC_api/Gatway_Common_gRPC_api/gateway_common_grpc.proto";
+//190516
+//protoc_3.7.0.rc2 -I Gateway_gRPC_api --go_out=plugins=grpc:Gateway_gRPC_api Gateway_gRPC_api/gateway_towards_fenix_grpc.proto
 
+// Import common Gateway messages and servicesTestDataFormatTypeEnum
+import "gateway_common_grpc.proto";
 
 // ***********************************************************************************
 // Runtime messages
@@ -82,16 +85,8 @@ message TestInstructionTimeOutMessage {
     string PluginName = 2; // The name of the plugin
     string OriginalMessageId = 3; // A unique id from the TestInstruction request sent from Fenix
     string MessageId = 4; // A unique id generated when sent from Plugin
-    string TimeOut = 5; // The relative time for timeout informat 'T+x hh:mm:ss' where x is days
+    string TimeOut = 5; // The time for timeout informat 'YYYY-MM-DD hh:mm:ss' w
 
-    enum TimeOutFormatEnum {
-        FIXED_DATETIME = 0; // YYYY-MM-DD hh:mm:ss
-        RELATIVE_DATE_WITHOUT_TIME = 1; // 'T+X', where X is days, e.g. 'T+10', 'T+0', 'T+1'
-        RELATIVE_DATE_WITH_FIXED_TIME = 2; // 'T+X hh:mm:ss', where X is days, e.g. 'T+10 12:14:33', 'T+0 09:22:55', 'T+1 23:23:59'
-        RELATIVE_TIME_MINUTES = 3; // 'mm', where mm is relative minutes from actual time, e.g. '60', '10', '2'
-
-    }
-    TimeOutFormatEnum TimeOutFormat = 6; //
 }
 
 // **********
@@ -178,13 +173,6 @@ message TestDataFromFilterValuesMessage {
     TestDataObject TestData = 9; // The object containing the testdata
 }
 
-// Defines the different ways testdata should be formated back to Fenix
-enum TestDataFormatTypeEnum {
-    LIST = 0; // TestData will be delivered as a normal list
-    //JSON_OBJECT = 1; // TestData will be delivered as a json object
-    //XML = 2; // TestData will be delivered as a XML-file
-    //OTHER_FILE = 3; TestData will be delivered as a non standard file
-}
 
 // Testdata in listform
 message ListObject {
@@ -298,6 +286,20 @@ message SupportedTestDataDomainsMessage {
 // Administrative messages
 // ***********************************************************************************
 
+// A message used when Plugin wants to send information to Fenix
+message InformationMessage {
+    string PluginId = 1; // The unique id of the plugin
+    string PluginName = 2; // The name of the plugin
+    string MessageId = 3; // A unique id generated when sent from Plugin
+    enum InformationType {
+        INFO = 0; // The message is pure information
+        WARNING = 1; //  The message is of category WARNING
+        ERROR = 2; // The Plugin wants to inform Fenix of that something is wrong
+    }
+    InformationType MessageType = 4;// The type of information message
+    string message = 5; // The message from Plugin to Fenix
+}
+
 /*
 // Used for defining the current version of the proto-file
 enum CurrentVersionEnum {
@@ -357,13 +359,18 @@ service Gateway {
 
     rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
     }
-    // ***********************************************************************************
-    // Administrative methods
-    // ***********************************************************************************
 
 
     // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
     rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse) {
+    }
+
+    // ***********************************************************************************
+    // Administrative methods
+    // ***********************************************************************************
+
+    // A Plugin can send a INFO- OR WARNING-message to Fenix by this mwethod
+    rpc SendMessageToFenix (InformationMessage) returns (AckNackResponse){
     }
 
 

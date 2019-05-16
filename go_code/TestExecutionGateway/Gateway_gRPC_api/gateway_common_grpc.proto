@@ -1,5 +1,5 @@
 syntax = "proto3";
-package Gateway_TCommin_gRPC_api;
+package Gateway_gRPC_api;
 
 
 
@@ -21,4 +21,12 @@ message EmptyParameter {
 message AckNackResponse {
     bool acknack = 1; // True=Ack, False=Nack
     string comments = 2; //Comments if needed
+}
+
+// Defines the different ways testdata should be formated back to Fenix
+enum TestDataFormatTypeEnum {
+    LIST = 0; // TestData will be delivered as a normal list
+    //JSON_OBJECT = 1; // TestData will be delivered as a json object
+    //XML = 2; // TestData will be delivered as a XML-file
+    //OTHER_FILE = 3; TestData will be delivered as a non standard file
 }

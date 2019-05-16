@@ -1,13 +1,15 @@
 syntax = "proto3";
-package Gateway_Towards_Plugin_gRPC_api;
+package Gateway_gRPC_api;
 
 
 // version 3.6.0
 //~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
+//190516
+//protoc_3.7.0.rc2 -I Gateway_gRPC_api --go_out=plugins=grpc:Gateway_gRPC_api Gateway_gRPC_api/gateway_towards_plugin_grpc.proto
 
-
-// Import common Gateway messages and services
-import "go_code/TestExecutionGateway/Gateway_gRPC_api/Gatway_Common_gRPC_api/gateway_common_grpc.proto";
+// Import common Gateway messages and servicesTestDataFormatTypeEnum
+import "gateway_common_grpc.proto";
+//import "go_code/TestExecutionGateway/Gateway_gRPC_api/Gatway_Common_gRPC_api/gateway_common_grpc.proto";
 
 
 // ***********************************************************************************
