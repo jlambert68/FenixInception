@@ -2,13 +2,14 @@ package TestExecutionGateway
 
 import (
 	"github.com/sirupsen/logrus"
+	"jlambert/FenixInception2/go_code/TestExecutionGateway/common_config"
 	"log"
 	"os"
 	"time"
 )
 
-func (workerObject *MotherObject_struct) InitLogger(filename string) {
-	workerObject.logger = logrus.StandardLogger()
+func (gatewayObject *GatewayTowardsPluginObject_struct) InitLogger(filename string) {
+	gatewayObject.logger = logrus.StandardLogger()
 
 	switch common_config.LoggingLevel {
 
@@ -38,12 +39,12 @@ func (workerObject *MotherObject_struct) InitLogger(filename string) {
 	//If no file then set standard out
 
 	if filename == "" {
-		workerObject.logger.Out = os.Stdout
+		gatewayObject.logger.Out = os.Stdout
 
 	} else {
 		file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
 		if err == nil {
-			workerObject.logger.Out = file
+			gatewayObject.logger.Out = file
 		} else {
 			log.Println("Failed to log to file, using default stderr")
 		}
