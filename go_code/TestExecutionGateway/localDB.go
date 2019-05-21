@@ -1,8 +1,7 @@
 package TestExecutionGateway
 
 import (
-	"log"
-
+	"errors"
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
 )
@@ -38,6 +37,10 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 
 		// Wait for data comes from channel to dtabase engine
 		messageToDbEngine := <-gatewayObject.dbMessageQueue
+		gatewayObject.logger.WithFields(logrus.Fields{
+			"ID":                "5bdb83d8-e913-4933-969b-5035f41e4a70",
+			"messageToDbEngine": messageToDbEngine,
+		}).Info("Received a new message to Database engine")
 
 		// Decide if it's a Read- or Write-instruction
 		switch messageToDbEngine.messageType {
@@ -51,6 +54,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 						"err":    err,
 						"Bucket": bucket,
 					}).Warning("Bucket not found")
+
 				} else {
 					gatewayObject.logger.WithFields(logrus.Fields{
 						"ID":     "8ccfac34-90a0-4b50-8e37-bc4f10d76f62",
@@ -69,14 +73,15 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 				}).Info("Success in reading Key")
 
 				// Send back value using attached channel
-				messageToDbEngine.resultsQueue <- valueString
+				readResultMessage := dbReadResultMessage_struct{
+					err,
+					messageToDbEngine.bucket,
+					messageToDbEngine.key,
+					value}
+				messageToDbEngine.resultsQueue <- readResultMessage
 
 				return nil
 			})
-
-			if err != nil {
-				log.Fatal(err)
-			}
 
 		case DB_WRITE:
 			// Store incoming data in defined bucket
@@ -118,10 +123,18 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 						}).Info("Success in saving Key-Value in bucket")
 					}
 				}
+
+				// Send back value using attached channel
+				dbWritedResultMessage := dbWritedResultMessage_struct{
+					err,
+					messageToDbEngine.bucket,
+					messageToDbEngine.key}
+				messageToDbEngine.resultsQueue <- dbWritedResultMessage
+
 				return nil
 			})
 
-			// No need to take care of error from return due to it is allways nil
+			// No need to take care of error from return due to it is always nil
 
 		default:
 			gatewayObject.logger.WithFields(logrus.Fields{
@@ -129,8 +142,12 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 				"messageToDbEngine.messageType": messageToDbEngine.messageType,
 			}).Warning("No known messageType sent to Database Enging")
 
+			// Send back value using attached channel
+			var errorMessage = errors.New("messageToDbEngine.messageType is not a known type")
+			dbUnknownResultMessage := dbUnknownResultMessage_struct{
+				errorMessage}
+			messageToDbEngine.resultsQueue <- dbUnknownResultMessage
+
 		}
-
 	}
-
 }

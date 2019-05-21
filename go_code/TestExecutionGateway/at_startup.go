@@ -55,7 +55,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) registerThisGatewayAtPar
 			"ID":            "fbd24ed4-638a-43ac-a07b-c622f0ab325c",
 			"addressToDial": addressToDial,
 			"error message": err,
-		}).Error("Did not connect to Parent Gateway/Fenix Server!")
+		}).Warning("Did not connect to Parent Gateway/Fenix Server!")
 		return false, err
 
 	} else {

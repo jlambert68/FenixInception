@@ -29,11 +29,11 @@ type GatewayTowardsPluginObject_struct struct {
 
 // Defines the message sent to Database Engine
 type dbMessage_struct struct {
-	messageType  int           // Will be (DB_READ, DB_WRITE)
-	bucket       string        // The Bucket for the message
-	key          string        // Key to be Read or Written
-	value        string        // Only used for writing messages to DB
-	resultsQueue chan<- string // Sending function sends in whcih channel tp pass back the results on
+	messageType  int                           // Will be (DB_READ, DB_WRITE)
+	bucket       string                        // The Bucket for the message
+	key          string                        // Key to be Read or Written
+	value        []byte                        // Only used for writing messages to DB
+	resultsQueue chan<- dbResultMessage_struct // Sending function sends in which channel tp pass back the results on
 }
 
 // Used for defining Write/Read message to Database Engine
@@ -44,9 +44,8 @@ const (
 
 // Message used for sending back Read-instructions from Database
 type dbResultMessage_struct struct {
-	bucket string // The Bucket for the message
-	key    string // Key used when reading Database
-	value  string // The result found in Database
+	err   error  // Error message
+	value []byte // The result found in Database
 }
 
 /*
