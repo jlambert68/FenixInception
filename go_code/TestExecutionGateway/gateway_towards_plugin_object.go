@@ -2,6 +2,7 @@ package TestExecutionGateway
 
 import (
 	"github.com/sirupsen/logrus"
+	bolt "go.etcd.io/bbolt"
 	"google.golang.org/grpc"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
 	"net"
@@ -12,12 +13,40 @@ type GatewayTowardsPluginObject_struct struct {
 	// Common logger for the gateway
 	logger *logrus.Logger
 
+	// Database object used for storing any persistant data within Gateway
+	db *bolt.DB
+
 	// Internal queues used by the gateway
-	// * TestInstruction Towards Plugin
-	TestInstructionMessageQueue chan gRPC.TestInstruction_RT
+	// TestInstruction Towards Plugin
+	testInstructionMessageQueue chan gRPC.TestInstruction_RT
+
+	// Database queue used for sending questions to databse
+	dbMessageQueue chan dbMessage_struct
 
 	// gRPC server used to handle all traffic Towards the Plugins
 	GRPCServer struct{}
+}
+
+// Defines the message sent to Database Engine
+type dbMessage_struct struct {
+	messageType  int           // Will be (DB_READ, DB_WRITE)
+	bucket       string        // The Bucket for the message
+	key          string        // Key to be Read or Written
+	value        string        // Only used for writing messages to DB
+	resultsQueue chan<- string // Sending function sends in whcih channel tp pass back the results on
+}
+
+// Used for defining Write/Read message to Database Engine
+const (
+	DB_READ = iota
+	DB_WRITE
+)
+
+// Message used for sending back Read-instructions from Database
+type dbResultMessage_struct struct {
+	bucket string // The Bucket for the message
+	key    string // Key used when reading Database
+	value  string // The result found in Database
 }
 
 /*

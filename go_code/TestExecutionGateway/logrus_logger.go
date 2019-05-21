@@ -2,7 +2,6 @@ package TestExecutionGateway
 
 import (
 	"github.com/sirupsen/logrus"
-	"jlambert/FenixInception2/go_code/TestExecutionGateway/common_config"
 	"log"
 	"os"
 	"time"
@@ -11,16 +10,16 @@ import (
 func (gatewayObject *GatewayTowardsPluginObject_struct) InitLogger(filename string) {
 	gatewayObject.logger = logrus.StandardLogger()
 
-	switch common_config.LoggingLevel {
+	switch LoggingLevel {
 
 	case logrus.DebugLevel:
-		log.Println("'common_config.LoggingLevel': ", common_config.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", LoggingLevel)
 
 	case logrus.InfoLevel:
-		log.Println("'common_config.LoggingLevel': ", common_config.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", LoggingLevel)
 
 	case logrus.WarnLevel:
-		log.Println("'common_config.LoggingLevel': ", common_config.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", LoggingLevel)
 
 	default:
 		log.Println("Not correct value for debugging-level, this was used: ", common_config.LoggingLevel)
@@ -28,7 +27,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) InitLogger(filename stri
 
 	}
 
-	logrus.SetLevel(common_config.LoggingLevel)
+	logrus.SetLevel(LoggingLevel)
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,

@@ -11,7 +11,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) AtStartUp() {
 
 	// Register gateway/client at parent Gateway/Fenix
 	resultBool, err := gatewayObject.registerThisGatewayAtParentGateway()
-	if err != nil || resultBool == false  {
+	if err != nil || resultBool == false {
 		// If this gateway never has been connected to parent gateway/Fenix then Exit
 		// due to that parent doesn't know this gateways address yet
 		if gatewayClientHasBeenConnectedToParentGateway == false {
@@ -25,8 +25,6 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) AtStartUp() {
 		}
 	}
 
-
-
 	//  end message to all known clients that they must reRegister themself to this sgateway server
 	// Run goroutine and use queue to count down registrations
 
@@ -34,7 +32,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) AtStartUp() {
 }
 
 // Register this gateway/client at parent gateway/Fenix
-func  (gatewayObject *GatewayTowardsPluginObject_struct) registerThisGatewayAtParentGateway() (bool, error) {
+func (gatewayObject *GatewayTowardsPluginObject_struct) registerThisGatewayAtParentGateway() (bool, error) {
 
 	var err error
 	var addressToDial string
@@ -54,7 +52,7 @@ func  (gatewayObject *GatewayTowardsPluginObject_struct) registerThisGatewayAtPa
 	remoteGatewayServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
 	if err != nil {
 		gatewayObject.logger.WithFields(logrus.Fields{
-			"ID": "fbd24ed4-638a-43ac-a07b-c622f0ab325c",
+			"ID":            "fbd24ed4-638a-43ac-a07b-c622f0ab325c",
 			"addressToDial": addressToDial,
 			"error message": err,
 		}).Error("Did not connect to Parent Gateway/Fenix Server!")
@@ -62,12 +60,12 @@ func  (gatewayObject *GatewayTowardsPluginObject_struct) registerThisGatewayAtPa
 
 	} else {
 		gatewayObject.logger.WithFields(logrus.Fields{
-			"ID": "14d029db-0031-4837-b139-7b04b707fabf",
+			"ID":            "14d029db-0031-4837-b139-7b04b707fabf",
 			"addressToDial": addressToDial,
 		}).Info("gRPC connection OK to Worker Server!")
 
 		// Creates a new Gateway Client
-		gatewayClient := gatewaygRPC.NewGatewayClient((remoteGatewayServerConnection)
+		gatewayClient := gatewaygRPC.NewGatewayClient(remoteGatewayServerConnection)
 
 		ctx := context.Background()
 		registerClientAddressResponse, err := gatewayClient.RegisterClientAddress(ctx, &registerClientAddressRequest)

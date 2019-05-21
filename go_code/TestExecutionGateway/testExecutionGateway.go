@@ -18,11 +18,19 @@ import (
 // Used for only process cleanup once
 var cleanupProcessed bool = false
 
-func cleanup() {
+func (gatewayObject *GatewayTowardsPluginObject_struct)  cleanup() {
 
 	if cleanupProcessed == false {
 
 		cleanupProcessed = true
+
+		// CLose database
+		gatewayObject.db.Close()
+		gatewayObject.logger.WithFields(logrus.Fields{
+			"ID":            "3c84178b-a365-4d64-babb-4e1956d96684",
+		}).Info("Closing local database")
+	}
+
 /*
 		// Cleanup before close down application
 		GatewayCommonObjects.GatewayTowardsPluginObject	. motherObject.logger.WithFields(logrus.Fields{
@@ -52,10 +60,11 @@ func TestExecution_main() {
 
 	//var err error
 
-	defer cleanup()
 
 	var GatewayObject *GatewayTowardsPluginObject_struct
 	GatewayObject = &GatewayTowardsPluginObject_struct{}
+
+	defer GatewayObject.cleanup()
 
 	// Init logger
 	GatewayObject.InitLogger("")
