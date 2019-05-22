@@ -6,10 +6,10 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-var world = []byte("world")
-
+// ********************************************************************************************
 // Open the database file in same directory as the executable file
-func (gatewayObject *GatewayTowardsPluginObject_struct) iBAsenitiateDB() {
+//
+func (gatewayObject *GatewayTowardsPluginObject_struct) initiateDB() {
 	var boldDBName string = "bolt.db"
 
 	db, err := bolt.Open(boldDBName, 0644, nil)
@@ -27,11 +27,12 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) iBAsenitiateDB() {
 	go gatewayObject.databaseEngine()
 }
 
+// ********************************************************************************************
+// Do Reads and Writes to local database
+//
 func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 
 	var err error
-	//key := []byte("hello")
-	//value := []byte("Hello World!")
 
 	for {
 
@@ -73,9 +74,8 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 				}).Info("Success in reading Key")
 
 				// Send back value using attached channel
-				readResultMessage := dbReadResultMessage_struct{
+				readResultMessage := dbResultMessage_struct{
 					err,
-					messageToDbEngine.bucket,
 					messageToDbEngine.key,
 					value}
 				messageToDbEngine.resultsQueue <- readResultMessage
@@ -125,10 +125,10 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 				}
 
 				// Send back value using attached channel
-				dbWritedResultMessage := dbWritedResultMessage_struct{
+				dbWritedResultMessage := dbResultMessage_struct{
 					err,
-					messageToDbEngine.bucket,
-					messageToDbEngine.key}
+					messageToDbEngine.key,
+					nil}
 				messageToDbEngine.resultsQueue <- dbWritedResultMessage
 
 				return nil
@@ -144,8 +144,11 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 
 			// Send back value using attached channel
 			var errorMessage = errors.New("messageToDbEngine.messageType is not a known type")
-			dbUnknownResultMessage := dbUnknownResultMessage_struct{
-				errorMessage}
+			dbUnknownResultMessage := dbResultMessage_struct{
+				errorMessage,
+				messageToDbEngine.key,
+				nil}
+
 			messageToDbEngine.resultsQueue <- dbUnknownResultMessage
 
 		}

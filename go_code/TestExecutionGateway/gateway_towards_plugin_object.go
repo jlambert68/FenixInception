@@ -27,6 +27,8 @@ type GatewayTowardsPluginObject_struct struct {
 	GRPCServer struct{}
 }
 
+// TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
+
 // Defines the message sent to Database Engine
 type dbMessage_struct struct {
 	messageType  int                           // Will be (DB_READ, DB_WRITE)
@@ -45,6 +47,7 @@ const (
 // Message used for sending back Read-instructions from Database
 type dbResultMessage_struct struct {
 	err   error  // Error message
+	key   string // Key that was Read or Written
 	value []byte // The result found in Database
 }
 
@@ -55,14 +58,6 @@ type clientConnectionInformation_struct struct {
 	uuId	string
 }
 */
-
-type clientsListing_struct struct {
-	clientHasRegistered            bool
-	clientIp                       string
-	clientPort                     string
-	clientRegistrationDateTime     string
-	clientLastRegistrationDateTime string
-}
 
 var (
 	GatewayTowardsPluginObject        *GatewayTowardsPluginObject_struct

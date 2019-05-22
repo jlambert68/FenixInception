@@ -33,6 +33,7 @@ message TestInstruction_RT {
     string TestInstructionCreatedDateTime = 8; // When the TestInstruction, RunTime-version, was created
     repeated string TestInstructionSentDateTime = 9; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
     string ChoosenLandingZone = 10; // Chosen LandingZone for TestInstruction
+    TestInstructionRTMetadata Metadata = 11; // Metadata around The TestInstruction, used for Send-DateTimes and DB-handling
 }
 
 //  An attribute with it's type and value
@@ -51,6 +52,22 @@ enum TestInstructionAttributeTypeEnum {
     ComboBox = 1; // Normal ComboBox
     FileSelector = 2; // A choosen file (Name of the file)
     //FunctionSelector = 3; Not used for now
+}
+
+// Metadata used for sending the the TestInstruction to correct receiver
+message TestInstructionRTMetadata {
+    string CreatedDateTimeFenix = 1; // The DateTime when the TestInstruction was sent from Fenix
+    string CreatedDateTimePlugin = 2; // The DateTime when the TestExecution Result was sent from Plugin
+    string LastUpdatedDateTimeInDB = 3; // Updated evey time a TestInstruction is updated or saved in local Database
+    DbStatusEnum  DbStatusEnum = 4; // Used for status in local DB in Gateway
+}
+
+// The status used within a Gateway can be one of the following types
+enum DbStatusEnum {
+    TESTINSTRUCTION_RECEIVED_FROM_PARENT = 0; // The TestInstruction has been received to the gateway
+    TESTINSTRUCTION_SENT_TO_CHILD = 1; // The TestInstruction has been sent forward to Child gateway or Plugin
+    RESULT_RECEIVED_FROM_CHILD = 2; // The Test Execution Result was received from child-gateway or plugin
+    RESULT_SENT_TO_TO_PARENT = 3; // The Test Execution Result has been sent forward to parent-gateway or Fenix
 }
 
 // **********
@@ -157,7 +174,7 @@ message AckNackResponse {
 */
 
 // The Gateservice definition.
-service Gateway {
+service GatewayTowayPlugin {
 
     // ***********************************************************************************
     // Runtime methods

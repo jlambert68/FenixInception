@@ -320,7 +320,7 @@ message AckNackResponse {
 
 
 // The Gateservice definition.
-service Gateway {
+service GatewayTowardsFenix {
 
     // ***********************************************************************************
     // Runtime methods
