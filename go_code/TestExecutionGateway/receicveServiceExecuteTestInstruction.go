@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"time"
 )
 
 // ********************************************************************************************
@@ -17,10 +18,11 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestInstructionTowar
 	gatewayObject.logger.WithFields(logrus.Fields{
 		"ID":              "b80b7746-04a8-4ef5-bdc5-2f9e07de754e",
 		"testInstruction": testInstruction,
-	}).Info("Incoming: 'SendTestInstructionTowardsPlugin'")
+	}).Debug("Incoming gRPC: 'SendTestInstructionTowardsPlugin'")
 
-	// Set New Database Status on TestInstruction
+	// Set New Database Status and Timestamp on TestInstruction
 	testInstruction.Metadata.DbStatusEnum = gRPC.DbStatusEnum_TESTINSTRUCTION_RECEIVED_FROM_PARENT
+	testInstruction.Metadata.LastUpdatedDateTimeInDB = time.Now().String()
 
 	// Convert TestInstruction struct into a byte array
 	testInstructionByteArray, err := json.Marshal(testInstruction)
@@ -70,13 +72,18 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestInstructionTowar
 		return returnMessage, nil
 	}
 
+	gatewayObject.logger.WithFields(logrus.Fields{
+		"ID":              "5a98f0f1-5de9-4dcc-af76-f2888aaebf76",
+		"testInstruction": testInstruction,
+	}).Debug("TestInstructions was saved in local database")
+
 	// Put TestInstruction on queue for further processing
 	gatewayObject.testInstructionMessageQueue <- testInstruction
 
 	gatewayObject.logger.WithFields(logrus.Fields{
 		"ID":              "73e44541-c793-4ccd-8bc8-c94320f49f29",
 		"testInstruction": testInstruction,
-	}).Info("Leaving: 'SendTestInstructionTowardsPlugin'")
+	}).Debug("Leaving: 'SendTestInstructionTowardsPlugin'")
 
 	// Create message back to parent Gateway/Fenix
 	returnMessage.Comments = "OK"

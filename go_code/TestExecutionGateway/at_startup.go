@@ -62,7 +62,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) registerThisGatewayAtPar
 		gatewayObject.logger.WithFields(logrus.Fields{
 			"ID":            "14d029db-0031-4837-b139-7b04b707fabf",
 			"addressToDial": addressToDial,
-		}).Info("gRPC connection OK to Worker Server!")
+		}).Debug("gRPC connection OK to Worker Server!")
 
 		// Creates a new Gateway Client
 		gatewayClient := gatewaygRPC.NewGatewayClient(remoteGatewayServerConnection)
@@ -94,7 +94,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) registerThisGatewayAtPar
 					"ID":            "116024c5-268b-4688-97ca-272ab3db385f",
 					"returnMessage": registerClientAddressResponse,
 					"error":         err,
-				}).Info("Success in registering gateway to parent Gateway/Fenix")
+				}).Debug("Success in registering gateway to parent Gateway/Fenix")
 			}
 		}
 

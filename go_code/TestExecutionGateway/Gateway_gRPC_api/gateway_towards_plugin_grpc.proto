@@ -138,14 +138,15 @@ message TestDataFilterHeaderValue {
 //  rpc PleaseReRegisterClientAddress(ReRegisterToGatewayMessage)returns(AckNackResponse)
 // START
 // **********
-
 // Used when a Fenix or a Gateway comes online, message is sent to know clients
 message ReRegisterToGatewayMessage {
     string GatewayAddress = 1; // The IP-address of the gateway
-    string GatewayPort = 2; // The Port of the gateway
+    string GatewayPort = 2; // The Port of the gateway where reRegistration should take place
     string GatewayId = 3; // The gateways unique Id
     string GatewayName = 4; //The gateways name
+    string CreatedDateTime = 5; // The Timestamp when this information was created
 }
+
 
 // **********
 // END

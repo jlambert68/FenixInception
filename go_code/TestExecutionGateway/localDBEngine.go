@@ -41,7 +41,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 		gatewayObject.logger.WithFields(logrus.Fields{
 			"ID":                "5bdb83d8-e913-4933-969b-5035f41e4a70",
 			"messageToDbEngine": messageToDbEngine,
-		}).Info("Received a new message to Database engine")
+		}).Debug("Received a new message to Database engine")
 
 		// Decide if it's a Read- or Write-instruction
 		switch messageToDbEngine.messageType {
@@ -60,7 +60,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 					gatewayObject.logger.WithFields(logrus.Fields{
 						"ID":     "8ccfac34-90a0-4b50-8e37-bc4f10d76f62",
 						"Bucket": bucket,
-					}).Info("Success in finding Bucket")
+					}).Debug("Success in finding Bucket")
 				}
 
 				// Retrieve value from key
@@ -71,7 +71,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 					"Bucket": bucket,
 					"Key":    messageToDbEngine.key,
 					"Value":  valueString,
-				}).Info("Success in reading Key")
+				}).Debug("Success in reading Key")
 
 				// Send back value using attached channel
 				readResultMessage := dbResultMessage_struct{
@@ -98,7 +98,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 					gatewayObject.logger.WithFields(logrus.Fields{
 						"ID":     "e0359bee-de08-420f-b417-9635fc7b1e9b",
 						"Bucket": bucket,
-					}).Info("Success in creating Bucket")
+					}).Debug("Success in creating Bucket")
 				}
 
 				// Save Value using its key
@@ -120,7 +120,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) databaseEngine() {
 							"Bucket": bucket,
 							"Key":    messageToDbEngine.key,
 							"Value":  messageToDbEngine.value,
-						}).Info("Success in saving Key-Value in bucket")
+						}).Debug("Success in saving Key-Value in bucket")
 					}
 				}
 

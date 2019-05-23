@@ -40,7 +40,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstructionE
 		gatewayObject.logger.WithFields(logrus.Fields{
 			"ID":                           "f015de87-d51f-4025-8e27-cf818bbe255d",
 			"testInstructionToBeForwarded": testInstructionToBeForwarded,
-		}).Info("Received a new TestInstruction from channel that shoud be forwarded")
+		}).Debug("Received a new TestInstruction from channel that shoud be forwarded")
 
 		// Get Clients address
 		dbMessage := dbMessage_struct{
@@ -84,7 +84,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstructionE
 				gatewayObject.logger.WithFields(logrus.Fields{
 					"ID":            "4510ae97-1753-4d4c-a7f5-3987054bd969",
 					"addressToDial": addressToDial,
-				}).Info("gRPC connection OK to Worker Server!")
+				}).Debug("gRPC connection OK to Worker Server!")
 
 				// Creates a new gateway Client
 				gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
@@ -103,7 +103,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstructionE
 					gatewayObject.logger.WithFields(logrus.Fields{
 						"ID":            "ef7f99b4-dcc0-4583-b16a-de3bf093880f",
 						"addressToDial": addressToDial,
-					}).Info("gRPC-send TestInstruction to child-Gateway or Plugin")
+					}).Debug("gRPC-send TestInstruction to child-Gateway or Plugin")
 
 					// Set New Database Status and Timestamp on TestInstruction
 					testInstructionToBeForwarded.Metadata.DbStatusEnum = gRPC.DbStatusEnum_TESTINSTRUCTION_SENT_TO_CHILD
@@ -123,7 +123,6 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstructionE
 					} else {
 
 						// Save TestInstruction to local database, using local channel
-						// Return Channel
 						returnChannel := make(chan dbResultMessage_struct)
 
 						dbMessage := dbMessage_struct{
