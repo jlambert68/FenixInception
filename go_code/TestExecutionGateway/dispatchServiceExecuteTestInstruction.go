@@ -15,32 +15,35 @@ var returnChannel chan dbResultMessage_struct
 // Initiate Dispatch Engine for TestInstructions to be executed
 //
 
-func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstruction() {
+func (gatewayObject *GatewayTowardsPluginObject_struct) initiateDispatchEngineForTestInstructiona() {
 
 	// Create return Channel
 	returnChannel = make(chan dbResultMessage_struct)
 
 	// Start Dispatch Engine, for TestInstruction to be executed, as a go-routine
-	go gatewayObject.dispatchTestInstructionEngineReceive()
+	go gatewayObject.dispatchEngineForTestInstructions()
 }
 
 // ********************************************************************************************
 // Forward TestInstructions from incoming channel to child gateway or plugin
 //
 
-func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstructionEngineReceive() {
+func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchEngineForTestInstructions() {
 
 	var clientAddress clientAddress_struct
 	var err error
 
 	for {
 		// Wait for data comes from channel to dispatch engine
-		testInstructionToBeForwarded := <-gatewayObject.testInstructionMessageQueue
+		testInstructionToBeForwarded := <-gatewayObject.testInstructionMessageChannel
 
 		gatewayObject.logger.WithFields(logrus.Fields{
 			"ID":                           "f015de87-d51f-4025-8e27-cf818bbe255d",
 			"testInstructionToBeForwarded": testInstructionToBeForwarded,
 		}).Debug("Received a new TestInstruction from channel that shoud be forwarded")
+
+		// Create the channel that the client address should be sent back on
+		returnClientAddressChannel := make(chan dbResultMessage_struct)
 
 		// Get Clients address
 		dbMessage := dbMessage_struct{
@@ -48,13 +51,12 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstructionE
 			"Clients",
 			testInstructionToBeForwarded.PluginId,
 			nil,
-			returnChannel}
+			returnClientAddressChannel}
 
 		// Send Read message to database to receive address
 		gatewayObject.dbMessageQueue <- dbMessage
 
 		// Wait for address from channel, then close the channel
-		returnClientAddressChannel := make(chan dbResultMessage_struct)
 		clientAddressByteArray := <-returnClientAddressChannel
 		close(returnClientAddressChannel)
 
@@ -84,7 +86,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchTestInstructionE
 				gatewayObject.logger.WithFields(logrus.Fields{
 					"ID":            "4510ae97-1753-4d4c-a7f5-3987054bd969",
 					"addressToDial": addressToDial,
-				}).Debug("gRPC connection OK to Worker Server!")
+				}).Debug("gRPC connection OK to child-gateway- or Plugin-Server!")
 
 				// Creates a new gateway Client
 				gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)

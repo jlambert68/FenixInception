@@ -89,6 +89,7 @@ message SupportedTestDataDomainsRequest {
     string PluginId = 1; // The unique id of the plugin
     string PluginName = 2; // The name of the plugin
     string MessageId = 3; // A unique id generated when sent from Fenix
+    string CreatedDateTime = 4; // The TimeStamp when the message was created at Fenix
 }
 
 // **********
@@ -197,8 +198,9 @@ service GatewayTowayPlugin {
     rpc GetSupportedTestDataDomains (SupportedTestDataDomainsRequest) returns (AckNackResponse) {
     }
 
-    rpc GetTestDataListFromFilterValues (TestDataFilterValuesRequest) returns (AckNackResponse) {
-    }
+    // This one should probably be something else
+//    rpc GetTestDataListFromFilterValues (TestDataFilterValuesRequest) returns (AckNackResponse) {
+//    }
 
     // ***********************************************************************************
     // Registration methods

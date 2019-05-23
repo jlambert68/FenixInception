@@ -78,7 +78,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestInstructionTowar
 	}).Debug("TestInstructions was saved in local database")
 
 	// Put TestInstruction on queue for further processing
-	gatewayObject.testInstructionMessageQueue <- testInstruction
+	gatewayObject.testInstructionMessageChannel <- testInstruction
 
 	gatewayObject.logger.WithFields(logrus.Fields{
 		"ID":              "73e44541-c793-4ccd-8bc8-c94320f49f29",

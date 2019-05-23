@@ -18,7 +18,10 @@ type GatewayTowardsPluginObject_struct struct {
 
 	// Internal queues used by the gateway
 	// TestInstruction Towards Plugin
-	testInstructionMessageQueue chan gRPC.TestInstruction_RT
+	testInstructionMessageChannel chan gRPC.TestInstruction_RT
+
+	// supportedTestDataDomainsRequest Towards Plugin
+	supportedTestDataDomainsRequestChannel chan gRPC.SupportedTestDataDomainsRequest
 
 	// Database queue used for sending questions to databse
 	dbMessageQueue chan dbMessage_struct
