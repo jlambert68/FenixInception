@@ -26,6 +26,9 @@ type GatewayTowardsPluginObject_struct struct {
 	//  informationMessage towards Fenix
 	informationMessageChannel chan gRPC.InformationMessage
 
+	// testInstructionTimeOutMessage towards Fenix
+	testInstructionTimeOutMessageChannel chan gRPC.TestInstructionTimeOutMessage
+
 	// Database queue used for sending questions to databse
 	dbMessageQueue chan dbMessage_struct
 

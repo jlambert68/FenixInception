@@ -74,7 +74,7 @@ enum LogMessageTypeEnum {
 
 
 // *********************************************************
-//  rpc SendTestInstructionTimeOutTowardsPlugin (TestInstructionTimeOutMessage) returns (AckNackResponse)
+//  rpc SendTestInstructionTimeOutTowardsFenix(TestInstructionTimeOutMessage) returns (AckNackResponse)
 //
 // START
 // **********
@@ -337,7 +337,7 @@ service GatewayTowardsFenix {
 
     // TestInstructions Timeouts flows from Plugins towards Fenix.
     // Used for telling Fenix when a TestInstruction should be have a timeout and execution for Testcase should be stopped
-    rpc SendTestInstructionTimeOutTowardsPlugin (TestInstructionTimeOutMessage) returns (AckNackResponse) {
+    rpc SendTestInstructionTimeOutTowardsFenix (TestInstructionTimeOutMessage) returns (AckNackResponse) {
     }
 
     // ***********************************************************************************

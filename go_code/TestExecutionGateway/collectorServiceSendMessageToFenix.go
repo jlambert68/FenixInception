@@ -7,7 +7,7 @@ import (
 )
 
 // ********************************************************************************************
-// Call from parent Gateway/Fenix for incoming request for supported TestDomains from a certain Plugin
+// Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a InfoMessage toward Fenix
 //
 func (gatewayObject *GatewayTowardsPluginObject_struct) SendMessageToFenix(ctx context.Context, informationMessage gRPC.InformationMessage) (*gRPC.AckNackResponse, error) {
 
