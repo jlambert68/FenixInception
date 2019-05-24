@@ -23,6 +23,9 @@ type GatewayTowardsPluginObject_struct struct {
 	// supportedTestDataDomainsRequest Towards Plugin
 	supportedTestDataDomainsRequestChannel chan gRPC.SupportedTestDataDomainsRequest
 
+	//  informationMessage towards Fenix
+	informationMessageChannel chan gRPC.InformationMessage
+
 	// Database queue used for sending questions to databse
 	dbMessageQueue chan dbMessage_struct
 

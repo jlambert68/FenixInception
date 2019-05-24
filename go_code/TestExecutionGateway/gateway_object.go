@@ -29,7 +29,7 @@ var (
 )
 
 // Data structures for clients (child-gateways and plugins) that register towards a gateway or Fenix
-type clientAddress_struct struct {
+type gRPCClientAddress_struct struct {
 	clientHasRegistered            bool
 	clientIp                       string
 	clientPort                     string

@@ -27,7 +27,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) initiateDispatchEngineFo
 
 func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchEngineForSupportedTestDomains() {
 
-	var clientAddress clientAddress_struct
+	var clientAddress gRPCClientAddress_struct
 	var err error
 
 	for {

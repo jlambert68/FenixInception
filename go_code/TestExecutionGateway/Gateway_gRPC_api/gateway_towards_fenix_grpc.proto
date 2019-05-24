@@ -286,18 +286,18 @@ message SupportedTestDataDomainsMessage {
 // Administrative messages
 // ***********************************************************************************
 
-// A message used when Plugin wants to send information to Fenix
+// A message used when Gateway or Plugin wants to send information to Fenix
 message InformationMessage {
-    string PluginId = 1; // The unique id of the plugin
-    string PluginName = 2; // The name of the plugin
-    string MessageId = 3; // A unique id generated when sent from Plugin
+    string SenderId = 1; // The unique id of the Gateway or Plugin
+    string SenderName = 2; // The name of the Gateway or Plugin
+    string MessageId = 3; // A unique id generated when sent from Gateway or Plugin
     enum InformationType {
         INFO = 0; // The message is pure information
         WARNING = 1; //  The message is of category WARNING
         ERROR = 2; // The Plugin wants to inform Fenix of that something is wrong
     }
     InformationType MessageType = 4;// The type of information message
-    string message = 5; // The message from Plugin to Fenix
+    string message = 5; // The message from Gateway or Plugin to Fenix
 }
 
 /*
@@ -335,7 +335,8 @@ service GatewayTowardsFenix {
     rpc SendTexecutionLogTowardsFenix (TexecutionLogMessage) returns (AckNackResponse) {
     }
 
-    // TestInstructions Timeouts flows from Fenix Inception towards Plugins
+    // TestInstructions Timeouts flows from Plugins towards Fenix.
+    // Used for telling Fenix when a TestInstruction should be have a timeout and execution for Testcase should be stopped
     rpc SendTestInstructionTimeOutTowardsPlugin (TestInstructionTimeOutMessage) returns (AckNackResponse) {
     }
 
@@ -346,9 +347,10 @@ service GatewayTowardsFenix {
     rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse) {
     }
 
-    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
-
-    }
+    // This one will probably be deleted
+//    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
+//
+//    }
     // ***********************************************************************************
     // Registration methods
     // ***********************************************************************************

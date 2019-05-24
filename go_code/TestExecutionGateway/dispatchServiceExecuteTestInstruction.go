@@ -9,16 +9,11 @@ import (
 	"time"
 )
 
-var returnChannel chan dbResultMessage_struct
-
 // ********************************************************************************************
 // Initiate Dispatch Engine for TestInstructions to be executed
 //
 
 func (gatewayObject *GatewayTowardsPluginObject_struct) initiateDispatchEngineForTestInstructiona() {
-
-	// Create return Channel
-	returnChannel = make(chan dbResultMessage_struct)
 
 	// Start Dispatch Engine, for TestInstruction to be executed, as a go-routine
 	go gatewayObject.dispatchEngineForTestInstructions()
@@ -30,7 +25,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) initiateDispatchEngineFo
 
 func (gatewayObject *GatewayTowardsPluginObject_struct) dispatchEngineForTestInstructions() {
 
-	var clientAddress clientAddress_struct
+	var clientAddress gRPCClientAddress_struct
 	var err error
 
 	for {
