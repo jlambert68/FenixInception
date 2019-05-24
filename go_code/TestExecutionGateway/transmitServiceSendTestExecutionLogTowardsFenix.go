@@ -9,32 +9,32 @@ import (
 )
 
 // ********************************************************************************************
-// Initiate Transmit Engine for InformationMessage-messages
+// Initiate Dispatch Engine for SendTestExecutionLogTowardsFenix
 //
 
-func (gatewayObject *GatewayTowardsPluginObject_struct) initiateSendTestInstructionTimeOutTowardsFenix() {
+func (gatewayObject *GatewayTowardsPluginObject_struct) initiateSendTestExecutionLogTowardsFenix() {
 
-	// Start Transmit Engine, for InformationMessage-messages as a go-routine
-	go gatewayObject.transmitEngineForSendTestInstructionTimeOutTowardsFenix()
+	// Start Transmit Engine, for TestExecutionLogs as a go-routine
+	go gatewayObject.transmitEngineForSendTestExecutionLogTowardsFenix()
 }
 
 // ********************************************************************************************
 // Forward InformationMessage-messages from incoming channel towards Fenix
 //
 
-func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTestInstructionTimeOutTowardsFenix() {
+func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTestExecutionLogTowardsFenix() {
 
 	var parentAddress gRPCClientAddress_struct
 	var err error
 
 	for {
 		// Wait for data comes from channel to transmit engine
-		testInstructionTimeOutMessageToBeForwarded := <-gatewayObject.testInstructionTimeOutMessageChannel
+		testExecutionLogMessageToBeForwarded := <-gatewayObject.testExecutionLogMessageTChannel
 
 		gatewayObject.logger.WithFields(logrus.Fields{
-			"ID": "d1d4385b-b7c1-473d-8105-2e9b2341ef14",
-			"testInstructionTimeOutMessageToBeForwarded": testInstructionTimeOutMessageToBeForwarded,
-		}).Debug("Received a new 'testInstructionTimeOutMessageToBeForwarded' from channel that shoud be forwarded")
+			"ID":                                   "5c9fe63a-fd82-4ccd-8386-2b9c049e51a1",
+			"testExecutionLogMessageToBeForwarded": testExecutionLogMessageToBeForwarded,
+		}).Debug("Received a new 'testExecutionLogMessageToBeForwarded' from channel that shoud be forwarded")
 
 		// Create the channel that the client address should be sent back on
 		returnParentAddressChannel := make(chan dbResultMessage_struct)
@@ -59,7 +59,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTes
 		if err != nil {
 			// Problem with unmarshal the json object
 			gatewayObject.logger.WithFields(logrus.Fields{
-				"ID":                      "dd9f143f-9796-4651-a394-b72f5375cb9e",
+				"ID":                      "58232255-c767-4143-95b3-3f52de741543",
 				"parentAddressByteArray,": parentAddressByteArray,
 			}).Error("Can't unmarshal gRPCClients address object from database")
 			//TODO Send Error information to Fenix
@@ -71,7 +71,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTes
 			remoteParentServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 			if err != nil {
 				gatewayObject.logger.WithFields(logrus.Fields{
-					"ID":            "6118ae80-1d86-4530-83e4-549c00d01337",
+					"ID":            "863612af-86b3-431c-8270-9d335f3f0001",
 					"addressToDial": addressToDial,
 					"error message": err,
 				}).Warning("Did not connect to Child (Gateway or Plugin) Server!")
@@ -80,7 +80,7 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTes
 				// TODO Save message in localDB for later resend
 			} else {
 				gatewayObject.logger.WithFields(logrus.Fields{
-					"ID":            "e1c1903e-d72b-4ca2-973e-33b8525cb6ee",
+					"ID":            "77167a87-99e8-49cc-ac3f-8966ac109658",
 					"addressToDial": addressToDial,
 				}).Debug("gRPC connection OK to Parent-gateway- or Fenix-Server!")
 
@@ -89,21 +89,21 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTes
 
 				// Do gRPC-call to client gateway or Fenix
 				ctx := context.Background()
-				returnMessage, err := gatewayClient.SendTestInstructionTimeOutTowardsFenix(ctx, &testInstructionTimeOutMessageToBeForwarded)
+				returnMessage, err := gatewayClient.SendTestExecutionLogTowardsFenix(ctx, &testExecutionLogMessageToBeForwarded)
 				if err != nil {
 					gatewayObject.logger.WithFields(logrus.Fields{
-						"ID":            "1ae9d406-b8fc-4622-b6a3-8b2c0ce3cdc9",
+						"ID":            "840312be-e773-4e9d-ae05-0ec8e9dcca5c",
 						"returnMessage": returnMessage,
 						"error":         err,
-					}).Warning("Problem to send 'testInstructionTimeOutMessageToBeForwarded' to parent-Gateway or Fenix")
+					}).Warning("Problem to send 'testExecutionLogMessageToBeForwarded' to parent-Gateway or Fenix")
 					// TODO Send Error information to Fenix
 					// TODO Add message to memmory cash for later resend
 					// TODO Save message in localDB for later resend
 				} else {
 					gatewayObject.logger.WithFields(logrus.Fields{
-						"ID":            "985c3a8b-dd01-496a-b3b8-9e1c67b89dd6",
+						"ID":            "fed7b18e-5cd5-485c-b14d-0b90ff720feb",
 						"addressToDial": addressToDial,
-					}).Debug("gRPC-send OK of 'testInstructionTimeOutMessageToBeForwarded' to Parent-Gateway or Fenix")
+					}).Debug("gRPC-send OK of 'testExecutionLogMessageToBeForwarded' to Parent-Gateway or Fenix")
 
 					// TODO Check for messages to Resend (If so then put them on channel)
 

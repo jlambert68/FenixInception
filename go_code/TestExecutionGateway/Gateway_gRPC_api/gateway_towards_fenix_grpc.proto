@@ -47,13 +47,13 @@ enum AvailableTestExecutionResultsEnum {
 // *********************************************************
 
 // *********************************************************
-//  rpc SendTexecutionLogTowardsFenix (TexecutionLogMessage) returns (AckNackResponse)
+//  rpc SendTestExecutionLogTowardsFenix (TestExecutionLogMessage) returns (AckNackResponse)
 //
 // START
 // **********
 
 // A log post that sent back to Fenix Inception from plugin during test execution
-message TexecutionLogMessage {
+message TestExecutionLogMessage {
     string TestInstructionGuid = 1; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
     string LogMessageId = 2; // A unique id created by plugin
     string TestInstructionResultCreatedDateTime = 3; // The DateTime when the message was created
@@ -332,7 +332,7 @@ service GatewayTowardsFenix {
     }
 
     // Log-posts har sent from Plugins towards Fenix Inception
-    rpc SendTexecutionLogTowardsFenix (TexecutionLogMessage) returns (AckNackResponse) {
+    rpc SendTestExecutionLogTowardsFenix (TestExecutionLogMessage) returns (AckNackResponse) {
     }
 
     // TestInstructions Timeouts flows from Plugins towards Fenix.

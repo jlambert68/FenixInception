@@ -29,6 +29,12 @@ type GatewayTowardsPluginObject_struct struct {
 	// testInstructionTimeOutMessage towards Fenix
 	testInstructionTimeOutMessageChannel chan gRPC.TestInstructionTimeOutMessage
 
+	// testExecutionLogMessage towards Fenix
+	testExecutionLogMessageTChannel chan gRPC.TestExecutionLogMessage
+
+	// testExecutionLogMessage towards Fenix
+	testExecutionLogMessage chan gRPC.TestExecutionLogMessage
+
 	// Database queue used for sending questions to databse
 	dbMessageQueue chan dbMessage_struct
 
