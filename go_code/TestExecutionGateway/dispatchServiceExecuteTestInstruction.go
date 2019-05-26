@@ -92,7 +92,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestIns
 
 				// Do gRPC-call to client gateway or Plugin
 				ctx := context.Background()
-				returnMessage, err := gatewayClient.SendTestInstructionTowardsPlugin(ctx, &testInstructionToBeForwarded)
+				returnMessage, err := gatewayClient.SendTestInstructionTowardsPlugin(ctx, testInstructionToBeForwarded)
 				if err != nil {
 					gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 						"ID":            "4a0f0753-6394-4115-aa56-cf26c9354f83",

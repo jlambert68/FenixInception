@@ -93,7 +93,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 
 				// Do gRPC-call to client gateway or Fenix
 				ctx := context.Background()
-				returnMessage, err := gatewayClient.SendMessageToFenix(ctx, &informationMessageToBeForwarded)
+				returnMessage, err := gatewayClient.SendMessageToFenix(ctx, informationMessageToBeForwarded)
 				if err != nil {
 					gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 						"ID":            "3becc080-360b-42b4-8fe8-32a01bf820bc",

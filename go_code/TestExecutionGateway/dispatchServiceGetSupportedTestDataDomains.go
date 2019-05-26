@@ -91,7 +91,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 
 				// Do gRPC-call to client gateway or Plugin
 				ctx := context.Background()
-				returnMessage, err := gatewayClient.GetSupportedTestDataDomains(ctx, &getSupportedTestDomainsToBeForwarded)
+				returnMessage, err := gatewayClient.GetSupportedTestDataDomains(ctx, getSupportedTestDomainsToBeForwarded)
 				if err != nil {
 					gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 						"ID":            "f549c867-1250-4276-af6e-901908cd6221",

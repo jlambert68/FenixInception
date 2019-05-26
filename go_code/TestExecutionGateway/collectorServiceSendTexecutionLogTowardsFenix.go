@@ -15,11 +15,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) SendTestExecutionLogTowar
 
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":                            "6ef6943e-7a05-42cd-80b5-e35231c14f04",
-		"testInstructionTimeOutMessage": *testExecutionLogMessage,
+		"testInstructionTimeOutMessage": testExecutionLogMessage,
 	}).Debug("Incoming gRPC: 'TestExecutionLogMessage'")
 
 	// Put testExecutionLogMessage on queue for further processing
-	gatewayObject.testExecutionLogMessageChannel <- *testExecutionLogMessage
+	gatewayObject.testExecutionLogMessageChannel <- testExecutionLogMessage
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID": "bbd8fdc7-16cb-4dae-b4a1-821fb30ccb70",
 	}).Debug("'testExecutionLogMessage' was put on the channel")

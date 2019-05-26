@@ -6,6 +6,15 @@ import (
 	"net"
 )
 
+// Data structures for clients (child-gateways and plugins) that register towards a gateway or Fenix
+type gRPCClientAddress_struct struct {
+	clientHasRegistered            bool
+	clientIp                       string
+	clientPort                     string
+	clientRegistrationDateTime     string
+	clientLastRegistrationDateTime string
+}
+
 type gatewayTowardsPluginObject_struct struct {
 
 	// Inherit common objects
@@ -19,10 +28,10 @@ type gatewayTowardsPluginObject_struct struct {
 
 	// Internal queues used by the gateway
 	// TestInstruction Towards Plugin
-	testInstructionMessageChannel chan gRPC.TestInstruction_RT
+	testInstructionMessageChannel chan *gRPC.TestInstruction_RT
 
 	// supportedTestDataDomainsRequest Towards Plugin
-	supportedTestDataDomainsRequestChannel chan gRPC.SupportedTestDataDomainsRequest
+	supportedTestDataDomainsRequestChannel chan *gRPC.SupportedTestDataDomainsRequest
 }
 
 var (

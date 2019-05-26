@@ -15,11 +15,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) SendTestInstructionTimeOu
 
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":                            "7f3d4cf0-e4fa-4aae-a5da-990adcdaab22",
-		"testInstructionTimeOutMessage": *testInstructionTimeOutMessage,
+		"testInstructionTimeOutMessage": testInstructionTimeOutMessage,
 	}).Debug("Incoming gRPC: 'SendTestInstructionTimeOutTowardsFenix'")
 
 	// Put testInstructionTimeOutMessage on queue for further processing
-	gatewayObject.testInstructionTimeOutMessageChannel <- *testInstructionTimeOutMessage
+	gatewayObject.testInstructionTimeOutMessageChannel <- testInstructionTimeOutMessage
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID": "c1845b2f-08fb-4eed-8c07-543c9fe24d45",
 	}).Debug("'testInstructionTimeOutMessage' was put on the channel")

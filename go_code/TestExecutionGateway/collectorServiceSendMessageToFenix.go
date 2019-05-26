@@ -15,11 +15,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) SendMessageToFenix(ctx co
 
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":                 "25d5b2fd-cfb6-4cb8-9c7c-898e92c50e51",
-		"informationMessage": *informationMessage,
+		"informationMessage": informationMessage,
 	}).Debug("Incoming gRPC: 'SendMessageToFenix'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	gatewayObject.informationMessageChannel <- *informationMessage
+	gatewayObject.informationMessageChannel <- informationMessage
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("InformationMessage was put on the channel")

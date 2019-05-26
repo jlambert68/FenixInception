@@ -7,7 +7,7 @@ import (
 	gatewaygRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
 )
 
-func (gatewayObject *gatewayTowardsPluginObject_struct) AtStartUp() {
+func (gatewayObject *gatewayTowardsFenixObject_struct) AtStartUp() {
 
 	// Register gateway/client at parent Gateway/Fenix
 	resultBool, err := gatewayObject.registerThisGatewayAtParentGateway()
@@ -32,7 +32,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) AtStartUp() {
 }
 
 // Register this gateway/client at parent gateway/Fenix
-func (gatewayObject *gatewayTowardsPluginObject_struct) registerThisGatewayAtParentGateway() (bool, error) {
+func (gatewayObject *gatewayTowardsFenixObject_struct) registerThisGatewayAtParentGateway() (bool, error) {
 
 	var err error
 	var addressToDial string
@@ -65,7 +65,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) registerThisGatewayAtPar
 		}).Debug("gRPC connection OK to Worker Server!")
 
 		// Creates a new Gateway Client
-		gatewayClient := gatewaygRPC.NewGatewayClient(remoteGatewayServerConnection)
+		gatewayClient := gatewaygRPC.NewGatewayTowardsFenixClient(remoteGatewayServerConnection)
 
 		ctx := context.Background()
 		registerClientAddressResponse, err := gatewayClient.RegisterClientAddress(ctx, &registerClientAddressRequest)

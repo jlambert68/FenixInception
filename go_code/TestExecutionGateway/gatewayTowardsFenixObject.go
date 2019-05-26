@@ -6,6 +6,25 @@ import (
 	"net"
 )
 
+var (
+
+	// Connection parameters for connecting to parent Gateway/Fenix
+	remoteGatewayServerConnection *grpc.ClientConn
+	grpcClient                    gRPC.GatewayTowardsFenixClient
+
+	// Address of Parent Gateway/Fenix
+	parent_address_to_dial string = ParentGatewayServer_address + ParentGatewayServer_port
+
+	// Port where Parent Gateway/Fenix will call this gateway/client
+	incomingPortForCallsFromParentGateway string
+)
+
+// The following variables is save in DB and reloaded At Startup
+var (
+	// Have this Gateway/Client ever been connected to parent Gateway/Fenix
+	gatewayClientHasBeenConnectedToParentGateway bool
+)
+
 type gatewayTowardsFenixObject_struct struct {
 
 	// Inherit common objects
@@ -14,16 +33,16 @@ type gatewayTowardsFenixObject_struct struct {
 	// *** Internal queues used by the gateway ***
 
 	//  informationMessage towards Fenix
-	informationMessageChannel chan gRPC.InformationMessage
+	informationMessageChannel chan *gRPC.InformationMessage
 
 	// testInstructionTimeOutMessage towards Fenix
-	testInstructionTimeOutMessageChannel chan gRPC.TestInstructionTimeOutMessage
+	testInstructionTimeOutMessageChannel chan *gRPC.TestInstructionTimeOutMessage
 
 	// testExecutionLogMessage towards Fenix
-	testExecutionLogMessageChannel chan gRPC.TestExecutionLogMessage
+	testExecutionLogMessageChannel chan *gRPC.TestExecutionLogMessage
 
 	// supportedTestDataDomainsMessage towards Fenix
-	supportedTestDataDomainsMessageTowardsFenixChannel chan gRPC.SupportedTestDataDomainsMessage
+	supportedTestDataDomainsMessageTowardsFenixChannel chan *gRPC.SupportedTestDataDomainsMessage
 }
 
 var (

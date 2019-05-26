@@ -5,34 +5,6 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-var (
-	/*
-		// Connection parameters for connecting to parent Gateway/Fenix
-		remoteGatewayServerConnection *grpc.ClientConn
-		grpcClient                    gRPC.GatewayClient
-	*/
-	// Address of Parent Gateway/Fenix
-	parent_address_to_dial string = ParentGatewayServer_address + ParentGatewayServer_port
-
-	// Port where Parent Gateway/Fenix will call this gateway/client
-	incomingPortForCallsFromParentGateway string
-)
-
-// The following variables is save in DB and reloaded At Startup
-var (
-	// Have this Gateway/Client ever been connected to parent Gateway/Fenix
-	gatewayClientHasBeenConnectedToParentGateway bool
-)
-
-// Data structures for clients (child-gateways and plugins) that register towards a gateway or Fenix
-type gRPCClientAddress_struct struct {
-	clientHasRegistered            bool
-	clientIp                       string
-	clientPort                     string
-	clientRegistrationDateTime     string
-	clientLastRegistrationDateTime string
-}
-
 type gatewayObject_struct struct {
 	// Common logger for the gateway
 	logger *logrus.Logger

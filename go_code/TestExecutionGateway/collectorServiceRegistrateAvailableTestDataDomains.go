@@ -15,11 +15,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) RegistrateAvailableTestDa
 
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":                              "d3672229-2897-4654-83aa-0e56dd1db4b1",
-		"supportedTestDataDomainsMessage": *supportedTestDataDomainsMessage,
+		"supportedTestDataDomainsMessage": supportedTestDataDomainsMessage,
 	}).Debug("Incoming gRPC: 'RegistrateAvailableTestDataDomains'")
 
 	// Put testExecutionLogMessage on queue for further processing
-	gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel <- *supportedTestDataDomainsMessage
+	gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel <- supportedTestDataDomainsMessage
 	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID": "4d55f441-4e13-41ae-a9eb-e71f288a18e9",
 	}).Debug("'SupportedTestDataDomainsMessage' was put on the channel")

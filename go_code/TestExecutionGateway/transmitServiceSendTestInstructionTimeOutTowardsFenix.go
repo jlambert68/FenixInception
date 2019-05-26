@@ -93,7 +93,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 
 				// Do gRPC-call to client gateway or Fenix
 				ctx := context.Background()
-				returnMessage, err := gatewayClient.SendTestInstructionTimeOutTowardsFenix(ctx, &testInstructionTimeOutMessageToBeForwarded)
+				returnMessage, err := gatewayClient.SendTestInstructionTimeOutTowardsFenix(ctx, testInstructionTimeOutMessageToBeForwarded)
 				if err != nil {
 					gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 						"ID":            "1ae9d406-b8fc-4622-b6a3-8b2c0ce3cdc9",
