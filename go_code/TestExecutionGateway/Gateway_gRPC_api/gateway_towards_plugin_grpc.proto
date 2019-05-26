@@ -23,17 +23,21 @@ import "gateway_common_grpc.proto";
 
 //  A RunTime version of the TestInstruction sent from Fenix towards a Plugin
 message TestInstruction_RT {
-    string TestInstructionTypeGuid = 1; // TestInstructionTypeGuid tells Plugin what to do, set by Plugin
-    string TestInstructionGuid = 2; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
-    string TestInstructionTypeName = 3; // Name of TestInstruction
-    string PluginId = 4; // The unique id of the plugin
-    string PluginName = 5; // The name of the plugin
-    string TestMainGroupGuid_RT = 6; // Reference to TestManinGroupGuid_RT which is top object ????Needed????
-    repeated TestInstructionAttribute_RT TestInstructionAttributes = 7; // All attributes with values for TestInstruction
-    string TestInstructionCreatedDateTime = 8; // When the TestInstruction, RunTime-version, was created
-    repeated string TestInstructionSentDateTime = 9; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
-    string ChoosenLandingZone = 10; // Chosen LandingZone for TestInstruction
-    TestInstructionRTMetadata Metadata = 11; // Metadata around The TestInstruction, used for Send-DateTimes and DB-handling
+    string OriginalSenderId = 1 ; // Then Id of the gateway/Fenix that created the message
+    string OriginalSenderName = 2 ; // Then name of the gateway/Fenix that created the message
+    string SenderId = 3; // Then Id of the gateway/Fenix that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/Fenix that was the last forwarder
+    string TestInstructionTypeGuid = 5; // TestInstructionTypeGuid tells Plugin what to do, set by Plugin
+    string TestInstructionGuid = 6; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
+    string TestInstructionTypeName = 7; // Name of TestInstruction
+    string PluginId = 8; // The unique id of the plugin
+    string PluginName = 9; // The name of the plugin
+    string TestMainGroupGuid_RT = 10; // Reference to TestManinGroupGuid_RT which is top object ????Needed????
+    repeated TestInstructionAttribute_RT TestInstructionAttributes = 11; // All attributes with values for TestInstruction
+    string TestInstructionCreatedDateTime = 12; // When the TestInstruction, RunTime-version, was created
+    repeated string TestInstructionSentDateTime = 13; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
+    string ChoosenLandingZone = 14; // Chosen LandingZone for TestInstruction
+    TestInstructionRTMetadata Metadata = 15; // Metadata around The TestInstruction, used for Send-DateTimes and DB-handling
 }
 
 //  An attribute with it's type and value
@@ -86,10 +90,14 @@ enum DbStatusEnum {
 
 // Message to get supported TestData-domains from a plugin
 message SupportedTestDataDomainsRequest {
-    string PluginId = 1; // The unique id of the plugin
-    string PluginName = 2; // The name of the plugin
-    string MessageId = 3; // A unique id generated when sent from Fenix
-    string CreatedDateTime = 4; // The TimeStamp when the message was created at Fenix
+    string OriginalSenderId = 1 ; // Then Id of the gateway/Fenix that created the message
+    string OriginalSenderName = 2 ; // Then name of the gateway/Fenix that created the message
+    string SenderId = 3; // Then Id of the gateway/Fenix that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/Fenix that was the last forwarder
+    string PluginId = 5; // The unique id of the plugin
+    string PluginName = 6; // The name of the plugin
+    string MessageId = 7; // A unique id generated when sent from Fenix
+    string CreatedDateTime = 8; // The TimeStamp when the message was created at Fenix
 }
 
 // **********

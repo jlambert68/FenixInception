@@ -9,32 +9,32 @@ import (
 )
 
 // ********************************************************************************************
-// Initiate Dispatch Engine for SendTestExecutionLogTowardsFenix
+// Initiate Transmit Engine for SupportedTestDataDomainsMessage-messages
 //
 
-func (gatewayObject *GatewayTowardsPluginObject_struct) initiateSendTestExecutionLogTowardsFenix() {
+func (gatewayObject *GatewayTowardsPluginObject_struct) initiateRegistrateAvailableTestDataDomainsTowardsFenix() {
 
-	// Start Transmit Engine, for TestExecutionLogs as a go-routine
-	go gatewayObject.transmitEngineForSendTestExecutionLogTowardsFenix()
+	// Start Transmit Engine, for SupportedTestDataDomainsMessage-messages as a go-routine
+	go gatewayObject.transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix()
 }
 
 // ********************************************************************************************
-// Forward InformationMessage-messages from incoming channel towards Fenix
+// Forward SupportedTestDataDomainsMessage-messages from incoming channel towards Fenix
 //
 
-func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTestExecutionLogTowardsFenix() {
+func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix() {
 
 	var parentAddress gRPCClientAddress_struct
 	var err error
 
 	for {
 		// Wait for data comes from channel to transmit engine
-		testExecutionLogMessageToBeForwarded := <-gatewayObject.testExecutionLogMessageChannel
+		supportedTestDataDomainsMessageToBeForwarded := <-gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel
 
 		gatewayObject.logger.WithFields(logrus.Fields{
-			"ID":                                   "5c9fe63a-fd82-4ccd-8386-2b9c049e51a1",
-			"testExecutionLogMessageToBeForwarded": testExecutionLogMessageToBeForwarded,
-		}).Debug("Received a new 'testExecutionLogMessageToBeForwarded' from channel that shoud be forwarded")
+			"ID": "0259aa0d-a161-45de-ae77-17d317605a0b",
+			"supportedTestDataDomainsMessageToBeForwarded": supportedTestDataDomainsMessageToBeForwarded,
+		}).Debug("Received a new 'supportedTestDataDomainsMessageToBeForwarded' from channel that shoud be forwarded")
 
 		// Create the channel that the client address should be sent back on
 		returnParentAddressChannel := make(chan dbResultMessage_struct)
@@ -59,28 +59,28 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTes
 		if err != nil {
 			// Problem with unmarshal the json object
 			gatewayObject.logger.WithFields(logrus.Fields{
-				"ID":                      "58232255-c767-4143-95b3-3f52de741543",
+				"ID":                      "a55a68d0-e6e6-4b0c-b02f-319600e39e96",
 				"parentAddressByteArray,": parentAddressByteArray,
 			}).Error("Can't unmarshal gRPCClients address object from database")
 			//TODO Send Error information to Fenix
 		} else {
-			// Send TestInstruction to client using gRPC-call
+			// Send SupportedTestDataDomainsMessage to client(parent gateway/Fenix) using gRPC-call
 			addressToDial := parentAddress.clientIp + parentAddress.clientPort
 
 			// Set up connection to Parent Gateway or Fenix
 			remoteParentServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 			if err != nil {
 				gatewayObject.logger.WithFields(logrus.Fields{
-					"ID":            "863612af-86b3-431c-8270-9d335f3f0001",
+					"ID":            "9abef370-58b6-44d6-bcf3-a91c9bac1911",
 					"addressToDial": addressToDial,
 					"error message": err,
-				}).Warning("Did not connect to Child (Gateway or Plugin) Server!")
+				}).Warning("Did not connect to Parent (Gateway or Fenix) Server!")
 				// TODO Send Error information to Fenix
 				// TODO Add message to memmory cash for later resend
 				// TODO Save message in localDB for later resend
 			} else {
 				gatewayObject.logger.WithFields(logrus.Fields{
-					"ID":            "77167a87-99e8-49cc-ac3f-8966ac109658",
+					"ID":            "05ff7bdd-435a-42a4-9921-aa5da8bc9d65",
 					"addressToDial": addressToDial,
 				}).Debug("gRPC connection OK to Parent-gateway- or Fenix-Server!")
 
@@ -88,26 +88,26 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) transmitEngineForSendTes
 				gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 				// ChangeSenderId to this gatway's SenderId before sending the data forward
-				testExecutionLogMessageToBeForwarded.SenderId = CallingSystemId
-				testExecutionLogMessageToBeForwarded.SenderName = CallingSystemName
+				supportedTestDataDomainsMessageToBeForwarded.SenderId = CallingSystemId
+				supportedTestDataDomainsMessageToBeForwarded.SenderName = CallingSystemName
 
 				// Do gRPC-call to client gateway or Fenix
 				ctx := context.Background()
-				returnMessage, err := gatewayClient.SendTestExecutionLogTowardsFenix(ctx, &testExecutionLogMessageToBeForwarded)
+				returnMessage, err := gatewayClient.RegistrateAvailableTestDataDomains(ctx, &supportedTestDataDomainsMessageToBeForwarded)
 				if err != nil {
 					gatewayObject.logger.WithFields(logrus.Fields{
-						"ID":            "840312be-e773-4e9d-ae05-0ec8e9dcca5c",
+						"ID":            "08ad8a9f-ee08-4915-a458-eeb38dc14b40",
 						"returnMessage": returnMessage,
 						"error":         err,
-					}).Warning("Problem to send 'testExecutionLogMessageToBeForwarded' to parent-Gateway or Fenix")
+					}).Warning("Problem to send 'supportedTestDataDomainsMessageToBeForwarded' to parent-Gateway or Fenix")
 					// TODO Send Error information to Fenix
 					// TODO Add message to memmory cash for later resend
 					// TODO Save message in localDB for later resend
 				} else {
 					gatewayObject.logger.WithFields(logrus.Fields{
-						"ID":            "fed7b18e-5cd5-485c-b14d-0b90ff720feb",
+						"ID":            "266c5829-9635-4cf1-bfe9-9f70470c96f9",
 						"addressToDial": addressToDial,
-					}).Debug("gRPC-send OK of 'testExecutionLogMessageToBeForwarded' to Parent-Gateway or Fenix")
+					}).Debug("gRPC-send OK of 'supportedTestDataDomainsMessageToBeForwarded' to Parent-Gateway or Fenix")
 
 					// TODO Check for messages to Resend (If so then put them on channel)
 

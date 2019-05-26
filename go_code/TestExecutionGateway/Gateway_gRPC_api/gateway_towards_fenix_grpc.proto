@@ -26,12 +26,16 @@ import "gateway_common_grpc.proto";
 
 // The result of the TestInstructionExecution sent towards Fenix Inception
 message TestInstructionExecutionResultMessage {
-    string TestInstructionGuid = 1; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
-    string ResultId = 2; // A unique id created by plugin
-    string TimeOut = 3; // The Plugin sends back information about when the TestInstruction, Test Case, can be seen as Ended if no final result has sent been back for TestInstruction
-    string TestInstructionResultCreatedDateTime = 4; // The DateTime when the message was created
-    string TestInstructionResultSentDateTime = 5; // The DateTime when the message was sent
-    AvailableTestExecutionResultsEnum TestExecutionResult = 6; // THe current execution status
+    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
+    string ResultId = 6; // A unique id created by plugin
+    string TimeOut = 7; // The Plugin sends back information about when the TestInstruction, Test Case, can be seen as Ended if no final result has sent been back for TestInstruction
+    string TestInstructionResultCreatedDateTime = 8; // The DateTime when the message was created
+    string TestInstructionResultSentDateTime = 9; // The DateTime when the message was sent
+    AvailableTestExecutionResultsEnum TestExecutionResult = 10; // THe current execution status
 }
 
 // Status for an ongoing TestExecution of a TestInstruction
@@ -54,12 +58,16 @@ enum AvailableTestExecutionResultsEnum {
 
 // A log post that sent back to Fenix Inception from plugin during test execution
 message TestExecutionLogMessage {
-    string TestInstructionGuid = 1; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
-    string LogMessageId = 2; // A unique id created by plugin
-    string TestInstructionResultCreatedDateTime = 3; // The DateTime when the message was created
-    string TestInstructionResultSentDateTime = 4; // The DateTime when the message was sent
-    string LogMessage = 5; // The log message
-    LogMessageTypeEnum LogMessageType = 6; // The type of the log message, text or json
+    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
+    string LogMessageId = 6; // A unique id created by plugin
+    string TestInstructionResultCreatedDateTime = 7; // The DateTime when the message was created
+    string TestInstructionResultSentDateTime = 8; // The DateTime when the message was sent
+    string LogMessage = 9; // The log message
+    LogMessageTypeEnum LogMessageType = 10; // The type of the log message, text or json
 }
 
 // Is the log message a json-object or a plain text message
@@ -81,11 +89,13 @@ enum LogMessageTypeEnum {
 
 // A message telling Fenix when a TestInstruction should time out and by then the complete TestCase
 message TestInstructionTimeOutMessage {
-    string PluginId = 1; // The unique id of the plugin
-    string PluginName = 2; // The name of the plugin
-    string OriginalMessageId = 3; // A unique id from the TestInstruction request sent from Fenix
-    string MessageId = 4; // A unique id generated when sent from Plugin
-    string TimeOut = 5; // The time for timeout informat 'YYYY-MM-DD hh:mm:ss' w
+    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string OriginalMessageId = 5; // A unique id from the TestInstruction request sent from Fenix
+    string MessageId = 6; // A unique id generated when sent from Plugin
+    string TimeOut = 7; // The time for timeout informat 'YYYY-MM-DD hh:mm:ss' w
 
 }
 
@@ -106,10 +116,12 @@ message TestInstructionTimeOutMessage {
 
 // All supported Testdata domains supported by a specific Plugin
 message SupportedTestDataDomainsWithHeadersMessage {
-    string PluginId = 1; // The unique id of the plugin
-    string PluginName = 2; // The name of the plugin
-    string OriginalMessageId = 3; // A unique id from the request sent from Fenix
-    string MessageId = 4; // A unique id generated when sent from Plugin
+    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string OriginalMessageId = 5; // A unique id from the request sent from Fenix
+    string MessageId = 6; // A unique id generated when sent from Plugin
 
     // Message thats defines a specific domain of testdata, a specific area
     message TestDataDomainWithHeaders {
@@ -137,7 +149,7 @@ message SupportedTestDataDomainsWithHeadersMessage {
         }
         repeated TestDataFilterHeader TestDataFilterHeaders = 5; // All headers, keys, that is used for filter testdata
     }
-    repeated TestDataDomainWithHeaders TestDataDomains = 5; // All supported Testdata domains from plugin
+    repeated TestDataDomainWithHeaders TestDataDomains = 7; // All supported Testdata domains from plugin
 
 }
 
@@ -245,7 +257,7 @@ message RegisterClientAddressResponse {
 // *********************************************************
 
 // *********************************************************
-//  rpc RegisterAvailbleTestInstruction(AvailbleTestInstructionAtPluginMessage)returns(AckNackResponse)
+//  rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage)returns(AckNackResponse)
 // START
 // **********
 
@@ -265,9 +277,11 @@ message AvailbleTestInstructionAtPluginMessage {
 
 // All supported Testdata domains supported by a specific Plugin
 message SupportedTestDataDomainsMessage {
-    string PluginId = 1; // The unique id of the plugin
-    string PluginName = 2; // The name of the plugin
-    string MessageId = 3; // A unique id generated when sent from Plugin
+    string OriginalSenderId = 1 ; // Then Id of the plugin that created the message
+    string OriginalSenderName = 2 ; // Then name of the plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string MessageId = 5; // A unique id generated when sent from Plugin
 
     // Message thats defines a specific domain of testdata, a specific area
     message TestDataDomain {
@@ -276,7 +290,7 @@ message SupportedTestDataDomainsMessage {
         string TestDataDomainDescription = 3; // A description of the testdata domain
         string TestDataDomainMouseOver = 4; // A mouse over description of the testdata domain
     }
-    repeated TestDataDomain TestDataDomains = 4; // All supported Testdata domains from plugin
+    repeated TestDataDomain TestDataDomains = 6; // All supported Testdata domains from plugin
 }
 
 // **********
@@ -288,16 +302,18 @@ message SupportedTestDataDomainsMessage {
 
 // A message used when Gateway or Plugin wants to send information to Fenix
 message InformationMessage {
-    string SenderId = 1; // The unique id of the Gateway or Plugin
-    string SenderName = 2; // The name of the Gateway or Plugin
-    string MessageId = 3; // A unique id generated when sent from Gateway or Plugin
+    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string MessageId = 5; // A unique id generated when sent from Gateway or Plugin
     enum InformationType {
         INFO = 0; // The message is pure information
         WARNING = 1; //  The message is of category WARNING
         ERROR = 2; // The Plugin wants to inform Fenix of that something is wrong
     }
-    InformationType MessageType = 4;// The type of information message
-    string message = 5; // The message from Gateway or Plugin to Fenix
+    InformationType MessageType = 6;// The type of information message
+    string message = 7; // The message from Gateway or Plugin to Fenix
 }
 
 /*
@@ -356,7 +372,7 @@ service GatewayTowardsFenix {
     // ***********************************************************************************
 
     // Register an avalible TestInstruction
-    rpc RegisterAvailbleTestInstruction(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
+    rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
     }
 
     rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
