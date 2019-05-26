@@ -1,0 +1,37 @@
+package TestExecutionGateway
+
+import (
+	"google.golang.org/grpc"
+	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"net"
+)
+
+type gatewayTowardsPluginObject_struct struct {
+
+	// Inherit common objects
+	gatewayCommonObjects *gatewayObject_struct
+
+	// Common logger for the gateway
+	//logger *logrus.Logger
+
+	// Database object used for storing any persistant data within Gateway
+	//db *bolt.DB
+
+	// Internal queues used by the gateway
+	// TestInstruction Towards Plugin
+	testInstructionMessageChannel chan gRPC.TestInstruction_RT
+
+	// supportedTestDataDomainsRequest Towards Plugin
+	supportedTestDataDomainsRequestChannel chan gRPC.SupportedTestDataDomainsRequest
+}
+
+var (
+	gatewayTowardsPluginObject        *gatewayTowardsPluginObject_struct
+	registerGatewayTowardsPluginerver *grpc.Server
+	gatewayTowardsPluginListener      net.Listener
+
+	// gRPC server used to handle all traffic Towards the Plugins
+
+)
+
+type GRPCServerTowardsPlugin struct{}

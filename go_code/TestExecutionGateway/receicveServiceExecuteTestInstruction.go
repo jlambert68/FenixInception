@@ -11,13 +11,13 @@ import (
 // ********************************************************************************************
 // Call from parent Gateway/Fenix for incoming TestInstructions that should be sent towards Plugin
 //
-func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsPluginObject_struct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
-	gatewayObject.logger.WithFields(logrus.Fields{
+	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":              "b80b7746-04a8-4ef5-bdc5-2f9e07de754e",
-		"testInstruction": testInstruction,
+		"testInstruction": *testInstruction,
 	}).Debug("Incoming gRPC: 'SendTestInstructionTowardsPlugin'")
 
 	// Set New Database Status and Timestamp on TestInstruction
@@ -25,9 +25,9 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestInstructionTowar
 	testInstruction.Metadata.LastUpdatedDateTimeInDB = time.Now().String()
 
 	// Convert TestInstruction struct into a byte array
-	testInstructionByteArray, err := json.Marshal(testInstruction)
+	testInstructionByteArray, err := json.Marshal(*testInstruction)
 	if err != nil {
-		gatewayObject.logger.WithFields(logrus.Fields{
+		gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 			"ID":              "de52efd0-684a-48cf-bebb-d4b6f6c6f517",
 			"testInstruction": testInstruction,
 			"err":             err,
@@ -53,14 +53,14 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestInstructionTowar
 		returnChannel}
 
 	// Send message to Database
-	gatewayObject.dbMessageQueue <- dbMessage
+	gatewayObject.gatewayCommonObjects.dbMessageQueue <- dbMessage
 
 	// Wait for result on result channel then close returnChannel
 	returnDBMessage := <-returnChannel
 	close(returnChannel)
 
 	if returnDBMessage.err != nil {
-		gatewayObject.logger.WithFields(logrus.Fields{
+		gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 			"ID":  "446cb366-9d84-4c1c-a628-ef162f7c1747",
 			"err": err,
 		}).Error("Got an error when Saveing to local DB")
@@ -72,15 +72,15 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestInstructionTowar
 		return returnMessage, nil
 	}
 
-	gatewayObject.logger.WithFields(logrus.Fields{
+	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":              "5a98f0f1-5de9-4dcc-af76-f2888aaebf76",
 		"testInstruction": testInstruction,
 	}).Debug("TestInstructions was saved in local database")
 
 	// Put TestInstruction on queue for further processing
-	gatewayObject.testInstructionMessageChannel <- testInstruction
+	gatewayObject.testInstructionMessageChannel <- *testInstruction
 
-	gatewayObject.logger.WithFields(logrus.Fields{
+	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":              "73e44541-c793-4ccd-8bc8-c94320f49f29",
 		"testInstruction": testInstruction,
 	}).Debug("Leaving: 'SendTestInstructionTowardsPlugin'")

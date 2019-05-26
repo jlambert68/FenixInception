@@ -9,22 +9,22 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a TestExecutionLogMessage toward Fenix
 //
-func (gatewayObject *GatewayTowardsPluginObject_struct) SendTestExecutionLogTowardsFenix(ctx context.Context, testExecutionLogMessage gRPC.TestExecutionLogMessage) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsFenixObject_struct) SendTestExecutionLogTowardsFenix(ctx context.Context, testExecutionLogMessage *gRPC.TestExecutionLogMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
-	gatewayObject.logger.WithFields(logrus.Fields{
+	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID":                            "6ef6943e-7a05-42cd-80b5-e35231c14f04",
-		"testInstructionTimeOutMessage": testExecutionLogMessage,
+		"testInstructionTimeOutMessage": *testExecutionLogMessage,
 	}).Debug("Incoming gRPC: 'TestExecutionLogMessage'")
 
 	// Put testExecutionLogMessage on queue for further processing
-	gatewayObject.testExecutionLogMessageChannel <- testExecutionLogMessage
-	gatewayObject.logger.WithFields(logrus.Fields{
+	gatewayObject.testExecutionLogMessageChannel <- *testExecutionLogMessage
+	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID": "bbd8fdc7-16cb-4dae-b4a1-821fb30ccb70",
 	}).Debug("'testExecutionLogMessage' was put on the channel")
 
-	gatewayObject.logger.WithFields(logrus.Fields{
+	gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 		"ID": "f07b61d0-16cc-4b9b-84a3-2e6c642125c3",
 	}).Debug("Leaving gRPC: 'SendTexecutionLogTowardsFenix'")
 

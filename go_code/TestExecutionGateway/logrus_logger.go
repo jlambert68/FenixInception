@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (gatewayObject *GatewayTowardsPluginObject_struct) InitLogger(filename string) {
+func (gatewayObject *gatewayTowardsPluginObject_struct) InitLogger(filename string) {
 	gatewayObject.logger = logrus.StandardLogger()
 
 	switch LoggingLevel {
@@ -38,12 +38,12 @@ func (gatewayObject *GatewayTowardsPluginObject_struct) InitLogger(filename stri
 	//If no file then set standard out
 
 	if filename == "" {
-		gatewayObject.logger.Out = os.Stdout
+		gatewayObject.gatewayCommonObjects.logger.Out = os.Stdout
 
 	} else {
 		file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
 		if err == nil {
-			gatewayObject.logger.Out = file
+			gatewayObject.gatewayCommonObjects.logger.Out = file
 		} else {
 			log.Println("Failed to log to file, using default stderr")
 		}

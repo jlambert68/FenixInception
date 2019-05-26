@@ -18,7 +18,7 @@ import (
 // Used for only process cleanup once
 var cleanupProcessed bool = false
 
-func (gatewayObject *GatewayTowardsPluginObject_struct)  cleanup() {
+func (gatewayObject *gatewayTowardsPluginObject_struct)  cleanup() {
 
 	if cleanupProcessed == false {
 
@@ -26,14 +26,14 @@ func (gatewayObject *GatewayTowardsPluginObject_struct)  cleanup() {
 
 		// CLose database
 		gatewayObject.db.Close()
-		gatewayObject.logger.WithFields(logrus.Fields{
+		gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
 			"ID":            "3c84178b-a365-4d64-babb-4e1956d96684",
 		}).Debug("Closing local database")
 	}
 
 /*
 		// Cleanup before close down application
-		GatewayCommonObjects.GatewayTowardsPluginObject	. motherObject.logger.WithFields(logrus.Fields{
+		GatewayCommonObjects.gatewayTowardsPluginObject	. motherObject.logger.WithFields(logrus.Fields{
 			"ID": "ab1abcdb-d786-4bcc-b274-b52bd931f43d",
 		}).Debug("Clean up and shut down servers")
 
@@ -61,8 +61,8 @@ func TestExecution_main() {
 	//var err error
 
 
-	var GatewayObject *GatewayTowardsPluginObject_struct
-	GatewayObject = &GatewayTowardsPluginObject_struct{}
+	var GatewayObject *gatewayTowardsPluginObject_struct
+	GatewayObject = &gatewayTowardsPluginObject_struct{}
 
 	defer GatewayObject.cleanup()
 
@@ -73,47 +73,6 @@ func TestExecution_main() {
 	// At startup Register Gateway to Parent Gateway/Fenix
 	GatewayObject.registerThisGatewayAtParentGateway()
 
-	// Find first non allocated port from defined start port
-	motherObject.logger.WithFields(logrus.Fields{
-		"ID": "56b6419f-d714-4ab0-be62-f3c7f08b9558",
-	}).Debug("Mother Server tries to start")
-
-	motherObject.logger.WithFields(logrus.Fields{
-		"common_config.MotherServer_port): ": common_config.MotherServer_port,
-		"ID": "8f904ace-9d24-452b-891a-5b8e5c247ba2",
-	}).Debug("Start listening on:")
-	lis, err = net.Listen("tcp", string(common_config.MotherServer_port))
-
-	if err != nil {
-		motherObject.logger.WithFields(logrus.Fields{
-			"err: ": err,
-			"ID": "0fbf0f08-6114-4cd8-9992-6a387955fb5f",
-		}).Fatal("failed to listen:")
-
-	} else {
-		motherObject.logger.WithFields(logrus.Fields{
-			"common_config.MotherServer_port): ": common_config.MotherServer_port,
-			"ID": "93496c07-2b6c-4edc-a1f9-3fd555fa1201",
-		}).Debug("Success in listening on port:")
-
-	}
-
-	// Creates a new RegisterMotherServer gRPC server
-	go func() {
-		motherObject.logger.WithFields(logrus.Fields{
-			"ID": "ebc26735-9d13-4b13-91b8-20999cd5e254",
-		}).Debug("Starting Mother Server")
-
-		registerMotherServer = grpc.NewServer()
-		mother_server_grpc_api.RegisterMotherServerServer(registerMotherServer, &MotherServer{})
-
-		motherObject.logger.WithFields(logrus.Fields{
-			"common_config.MotherServer_port): ": common_config.MotherServer_port,
-			"ID": "cfed87c4-55aa-4cd1-980a-a15eb75ab6fb",
-		}).Debug("registerMotherServer for Mother Server started")
-
-		registerMotherServer.Serve(lis)
-	}()
 
 	// Start up 'reassebleEngine' to receive incoming worker objects
 	go motherObject.reassebleEngine()
