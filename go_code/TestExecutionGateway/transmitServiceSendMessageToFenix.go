@@ -31,7 +31,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 		// Wait for data comes from channel to transmit engine
 		informationMessageToBeForwarded := <-gatewayObject.informationMessageChannel
 
-		gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID":                              "3103a0a5-ff25-4e85-9939-5e8d72e26ba3",
 			"informationMessageToBeForwarded": informationMessageToBeForwarded,
 		}).Debug("Received a new informationMessage from channel that shoud be forwarded")
@@ -48,7 +48,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 			returnParentAddressChannel}
 
 		// Send Read message to database to receive address
-		gatewayObject.gatewayCommonObjects.dbMessageQueue <- dbMessage
+		dbMessageQueue <- dbMessage
 
 		// Wait for address from channel, then close the channel
 		parentAddressByteArray := <-returnParentAddressChannel
@@ -58,7 +58,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 		err = json.Unmarshal(parentAddressByteArray.value, &parentAddress)
 		if err != nil {
 			// Problem with unmarshal the json object
-			gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
+			logger.WithFields(logrus.Fields{
 				"ID":                      "fba82bec-aa10-4f2c-8972-177872bb94c0",
 				"parentAddressByteArray,": parentAddressByteArray,
 			}).Error("Can't unmarshal gRPCClients address object from database")
@@ -70,7 +70,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 			// Set up connection to Parent Gateway or Fenix
 			remoteParentServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 			if err != nil {
-				gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
+				logger.WithFields(logrus.Fields{
 					"ID":            "0c8ba004-1402-46d4-ac3b-c49863ff817e",
 					"addressToDial": addressToDial,
 					"error message": err,
@@ -79,7 +79,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 				// TODO Add message to memmory cash for later resend
 				// TODO Save message in localDB for later resend
 			} else {
-				gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
+				logger.WithFields(logrus.Fields{
 					"ID":            "5ae8053c-1aca-4fc5-9d01-f2c5577933cc",
 					"addressToDial": addressToDial,
 				}).Debug("gRPC connection OK to Parent-gateway- or Plugin-Server!")
@@ -95,7 +95,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 				ctx := context.Background()
 				returnMessage, err := gatewayClient.SendMessageToFenix(ctx, informationMessageToBeForwarded)
 				if err != nil {
-					gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
+					logger.WithFields(logrus.Fields{
 						"ID":            "3becc080-360b-42b4-8fe8-32a01bf820bc",
 						"returnMessage": returnMessage,
 						"error":         err,
@@ -104,7 +104,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 					// TODO Add message to memmory cash for later resend
 					// TODO Save message in localDB for later resend
 				} else {
-					gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
+					logger.WithFields(logrus.Fields{
 						"ID":            "860b622b-c2fb-442c-b4e1-ac5fdf4f8d36",
 						"addressToDial": addressToDial,
 					}).Debug("gRPC-send OK of 'informationMessageToBeForwarded' to parent-Gateway or Fenix")

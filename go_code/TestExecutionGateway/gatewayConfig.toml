@@ -1,0 +1,29 @@
+# This is a TOML document.
+# Config parameters for gateway
+
+# Identification for the gateway
+[gatewayIdentification]
+callingSystemId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
+callingSystemName = "Gateway #1"
+callingSystemIpAddress = "127.0.0.1"
+
+# Identification of the the domain that this gateway belongs to
+[systemDomain]
+callingSystemDomainId = "77a1a1be-52f6-4931-bcfe-b336979c2600"
+callingSystemDomainName = "Custody Cash"
+
+# Initial IP and Port for Parent Gateway/Fenix.
+[parentgRPCAddress]
+parentGatewayId ="42744278-1128-4eec-8b75-8817516ca09b"
+parentGatewayInitialServer_address = "127.0.0.1"
+parentGatewayInitialServer_port = ":5999"
+
+# The first port in port range for child-gateways or Plugins
+[firstClientPort]
+firstClientPort = "6660"
+
+# The logging level. Inly yse Debug for finding error otherwise use Info as standard logging level
+[loggingLevel]
+loggingLevel = "Debug"
+# loggingLevel = "Info"
+# loggingLevel = "Warning"

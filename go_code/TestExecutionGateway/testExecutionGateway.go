@@ -26,7 +26,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct)  cleanup() {
 
 		// CLose database
 		gatewayObject.db.Close()
-		gatewayObject.gatewayCommonObjects.logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID":            "3c84178b-a365-4d64-babb-4e1956d96684",
 		}).Debug("Closing local database")
 	}

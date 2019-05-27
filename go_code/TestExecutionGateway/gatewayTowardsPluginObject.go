@@ -17,15 +17,6 @@ type gRPCClientAddress_struct struct {
 
 type gatewayTowardsPluginObject_struct struct {
 
-	// Inherit common objects
-	gatewayCommonObjects *gatewayObject_struct
-
-	// Common logger for the gateway
-	//logger *logrus.Logger
-
-	// Database object used for storing any persistant data within Gateway
-	//db *bolt.DB
-
 	// Internal queues used by the gateway
 	// TestInstruction Towards Plugin
 	testInstructionMessageChannel chan *gRPC.TestInstruction_RT

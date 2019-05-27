@@ -38,6 +38,7 @@ message TestInstruction_RT {
     repeated string TestInstructionSentDateTime = 13; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
     string ChoosenLandingZone = 14; // Chosen LandingZone for TestInstruction
     TestInstructionRTMetadata Metadata = 15; // Metadata around The TestInstruction, used for Send-DateTimes and DB-handling
+    string OrginalCreateDateTime = 16; // The timestamp when the orignal message was created
 }
 
 //  An attribute with it's type and value
@@ -119,6 +120,7 @@ message TestDataFilterValuesRequest {
     int64 MaxNumberOffLinesInResult = 7; // This is the number of Test Data Rows that should be sent back to Fenix
     TestDataFormatTypeEnum TestDataType = 8; // THe format the testdata will be delivered
     repeated TestDataFilterHeader TestDataFIlterHeaders = 9; // All column headers for testdata
+    string OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
 }
 
 

@@ -3,9 +3,10 @@ package TestExecutionGateway
 import (
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
+	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
 )
 
-type gatewayObject_struct struct {
+var (
 	// Common logger for the gateway
 	logger *logrus.Logger
 
@@ -14,7 +15,10 @@ type gatewayObject_struct struct {
 
 	// Database queue used for sending questions to databse
 	dbMessageQueue chan dbMessage_struct
-}
+
+	// Channel for informationMessage initiated in this gateway
+	localInformationMessageChannel chan *gRPC.InformationMessage
+)
 
 // TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
 
@@ -39,3 +43,51 @@ type dbResultMessage_struct struct {
 	key   string // Key that was Read or Written
 	value []byte // The result found in Database
 }
+
+// *******************************************************************
+// Information read from TOML-file
+//
+
+// All config parameter will be stored in the following parameter
+var gatewayConfig tomlConfig_struct
+
+type tomlConfig_struct struct {
+	gatewayIdentification gatewayIdentification_struct `toml:"gatewayIdentification"`
+	systemDomain          systemDomain_struct          `toml:"systemDomain"`
+	parentgRPCAddress     parentgRPCAddress_struct     `toml:"parentgRPCAddress"`
+	firstClientPort       firstClientPort_struct       `toml:"firstClientPort"`
+	loggingLevel          loggingLevel_struct          `toml:"loggingLevel"`
+}
+
+type gatewayIdentification_struct struct {
+	callingSystemId        string
+	callingSystemName      string
+	callingSystemIpAddress string
+}
+
+type systemDomain_struct struct {
+	callingSystemDomainId   string
+	callingSystemDomainName string
+}
+
+type parentgRPCAddress_struct struct {
+	parentGatewayId                    string
+	parentGatewayInitialServer_address string
+	parentGatewayInitialServer_port    string
+}
+
+type firstClientPort_struct struct {
+	firstClientPort string
+}
+
+type loggingLevel_struct struct {
+	loggingLevel string
+}
+
+//
+// *******************************************************************
+
+// Bucket name, and some keys used in DB
+const BUCKET_PARENT_ADDRESS = "Parent"
+const BUCKET_KEY_PARENT_ADDRESS = "ParentId"
+const BUCKET_CLIENTS = "Clients"

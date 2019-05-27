@@ -19,16 +19,13 @@ var (
 	incomingPortForCallsFromParentGateway string
 )
 
-// The following variables is save in DB and reloaded At Startup
+// The following variables is saved in DB and reloaded At Startup
 var (
 	// Have this Gateway/Client ever been connected to parent Gateway/Fenix
 	gatewayClientHasBeenConnectedToParentGateway bool
 )
 
 type gatewayTowardsFenixObject_struct struct {
-
-	// Inherit common objects
-	gatewayCommonObjects *gatewayObject_struct
 
 	// *** Internal queues used by the gateway ***
 

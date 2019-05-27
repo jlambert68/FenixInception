@@ -1,7 +1,6 @@
 package TestExecutionGateway
 
-import "github.com/sirupsen/logrus"
-
+/*
 // Identification for the gateway
 const CallingSystemId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
 const CallingSystemName = "Gateway #1"
@@ -20,3 +19,4 @@ const LoggingLevel = logrus.DebugLevel
 
 //const LoggingLevel = logrus.InfoLevel
 //const LoggingLevel = logrus.WarnLevel
+*/

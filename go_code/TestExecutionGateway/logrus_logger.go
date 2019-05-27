@@ -38,12 +38,12 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) InitLogger(filename stri
 	//If no file then set standard out
 
 	if filename == "" {
-		gatewayObject.gatewayCommonObjects.logger.Out = os.Stdout
+		logger.Out = os.Stdout
 
 	} else {
 		file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
 		if err == nil {
-			gatewayObject.gatewayCommonObjects.logger.Out = file
+			logger.Out = file
 		} else {
 			log.Println("Failed to log to file, using default stderr")
 		}

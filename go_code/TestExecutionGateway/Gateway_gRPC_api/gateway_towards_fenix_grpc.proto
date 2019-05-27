@@ -36,6 +36,8 @@ message TestInstructionExecutionResultMessage {
     string TestInstructionResultCreatedDateTime = 8; // The DateTime when the message was created
     string TestInstructionResultSentDateTime = 9; // The DateTime when the message was sent
     AvailableTestExecutionResultsEnum TestExecutionResult = 10; // THe current execution status
+    string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
 }
 
 // Status for an ongoing TestExecution of a TestInstruction
@@ -68,6 +70,8 @@ message TestExecutionLogMessage {
     string TestInstructionResultSentDateTime = 8; // The DateTime when the message was sent
     string LogMessage = 9; // The log message
     LogMessageTypeEnum LogMessageType = 10; // The type of the log message, text or json
+    string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
 }
 
 // Is the log message a json-object or a plain text message
@@ -96,6 +100,9 @@ message TestInstructionTimeOutMessage {
     string OriginalMessageId = 5; // A unique id from the TestInstruction request sent from Fenix
     string MessageId = 6; // A unique id generated when sent from Plugin
     string TimeOut = 7; // The time for timeout informat 'YYYY-MM-DD hh:mm:ss' w
+    string OrginalCreateDateTime = 8; // The timestamp when the orignal message was created
+    string OriginalSystemDomainId = 9; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 10; // The Domain/system's Name where the Sender operates
 
 }
 
@@ -150,7 +157,9 @@ message SupportedTestDataDomainsWithHeadersMessage {
         repeated TestDataFilterHeader TestDataFilterHeaders = 5; // All headers, keys, that is used for filter testdata
     }
     repeated TestDataDomainWithHeaders TestDataDomains = 7; // All supported Testdata domains from plugin
-
+    string OrginalCreateDateTime = 8; // The timestamp when the orignal message was created
+    string OriginalSystemDomainId = 9; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 10; // The Domain/system's Name where the Sender operates
 }
 
 // **********
@@ -183,6 +192,9 @@ message TestDataFromFilterValuesMessage {
         OtherFileObject TestDataAsOtherFile = 4; // Object containing Testdata in a non standard form
     }
     TestDataObject TestData = 9; // The object containing the testdata
+    string OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
+    string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
 }
 
 
@@ -291,6 +303,9 @@ message SupportedTestDataDomainsMessage {
         string TestDataDomainMouseOver = 4; // A mouse over description of the testdata domain
     }
     repeated TestDataDomain TestDataDomains = 6; // All supported Testdata domains from plugin
+    string OrginalCreateDateTime = 7; // The timestamp when the orignal message was created
+    string OriginalSystemDomainId = 8; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 9; // The Domain/system's Name where the Sender operates
 }
 
 // **********
@@ -304,16 +319,19 @@ message SupportedTestDataDomainsMessage {
 message InformationMessage {
     string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
     string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
-    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
-    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
-    string MessageId = 5; // A unique id generated when sent from Gateway or Plugin
+    string OriginalSystemDomainId = 3; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 4; // The Domain/system's Name where the Sender operates
+    string SenderId = 5; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 6; // Then name of the gateway/plugin that was the last forwarder
+    string MessageId = 7; // A unique id generated when sent from Gateway or Plugin
     enum InformationType {
         INFO = 0; // The message is pure information
         WARNING = 1; //  The message is of category WARNING
         ERROR = 2; // The Plugin wants to inform Fenix of that something is wrong
     }
-    InformationType MessageType = 6;// The type of information message
-    string message = 7; // The message from Gateway or Plugin to Fenix
+    InformationType MessageType = 8;// The type of information message
+    string message = 9; // The message from Gateway or Plugin to Fenix
+    string OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
 }
 
 /*
