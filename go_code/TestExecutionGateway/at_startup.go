@@ -10,6 +10,9 @@ import (
 
 func (gatewayObject *gatewayTowardsFenixObject_struct) AtStartUp() {
 
+	// Initiate map used for handle CLients address and port info
+	clientsAddressAndPort = make(map[string]clientsAddressAndPort_struct)
+
 	// Register gateway/client at parent Gateway/Fenix
 	resultBool, err := gatewayObject.registerThisGatewayAtParentGateway()
 	if err != nil || resultBool == false {

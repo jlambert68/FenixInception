@@ -51,6 +51,7 @@ type dbResultMessage_struct struct {
 // All config parameter will be stored in the following parameter
 var gatewayConfig tomlConfig_struct
 
+// Main struct for toml-file
 type tomlConfig_struct struct {
 	gatewayIdentification gatewayIdentification_struct `toml:"gatewayIdentification"`
 	systemDomain          systemDomain_struct          `toml:"systemDomain"`
@@ -59,27 +60,32 @@ type tomlConfig_struct struct {
 	loggingLevel          loggingLevel_struct          `toml:"loggingLevel"`
 }
 
+// local gateway information for toml-file
 type gatewayIdentification_struct struct {
 	callingSystemId        string
 	callingSystemName      string
 	callingSystemIpAddress string
 }
 
+// Ovelall domain for toml-file, Custody Cash, Compis etc.
 type systemDomain_struct struct {
 	callingSystemDomainId   string
 	callingSystemDomainName string
 }
 
+// Parents address informaiton for toml-file
 type parentgRPCAddress_struct struct {
-	parentGatewayId                    string
-	parentGatewayInitialServer_address string
-	parentGatewayInitialServer_port    string
+	parentGatewayId             string
+	parentGatewayServer_address string
+	parentGatewayServer_port    string
 }
 
+// The first client must listen on this port, toml-file
 type firstClientPort_struct struct {
 	firstClientPort string
 }
 
+// The logging level that the gateway will use during runtime
 type loggingLevel_struct struct {
 	loggingLevel string
 }
@@ -91,3 +97,14 @@ type loggingLevel_struct struct {
 const BUCKET_PARENT_ADDRESS = "Parent"
 const BUCKET_KEY_PARENT_ADDRESS = "ParentId"
 const BUCKET_CLIENTS = "Clients"
+
+// Memory Object for all clients
+var clientsAddressAndPort map[string]clientsAddressAndPort_struct
+
+// Definition for memory Object for all clients
+type clientsAddressAndPort_struct struct {
+	clientId      string
+	clientName    string
+	clientAddress string
+	clientPort    string
+}

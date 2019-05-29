@@ -1,7 +1,6 @@
 package TestExecutionGateway
 
 import (
-	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -24,9 +23,6 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDispatchEngineFo
 
 func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupportedTestDomains() {
 
-	var clientAddress gRPCClientAddress_struct
-	var err error
-
 	for {
 		// Wait for data comes from channel to dispatch engine
 		getSupportedTestDomainsToBeForwarded := <-gatewayObject.supportedTestDataDomainsRequestChannel
@@ -36,76 +32,47 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 			"getSupportedTestDomainsToBeForwarded": getSupportedTestDomainsToBeForwarded,
 		}).Debug("Received a new getSupportedTestDomains-message from channel that shoud be forwarded")
 
-		// Create the channel that the client address should be sent back on
-		returnClientAddressChannel := make(chan dbResultMessage_struct)
+		// Send TestInstruction to client using gRPC-call
+		addressToDial := getClientAddressAndPort(getSupportedTestDomainsToBeForwarded.PluginId)
 
-		// Get Clients address
-		dbMessage := dbMessage_struct{
-			DB_READ,
-			"Clients",
-			getSupportedTestDomainsToBeForwarded.PluginId,
-			nil,
-			returnClientAddressChannel}
-
-		// Send Read message to database to receive address
-		dbMessageQueue <- dbMessage
-
-		// Wait for address from channel, then close the channel
-		clientAddressByteArray := <-returnClientAddressChannel
-		close(returnClientAddressChannel)
-
-		// Convert saved json object into Go-struct
-		err = json.Unmarshal(clientAddressByteArray.value, &clientAddress)
+		// Set up connection to Client Gateway or Plugin
+		remoteChildServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 		if err != nil {
-			// Problem with unmarshal the json object
 			logger.WithFields(logrus.Fields{
-				"ID": "74bca1b9-2fe2-47cf-a776-6968d16921eb",
-				"getSupportedTestDomainsToBeForwarded.PluginId,": getSupportedTestDomainsToBeForwarded.PluginId,
-			}).Error("Can't unmarshal Client address object from Database")
+				"ID":            "83830dbc-edbe-4087-a5a9-d164fb54c395",
+				"addressToDial": addressToDial,
+				"error message": err,
+			}).Error("Did not connect to Child (Gateway or Plugin) Server!")
 			//TODO Send Error information to Fenix
 		} else {
-			// Send TestInstruction to client using gRPC-call
-			addressToDial := clientAddress.clientIp + clientAddress.clientPort
+			logger.WithFields(logrus.Fields{
+				"ID":            "7f8910b0-752a-4e80-8210-8f9f2f19dbbc",
+				"addressToDial": addressToDial,
+			}).Debug("gRPC connection OK to child-gateway- or Plugin-Server!")
 
-			// Set up connection to Client Gateway or Plugin
-			remoteChildServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
+			// Creates a new gateway Client
+			gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
+
+			// ChangeSenderId to this gatway's SenderId before sending the data forward
+			getSupportedTestDomainsToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.callingSystemId
+			getSupportedTestDomainsToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.callingSystemName
+
+			// Do gRPC-call to client gateway or Plugin
+			ctx := context.Background()
+			returnMessage, err := gatewayClient.GetSupportedTestDataDomains(ctx, getSupportedTestDomainsToBeForwarded)
 			if err != nil {
 				logger.WithFields(logrus.Fields{
-					"ID":            "83830dbc-edbe-4087-a5a9-d164fb54c395",
-					"addressToDial": addressToDial,
-					"error message": err,
-				}).Error("Did not connect to Child (Gateway or Plugin) Server!")
+					"ID":            "f549c867-1250-4276-af6e-901908cd6221",
+					"returnMessage": returnMessage,
+					"error":         err,
+				}).Error("Problem to send getSupportedTestDomains to child-Gateway or Plugin")
 				//TODO Send Error information to Fenix
 			} else {
 				logger.WithFields(logrus.Fields{
-					"ID":            "7f8910b0-752a-4e80-8210-8f9f2f19dbbc",
+					"ID":            "85ee050c-6880-4c33-8f27-4f09380a5a67",
 					"addressToDial": addressToDial,
-				}).Debug("gRPC connection OK to child-gateway- or Plugin-Server!")
+				}).Debug("gRPC-send getSupportedTestDomains to child-Gateway or Plugin")
 
-				// Creates a new gateway Client
-				gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
-
-				// ChangeSenderId to this gatway's SenderId before sending the data forward
-				getSupportedTestDomainsToBeForwarded.SenderId = CallingSystemId
-				getSupportedTestDomainsToBeForwarded.SenderName = CallingSystemName
-
-				// Do gRPC-call to client gateway or Plugin
-				ctx := context.Background()
-				returnMessage, err := gatewayClient.GetSupportedTestDataDomains(ctx, getSupportedTestDomainsToBeForwarded)
-				if err != nil {
-					logger.WithFields(logrus.Fields{
-						"ID":            "f549c867-1250-4276-af6e-901908cd6221",
-						"returnMessage": returnMessage,
-						"error":         err,
-					}).Error("Problem to send getSupportedTestDomains to child-Gateway or Plugin")
-					//TODO Send Error information to Fenix
-				} else {
-					logger.WithFields(logrus.Fields{
-						"ID":            "85ee050c-6880-4c33-8f27-4f09380a5a67",
-						"addressToDial": addressToDial,
-					}).Debug("gRPC-send getSupportedTestDomains to child-Gateway or Plugin")
-
-				}
 			}
 		}
 	}

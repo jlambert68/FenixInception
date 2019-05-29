@@ -15,8 +15,8 @@ callingSystemDomainName = "Custody Cash"
 # Initial IP and Port for Parent Gateway/Fenix.
 [parentgRPCAddress]
 parentGatewayId ="42744278-1128-4eec-8b75-8817516ca09b"
-parentGatewayInitialServer_address = "127.0.0.1"
-parentGatewayInitialServer_port = ":5999"
+parentGatewayServer_address = "127.0.0.1"
+parentGatewayServer_port = ":5999"
 
 # The first port in port range for child-gateways or Plugins
 [firstClientPort]
