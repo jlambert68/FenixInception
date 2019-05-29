@@ -28,7 +28,17 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAd
 			"err":                        err,
 		}).Error("Error when converting reRegisterToGatewayMessage into a byte array, stopping futher processing of Reregistration.")
 
-		//TODO Send Error information to Fenix
+		// Send Error information to Fenix
+		localInformationMessageChannel <- &gRPC.InformationMessage{
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			MessageId:             generateUUID(),
+			MessageType:           gRPC.InformationMessage_ERROR,
+			Message:               "Error when converting reRegisterToGatewayMessage into a byte array, stopping futher processing of Reregistration.",
+			OrginalCreateDateTime: generaTimeStampUTC(),
+		}
 
 		returnMessage.Comments = "Error when converting reRegisterToGatewayMessage into a byte array, stopping futher processing of Reregistration."
 		returnMessage.Acknack = false
@@ -59,7 +69,18 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAd
 			"ID":  "446cb366-9d84-4c1c-a628-ef162f7c1747",
 			"err": err,
 		}).Error("Got an error when Saveing to local DB")
-		//TODO Send Error information to Fenix
+
+		// Send Error information to Fenix
+		localInformationMessageChannel <- &gRPC.InformationMessage{
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			MessageId:             generateUUID(),
+			MessageType:           gRPC.InformationMessage_ERROR,
+			Message:               "Got an error when Saveing to local DB",
+			OrginalCreateDateTime: generaTimeStampUTC(),
+		}
 
 		// Create message back to parent Gateway/Fenix
 		returnMessage.Comments = "Error when saving to local DB, stopping futher processing of Reregistration"

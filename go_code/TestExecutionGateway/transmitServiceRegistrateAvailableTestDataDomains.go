@@ -46,8 +46,20 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistra
 				"ID":            "9abef370-58b6-44d6-bcf3-a91c9bac1911",
 				"addressToDial": addressToDial,
 				"error message": err,
-			}).Warning("Did not connect to Parent (Gateway or Fenix) Server!")
-			// TODO Send Error information to Fenix
+			}).Warning("Did not connect to Parent (Gateway or Fenix) Server!, will retry")
+
+			// Send Warning information to Fenix
+			localInformationMessageChannel <- &gRPC.InformationMessage{
+				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+				MessageId:             generateUUID(),
+				MessageType:           gRPC.InformationMessage_WARNING,
+				Message:               "Got an error when Saveing to local DB, will retry",
+				OrginalCreateDateTime: generaTimeStampUTC(),
+			}
+
 			// TODO Add message to memmory cash for later resend
 			// TODO Save message in localDB for later resend
 		} else {
@@ -72,7 +84,19 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistra
 					"returnMessage": returnMessage,
 					"error":         err,
 				}).Warning("Problem to send 'supportedTestDataDomainsMessageToBeForwarded' to parent-Gateway or Fenix")
-				// TODO Send Error information to Fenix
+
+				// Send Warning information to Fenix
+				localInformationMessageChannel <- &gRPC.InformationMessage{
+					OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+					OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+					SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+					SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+					MessageId:             generateUUID(),
+					MessageType:           gRPC.InformationMessage_WARNING,
+					Message:               "Problem to send 'supportedTestDataDomainsMessageToBeForwarded' to parent-Gateway or Fenix",
+					OrginalCreateDateTime: generaTimeStampUTC(),
+				}
+
 				// TODO Add message to memmory cash for later resend
 				// TODO Save message in localDB for later resend
 			} else {

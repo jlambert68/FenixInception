@@ -43,7 +43,20 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 				"addressToDial": addressToDial,
 				"error message": err,
 			}).Error("Did not connect to Child (Gateway or Plugin) Server!")
-			//TODO Send Error information to Fenix
+
+			// Send Error information to Fenix
+			//Send Error information to Fenix
+			localInformationMessageChannel <- &gRPC.InformationMessage{
+				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+				MessageId:             generateUUID(),
+				MessageType:           gRPC.InformationMessage_ERROR,
+				Message:               "Did not connect to Child (Gateway or Plugin) Server!",
+				OrginalCreateDateTime: generaTimeStampUTC(),
+			}
+
 		} else {
 			logger.WithFields(logrus.Fields{
 				"ID":            "7f8910b0-752a-4e80-8210-8f9f2f19dbbc",
@@ -66,7 +79,19 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 					"returnMessage": returnMessage,
 					"error":         err,
 				}).Error("Problem to send getSupportedTestDomains to child-Gateway or Plugin")
-				//TODO Send Error information to Fenix
+
+				// Send Error information to Fenix
+				localInformationMessageChannel <- &gRPC.InformationMessage{
+					OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+					OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+					SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+					SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+					MessageId:             generateUUID(),
+					MessageType:           gRPC.InformationMessage_ERROR,
+					Message:               "Problem to send getSupportedTestDomains to child-Gateway or Plugin",
+					OrginalCreateDateTime: generaTimeStampUTC(),
+				}
+
 			} else {
 				logger.WithFields(logrus.Fields{
 					"ID":            "85ee050c-6880-4c33-8f27-4f09380a5a67",

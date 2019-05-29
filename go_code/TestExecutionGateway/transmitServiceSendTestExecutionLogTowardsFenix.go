@@ -43,7 +43,19 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				"addressToDial": addressToDial,
 				"error message": err,
 			}).Warning("Did not connect to Child (Gateway or Plugin) Server!")
-			// TODO Send Error information to Fenix
+
+			// Send Warning information to Fenix
+			localInformationMessageChannel <- &gRPC.InformationMessage{
+				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+				MessageId:             generateUUID(),
+				MessageType:           gRPC.InformationMessage_WARNING,
+				Message:               "Did not connect to Child (Gateway or Plugin) Server!",
+				OrginalCreateDateTime: generaTimeStampUTC(),
+			}
+
 			// TODO Add message to memmory cash for later resend
 			// TODO Save message in localDB for later resend
 		} else {
@@ -68,7 +80,19 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 					"returnMessage": returnMessage,
 					"error":         err,
 				}).Warning("Problem to send 'testExecutionLogMessageToBeForwarded' to parent-Gateway or Fenix")
-				// TODO Send Error information to Fenix
+
+				// Send Warning information to Fenix
+				localInformationMessageChannel <- &gRPC.InformationMessage{
+					OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+					OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+					SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+					SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+					MessageId:             generateUUID(),
+					MessageType:           gRPC.InformationMessage_WARNING,
+					Message:               "Problem to send 'testExecutionLogMessageToBeForwarded' to parent-Gateway or Fenix",
+					OrginalCreateDateTime: generaTimeStampUTC(),
+				}
+
 				// TODO Add message to memmory cash for later resend
 				// TODO Save message in localDB for later resend
 			} else {
