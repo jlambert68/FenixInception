@@ -52,13 +52,13 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
 				MessageId:             generateUUID(),
 				MessageType:           gRPC.InformationMessage_WARNING,
-				Message:               "Did not connect to Child (Gateway or Plugin) Server!",
+				Message:               "Did not connect to parent (Gateway or Fenix) Server!",
 				OrginalCreateDateTime: generaTimeStampUTC(),
 			}
 
-			// TODO Add message to memmory cash for later resend
 			// TODO Save message in localDB for later resend
 		} else {
+			// Connection to parent server OK
 			logger.WithFields(logrus.Fields{
 				"ID":            "e1c1903e-d72b-4ca2-973e-33b8525cb6ee",
 				"addressToDial": addressToDial,
@@ -96,6 +96,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				// TODO Add message to memmory cash for later resend
 				// TODO Save message in localDB for later resend
 			} else {
+				// gRPC messagage send parent server
 				logger.WithFields(logrus.Fields{
 					"ID":            "985c3a8b-dd01-496a-b3b8-9e1c67b89dd6",
 					"addressToDial": addressToDial,

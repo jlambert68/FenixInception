@@ -97,6 +97,8 @@ type loggingLevel_struct struct {
 const BUCKET_PARENT_ADDRESS = "Parent"
 const BUCKET_KEY_PARENT_ADDRESS = "ParentId"
 const BUCKET_CLIENTS = "Clients"
+const BUCKET_RESEND_INFOMESSAGES_TO_FENIX = "ReSendInfoMessages"
+const BUCKET_RESEND_LOG_MESSAGES_TO_FENIX = "ReSendLogMessages"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPort_struct

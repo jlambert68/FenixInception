@@ -3,10 +3,13 @@ package TestExecutionGateway
 import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
 	"time"
 )
 
+// *********************************************************************************
 // Generate a new unique uuid
+//
 func generateUUID() string {
 	var new_uuid_string string = ""
 
@@ -19,19 +22,22 @@ func generateUUID() string {
 			"error message": err,
 		}).Fatal("Couldn't generate a new UUID, stopping execution of Gateway")
 
-	} else {
-		// Return newly created UUID
-		return new_uuid_string
 	}
+	// Return newly created UUID
+	return new_uuid_string
 }
 
+// *********************************************************************************
 // Genrerate UTC DateTime timestamp
+//
 func generaTimeStampUTC() string {
 	now := time.Now()
 	return now.String()
 }
 
+// *********************************************************************************
 // Get Clients IP-address and Port from final PluginId from Memory object
+//
 func getClientAddressAndPort(pluginId string) (addressAndPort string) {
 	// Get Client-info object from Clients-memory-object
 	clientsAddressAndPortInfo, keyExists := clientsAddressAndPort[pluginId]
@@ -51,7 +57,9 @@ func getClientAddressAndPort(pluginId string) (addressAndPort string) {
 
 }
 
+// *********************************************************************************
 // Get Parents IP-address and Port from Memory object
+//
 func getParentAddressAndPort() (addressAndPort string) {
 	// Get Parent-info object from Clients-memory-object
 	ParentAddressAndPortInfo := gatewayConfig.parentgRPCAddress
@@ -60,4 +68,44 @@ func getParentAddressAndPort() (addressAndPort string) {
 
 	return addressAndPort
 
+}
+
+// *********************************************************************************
+// Save Message in Local DB
+//
+func SaveMessageToLocalDB(
+	key string,
+	valueToStoreInDB []byte,
+	bucket string,
+	id string,
+) {
+
+	// Create return channel for save-status from DB
+	returnChannel := make(chan dbResultMessage_struct)
+
+	dbMessage := dbMessage_struct{
+		DB_WRITE,
+		bucket,
+		key,
+		valueToStoreInDB,
+		returnChannel}
+
+	// Send message to Database
+	dbMessageQueue <- dbMessage
+
+	// Wait for result on result channel and then close returnChannel
+	returnDBMessage := <-returnChannel
+	close(returnChannel)
+
+	if returnDBMessage.err != nil {
+
+		LogErrorAndSendInfoToFenixFor_SendTestExecutionLogTowardsFenix(
+			id,
+			gRPC.InformationMessage_FATAL,
+			"",
+			"",
+			returnDBMessage.err.Error(),
+			"Got an error when Saveing to local DB",
+		)
+	}
 }

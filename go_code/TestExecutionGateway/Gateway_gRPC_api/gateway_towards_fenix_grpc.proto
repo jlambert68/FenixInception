@@ -325,9 +325,11 @@ message InformationMessage {
     string SenderName = 6; // Then name of the gateway/plugin that was the last forwarder
     string MessageId = 7; // A unique id generated when sent from Gateway or Plugin
     enum InformationType {
-        INFO = 0; // The message is pure information
-        WARNING = 1; //  The message is of category WARNING
-        ERROR = 2; // The Plugin wants to inform Fenix of that something is wrong
+        DEBUG = 0; // MessageType only used for developing
+        INFO = 1; // The message is pure information
+        WARNING = 2; //  The message is of category WARNING
+        ERROR = 3; // The Plugin wants to inform Fenix of that something is wrong
+        FATAL = 4; // THe gateway will log problem and then exit
     }
     InformationType MessageType = 8;// The type of information message
     string message = 9; // The message from Gateway or Plugin to Fenix
