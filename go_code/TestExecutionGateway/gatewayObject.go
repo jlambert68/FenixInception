@@ -99,6 +99,7 @@ const BUCKET_KEY_PARENT_ADDRESS = "ParentId"
 const BUCKET_CLIENTS = "Clients"
 const BUCKET_RESEND_INFOMESSAGES_TO_FENIX = "ReSendInfoMessages"
 const BUCKET_RESEND_LOG_MESSAGES_TO_FENIX = "ReSendLogMessages"
+const BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN = "ReSendGetTestDataDomainsMessages"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPort_struct

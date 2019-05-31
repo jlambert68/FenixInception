@@ -48,6 +48,31 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				err.Error(),
 				"Did not connect to Child (Gateway or Plugin) Server!",
 			)
+
+			// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
+			testInstructionTimeOutMessageToBeForwardedByteArray, err := json.Marshal(*testInstructionTimeOutMessageToBeForwarded)
+
+			if err != nil {
+				// Error when Unmarshaling to []byte
+				LogErrorAndSendInfoToFenix(
+					"03c654a6-ff0a-4ad5-979b-4c0d920a4c82",
+					gRPC.InformationMessage_FATAL,
+					"testExecutionLogMessageToBeForwarded",
+					testInstructionTimeOutMessageToBeForwarded.String(),
+					err.Error(),
+					"Error when converting 'testInstructionTimeOutMessageToBeForwarded' into a byte array, stopping futher processing of this TestInstruction",
+				)
+			} else {
+				// Marshaling to []byte OK
+
+				// Save message to local DB for later processing
+				SaveMessageToLocalDB(
+					testInstructionTimeOutMessageToBeForwarded.MessageId,
+					testInstructionTimeOutMessageToBeForwardedByteArray,
+					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+					"4f9d9fc7-3a0f-4650-8fa3-795044edb1db",
+				)
+			}
 		} else {
 			//Connection OK
 
@@ -66,14 +91,6 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				)
 			} else {
 				// Marshaling to []byte OK
-
-				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
-					testInstructionTimeOutMessageToBeForwarded.MessageId,
-					testInstructionTimeOutMessageToBeForwardedByteArray,
-					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
-					"3b0223ad-7c4a-4fe3-9684-c28214d3f2b5",
-				)
 
 				// Creates a new gateway Client
 				gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)

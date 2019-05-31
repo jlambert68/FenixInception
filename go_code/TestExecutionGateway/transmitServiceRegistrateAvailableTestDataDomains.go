@@ -29,6 +29,9 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) initiateRegistrateAvailab
 func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix() {
 
 	for {
+
+		// TODO HALT forwarding of messages if Fenix says so
+
 		// Wait for data comes from channel to transmit engine
 		supportedTestDataDomainsMessageToBeForwarded := <-gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel
 
@@ -52,6 +55,32 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistra
 				err.Error(),
 				"Did not connect to Child (Gateway or Plugin) Server!",
 			)
+
+			// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
+			supportedTestDataDomainsMessageToBeForwardedByteArray, err := json.Marshal(*supportedTestDataDomainsMessageToBeForwarded)
+
+			if err != nil {
+				// Error when Unmarshaling to []byte
+				LogErrorAndSendInfoToFenix(
+					"661b6fb7-d125-4e8f-91b4-3d655d39963a",
+					gRPC.InformationMessage_FATAL,
+					"testExecutionLogMessageToBeForwarded",
+					supportedTestDataDomainsMessageToBeForwarded.String(),
+					err.Error(),
+					"Error when converting testExecutionLogMessageToBeForwarded into a byte array, stopping futher processing of this TestInstruction",
+				)
+			} else {
+				// Marshaling to []byte OK
+
+				// Save message to local DB for later processing
+				SaveMessageToLocalDB(
+					supportedTestDataDomainsMessageToBeForwarded.MessageId,
+					supportedTestDataDomainsMessageToBeForwardedByteArray,
+					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+					"0a71308b-a172-4342-b3da-b45cf923860b",
+				)
+			}
+
 		} else {
 			//Connection OK
 
@@ -70,14 +99,6 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistra
 				)
 			} else {
 				// Marshaling to []byte OK
-
-				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
-					supportedTestDataDomainsMessageToBeForwarded.MessageId,
-					supportedTestDataDomainsMessageToBeForwardedByteArray,
-					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
-					"b98905fd-1519-440d-a017-c8c0c217e738",
-				)
 
 				// Creates a new gateway Client
 				gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)

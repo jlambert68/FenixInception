@@ -48,10 +48,41 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				"addressToDial",
 				addressToDial,
 				err.Error(),
-				"Did not connect to Child (Gateway or Plugin) Server!",
+				"Did not connect to Parent (Gateway or Plugin) Server!",
 			)
+
+			// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
+			testExecutionLogMessageToBeForwardedByteArray, err := json.Marshal(*testExecutionLogMessageToBeForwarded)
+
+			if err != nil {
+				// Error when Unmarshaling to []byte
+				LogErrorAndSendInfoToFenix(
+					"e395a57d-0d5d-4388-9579-41315a267533",
+					gRPC.InformationMessage_FATAL,
+					"testExecutionLogMessageToBeForwarded",
+					testExecutionLogMessageToBeForwarded.String(),
+					err.Error(),
+					"Error when converting testExecutionLogMessageToBeForwarded into a byte array, stopping futher processing of this TestInstruction",
+				)
+
+			} else {
+				// Marshaling to []byte OK
+
+				// Save message to local DB for later processing
+				SaveMessageToLocalDB(
+					testExecutionLogMessageToBeForwarded.LogMessageId,
+					testExecutionLogMessageToBeForwardedByteArray,
+					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+					"c22d1b76-2f52-4d76-8013-fcc65b94da2f",
+				)
+			}
+
 		} else {
 			//Connection OK
+			logger.WithFields(logrus.Fields{
+				"ID":            "9f72b39f-34c7-417c-bba0-0e0630a4f7a1",
+				"addressToDial": addressToDial,
+			}).Debug("gRPC connection OK to parent-gateway/Fenix!")
 
 			// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
 			testExecutionLogMessageToBeForwardedByteArray, err := json.Marshal(*testExecutionLogMessageToBeForwarded)
@@ -66,16 +97,9 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 					err.Error(),
 					"Error when converting testExecutionLogMessageToBeForwarded into a byte array, stopping futher processing of this TestInstruction",
 				)
+
 			} else {
 				// Marshaling to []byte OK
-
-				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
-					testExecutionLogMessageToBeForwarded.LogMessageId,
-					testExecutionLogMessageToBeForwardedByteArray,
-					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
-					"b523d0a6-e3d6-42ea-8746-8c2864a943a5",
-				)
 
 				// Creates a new gateway Client
 				gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
