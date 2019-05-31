@@ -1,6 +1,7 @@
 package TestExecutionGateway
 
 import (
+	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -32,78 +33,87 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 			"testInstructionTimeOutMessageToBeForwarded": testInstructionTimeOutMessageToBeForwarded,
 		}).Debug("Received a new 'testInstructionTimeOutMessageToBeForwarded' from channel that shoud be forwarded")
 
-		// Send TestInstruction to client using gRPC-call
+		// ***** Send Timeout to parent gateway Fenix using gRPC-call ****
 		addressToDial := getParentAddressAndPort()
 
 		// Set up connection to Parent Gateway or Fenix
 		remoteParentServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"ID":            "6118ae80-1d86-4530-83e4-549c00d01337",
-				"addressToDial": addressToDial,
-				"error message": err,
-			}).Warning("Did not connect to Child (Gateway or Plugin) Server!")
-
-			// Send Warning information to Fenix
-			localInformationMessageChannel <- &gRPC.InformationMessage{
-				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
-				MessageId:             generateUUID(),
-				MessageType:           gRPC.InformationMessage_WARNING,
-				Message:               "Did not connect to parent (Gateway or Fenix) Server!",
-				OrginalCreateDateTime: generaTimeStampUTC(),
-			}
-
-			// TODO Save message in localDB for later resend
+			// Connection Not OK
+			LogErrorAndSendInfoToFenix(
+				"f4ba70b6-06e0-46cc-9f82-fcd81992d8a3",
+				gRPC.InformationMessage_WARNING,
+				"addressToDial",
+				addressToDial,
+				err.Error(),
+				"Did not connect to Child (Gateway or Plugin) Server!",
+			)
 		} else {
-			// Connection to parent server OK
-			logger.WithFields(logrus.Fields{
-				"ID":            "e1c1903e-d72b-4ca2-973e-33b8525cb6ee",
-				"addressToDial": addressToDial,
-			}).Debug("gRPC connection OK to Parent-gateway- or Fenix-Server!")
+			//Connection OK
 
-			// Creates a new gateway Client
-			gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
+			// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
+			testInstructionTimeOutMessageToBeForwardedByteArray, err := json.Marshal(*testInstructionTimeOutMessageToBeForwarded)
 
-			// ChangeSenderId to this gatway's SenderId before sending the data forward
-			testInstructionTimeOutMessageToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.callingSystemId
-			testInstructionTimeOutMessageToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.callingSystemName
-
-			// Do gRPC-call to client gateway or Fenix
-			ctx := context.Background()
-			returnMessage, err := gatewayClient.SendTestInstructionTimeOutTowardsFenix(ctx, testInstructionTimeOutMessageToBeForwarded)
 			if err != nil {
-				logger.WithFields(logrus.Fields{
-					"ID":            "1ae9d406-b8fc-4622-b6a3-8b2c0ce3cdc9",
-					"returnMessage": returnMessage,
-					"error":         err,
-				}).Warning("Problem to send 'testInstructionTimeOutMessageToBeForwarded' to parent-Gateway or Fenix")
-
-				// Send Warning information to Fenix
-				localInformationMessageChannel <- &gRPC.InformationMessage{
-					OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-					OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-					SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-					SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
-					MessageId:             generateUUID(),
-					MessageType:           gRPC.InformationMessage_WARNING,
-					Message:               "Problem to send 'testInstructionTimeOutMessageToBeForwarded' to parent-Gateway or Fenix",
-					OrginalCreateDateTime: generaTimeStampUTC(),
-				}
-
-				// TODO Add message to memmory cash for later resend
-				// TODO Save message in localDB for later resend
+				// Error when Unmarshaling to []byte
+				LogErrorAndSendInfoToFenix(
+					"b0883ffe-33f3-4204-9cb2-e32ef879597b",
+					gRPC.InformationMessage_FATAL,
+					"testExecutionLogMessageToBeForwarded",
+					testInstructionTimeOutMessageToBeForwarded.String(),
+					err.Error(),
+					"Error when converting 'testInstructionTimeOutMessageToBeForwarded' into a byte array, stopping futher processing of this TestInstruction",
+				)
 			} else {
-				// gRPC messagage send parent server
-				logger.WithFields(logrus.Fields{
-					"ID":            "985c3a8b-dd01-496a-b3b8-9e1c67b89dd6",
-					"addressToDial": addressToDial,
-				}).Debug("gRPC-send OK of 'testInstructionTimeOutMessageToBeForwarded' to Parent-Gateway or Fenix")
+				// Marshaling to []byte OK
 
-				// TODO Check for messages to Resend (If so then put them on channel) and remove from DB
+				// Save message to local DB for later processing
+				SaveMessageToLocalDB(
+					testInstructionTimeOutMessageToBeForwarded.MessageId,
+					testInstructionTimeOutMessageToBeForwardedByteArray,
+					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+					"3b0223ad-7c4a-4fe3-9684-c28214d3f2b5",
+				)
 
+				// Creates a new gateway Client
+				gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
+
+				// ChangeSenderId to this gatway's SenderId before sending the data forward
+				testInstructionTimeOutMessageToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.callingSystemId
+				testInstructionTimeOutMessageToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.callingSystemName
+
+				// Do gRPC-call to client gateway or Fenix
+				ctx := context.Background()
+				returnMessage, err := gatewayClient.SendTestInstructionTimeOutTowardsFenix(ctx, testInstructionTimeOutMessageToBeForwarded)
+				if err != nil {
+					// Error when rending gRPC to parent
+					LogErrorAndSendInfoToFenix(
+						"6c3ed5a3-9e16-4c19-bbc9-a3b84b921ea0",
+						gRPC.InformationMessage_WARNING,
+						"returnMessage",
+						returnMessage.String(),
+						err.Error(),
+						"Problem to send 'testInstructionTimeOutMessageToBeForwarded' to parent-Gateway or Fenix",
+					)
+
+					// Save message to local DB for later processing
+					SaveMessageToLocalDB(
+						testInstructionTimeOutMessageToBeForwarded.MessageId,
+						testInstructionTimeOutMessageToBeForwardedByteArray,
+						BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+						"ae47bac5-fd22-41dd-80b0-16063d880988",
+					)
+
+				} else {
+					// gRPC Send message OK
+					logger.WithFields(logrus.Fields{
+						"ID":            "",
+						"addressToDial": addressToDial,
+					}).Debug("gRPC-send OK of 'testInstructionTimeOutMessageToBeForwarded' to Parent-Gateway or Fenix")
+
+					// TODO Check for messages to Resend (If so then put them on channel)
+
+				}
 			}
 		}
 	}

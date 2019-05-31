@@ -35,14 +35,14 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 			"testExecutionLogMessageToBeForwarded": testExecutionLogMessageToBeForwarded,
 		}).Debug("Received a new 'testExecutionLogMessageToBeForwarded' from channel that shoud be forwarded")
 
-		// ***** Send TestInstruction to client using gRPC-call ****
+		// ***** Send ExecutionLog to parent gateway Fenix using gRPC-call ****
 		addressToDial := getParentAddressAndPort()
 
 		// Set up connection to Parent Gateway or Fenix
 		remoteParentServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 		if err != nil {
 			// Connection Not OK
-			LogErrorAndSendInfoToFenixFor_SendTestExecutionLogTowardsFenix(
+			LogErrorAndSendInfoToFenix(
 				"512db5b3-9f6f-4981-9520-d53d91e24748",
 				gRPC.InformationMessage_WARNING,
 				"addressToDial",
@@ -58,7 +58,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 
 			if err != nil {
 				// Error when Unmarshaling to []byte
-				LogErrorAndSendInfoToFenixFor_SendTestExecutionLogTowardsFenix(
+				LogErrorAndSendInfoToFenix(
 					"20ba7b7d-a27e-4bb1-a846-3f7cde8ecf04",
 					gRPC.InformationMessage_FATAL,
 					"testExecutionLogMessageToBeForwarded",
@@ -89,7 +89,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				returnMessage, err := gatewayClient.SendTestExecutionLogTowardsFenix(ctx, testExecutionLogMessageToBeForwarded)
 				if err != nil {
 					// Error when rending gRPC to parent
-					LogErrorAndSendInfoToFenixFor_SendTestExecutionLogTowardsFenix(
+					LogErrorAndSendInfoToFenix(
 						"59939fa7-22b6-4595-a70b-816416cc228f",
 						gRPC.InformationMessage_WARNING,
 						"returnMessage",
@@ -118,104 +118,5 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				}
 			}
 		}
-	}
-}
-
-// *********************************************************************************
-// Log message to local log and then Send message to Fenix
-func LogErrorAndSendInfoToFenixFor_SendTestExecutionLogTowardsFenix(
-	id string,
-	messageType gRPC.InformationMessage_InformationType,
-	infoHeader string,
-	info string,
-	errorMessage string,
-	message string,
-) {
-
-	var suffix string = "_A"
-
-	switch messageType {
-	case gRPC.InformationMessage_DEBUG:
-		// Only logg information and do not send to Fenix
-		logger.WithFields(logrus.Fields{
-			"ID":       id + suffix,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Debug(message)
-
-	case gRPC.InformationMessage_INFO:
-		// Log information
-		logger.WithFields(logrus.Fields{
-			"ID":       id + suffix,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Info(message)
-
-		// Send information to Fenix
-		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
-			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_INFO,
-			Message:               message,
-			OrginalCreateDateTime: generaTimeStampUTC(),
-		}
-
-	case gRPC.InformationMessage_WARNING:
-		// Log information
-		logger.WithFields(logrus.Fields{
-			"ID":       id + suffix,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Warning(message)
-
-		// Send Warning information to Fenix
-		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
-			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_WARNING,
-			Message:               message,
-			OrginalCreateDateTime: generaTimeStampUTC(),
-		}
-
-	case gRPC.InformationMessage_ERROR:
-		// Log information
-		logger.WithFields(logrus.Fields{
-			"ID":       id + suffix,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Error(message)
-
-		// Send Error information to Fenix
-		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
-			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_ERROR,
-			Message:               message,
-			OrginalCreateDateTime: generaTimeStampUTC(),
-		}
-
-	case gRPC.InformationMessage_FATAL:
-		// Only log and then Terminate Gateway due to problems
-		logger.WithFields(logrus.Fields{
-			"ID":       id + suffix,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Fatal(message)
-
-	default:
-		logger.WithFields(logrus.Fields{
-			"ID":          "d83326f4-1b06-4d13-8010-70b6c829cc88",
-			"messageType": messageType,
-		}).Fatal("Unknown messageType, stopping gateway")
-
 	}
 }

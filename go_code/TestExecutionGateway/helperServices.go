@@ -71,6 +71,102 @@ func getParentAddressAndPort() (addressAndPort string) {
 }
 
 // *********************************************************************************
+// Log message to local log and then Send message to Fenix
+func LogErrorAndSendInfoToFenix(
+	id string,
+	messageType gRPC.InformationMessage_InformationType,
+	infoHeader string,
+	info string,
+	errorMessage string,
+	message string,
+) {
+
+	switch messageType {
+	case gRPC.InformationMessage_DEBUG:
+		// Only logg information and do not send to Fenix
+		logger.WithFields(logrus.Fields{
+			"ID":       id,
+			infoHeader: info,
+		}).Debug(message)
+
+	case gRPC.InformationMessage_INFO:
+		// Log information
+		logger.WithFields(logrus.Fields{
+			"ID":       id,
+			infoHeader: info,
+			"error":    errorMessage,
+		}).Info(message)
+
+		// Send information to Fenix
+		localInformationMessageChannel <- &gRPC.InformationMessage{
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			MessageId:             generateUUID(),
+			MessageType:           gRPC.InformationMessage_INFO,
+			Message:               message,
+			OrginalCreateDateTime: generaTimeStampUTC(),
+		}
+
+	case gRPC.InformationMessage_WARNING:
+		// Log information
+		logger.WithFields(logrus.Fields{
+			"ID":       id,
+			infoHeader: info,
+			"error":    errorMessage,
+		}).Warning(message)
+
+		// Send Warning information to Fenix
+		localInformationMessageChannel <- &gRPC.InformationMessage{
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			MessageId:             generateUUID(),
+			MessageType:           gRPC.InformationMessage_WARNING,
+			Message:               message,
+			OrginalCreateDateTime: generaTimeStampUTC(),
+		}
+
+	case gRPC.InformationMessage_ERROR:
+		// Log information
+		logger.WithFields(logrus.Fields{
+			"ID":       id,
+			infoHeader: info,
+			"error":    errorMessage,
+		}).Error(message)
+
+		// Send Error information to Fenix
+		localInformationMessageChannel <- &gRPC.InformationMessage{
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			MessageId:             generateUUID(),
+			MessageType:           gRPC.InformationMessage_ERROR,
+			Message:               message,
+			OrginalCreateDateTime: generaTimeStampUTC(),
+		}
+
+	case gRPC.InformationMessage_FATAL:
+		// Only log and then Terminate Gateway due to problems
+		logger.WithFields(logrus.Fields{
+			"ID":       id,
+			infoHeader: info,
+			"error":    errorMessage,
+		}).Fatal(message)
+
+	default:
+		logger.WithFields(logrus.Fields{
+			"ID":          "d83326f4-1b06-4d13-8010-70b6c829cc88",
+			"messageType": messageType,
+		}).Fatal("Unknown messageType, stopping gateway")
+
+	}
+}
+
+// *********************************************************************************
 // Save Message in Local DB
 //
 func SaveMessageToLocalDB(
@@ -99,13 +195,13 @@ func SaveMessageToLocalDB(
 
 	if returnDBMessage.err != nil {
 
-		LogErrorAndSendInfoToFenixFor_SendTestExecutionLogTowardsFenix(
+		LogErrorAndSendInfoToFenix(
 			id,
 			gRPC.InformationMessage_FATAL,
 			"",
 			"",
 			returnDBMessage.err.Error(),
-			"Got an error when Saveing to local DB",
+			"Got an error when Saveing to local DB, Stopping Gateway",
 		)
 	}
 }
