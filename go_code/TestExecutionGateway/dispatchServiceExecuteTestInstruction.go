@@ -32,6 +32,11 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestIns
 		// Wait for data comes from channel to dispatch engine
 		testInstructionToBeForwarded := <-gatewayObject.testInstructionMessageChannel
 
+		// Check number of messages in channel
+		channelSinaling(len(gatewayObject.testInstructionMessageChannel),
+			"testInstructionTimeOutMessageChannel",
+			"9c89b05d-7f4d-4971-b21b-7c7fa9d42e9c")
+
 		logger.WithFields(logrus.Fields{
 			"ID":                           "f015de87-d51f-4025-8e27-cf818bbe255d",
 			"testInstructionToBeForwarded": testInstructionToBeForwarded,

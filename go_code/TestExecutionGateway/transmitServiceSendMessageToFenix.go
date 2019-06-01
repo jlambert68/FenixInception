@@ -35,6 +35,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 			"informationMessageToBeForwarded": informationMessageToBeForwarded,
 		}).Debug("Received a new informationMessage from channel that shoud be forwarded")
 
+		// Check number of messages in channel
+		channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
+			"informationMessageChannel",
+			"01411586-7dab-4f34-809c-cdc8af8742c5")
+
 		// ***** Send ExecutionLog to parent gateway Fenix using gRPC-call ****
 		addressToDial := getParentAddressAndPort()
 

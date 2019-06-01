@@ -205,3 +205,36 @@ func SaveMessageToLocalDB(
 		)
 	}
 }
+
+// *********************************************************************************
+// Signal when channel reached certain levels
+//
+
+func channelSinaling(
+	numberOfMessagesInChannel int,
+	channelName string,
+	id string) {
+	// if channel items is greater than upper warning levels then lg warning
+	if numberOfMessagesInChannel >= CHANNEL_UPPER_MESSAGE_TO_BE_SIGNALED {
+
+		LogErrorAndSendInfoToFenix(
+			id,
+			gRPC.InformationMessage_WARNING,
+			"Number of message in Channel '"+channelName+"'",
+			string(numberOfMessagesInChannel),
+			"",
+			"Upper WARNING level reached for number of items in channel")
+	} else {
+		if numberOfMessagesInChannel >= CHANNEL_LOWER_MESSAGE_TO_BE_SIGNALED {
+			logger.WithFields(logrus.Fields{
+				"ID": id,
+				"Number of message in Channel '" + channelName + "'": numberOfMessagesInChannel,
+			}).Info("Lower INFO level reached for number of items in channel")
+		} else {
+			logger.WithFields(logrus.Fields{
+				"ID": id,
+				"Number of message in Channel '" + channelName + "'": numberOfMessagesInChannel,
+			}).Debug("Number of items in channel")
+		}
+	}
+}

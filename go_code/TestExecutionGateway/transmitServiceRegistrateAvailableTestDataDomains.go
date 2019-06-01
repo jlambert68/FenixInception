@@ -40,6 +40,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistra
 			"supportedTestDataDomainsMessageToBeForwarded": supportedTestDataDomainsMessageToBeForwarded,
 		}).Debug("Received a new 'supportedTestDataDomainsMessageToBeForwarded' from channel that shoud be forwarded")
 
+		// Check number of messages in channel
+		channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
+			"supportedTestDataDomainsMessageTowardsFenixChannel",
+			"7f51813f-07f2-4e05-9143-ecc40e59bb17")
+
 		// ***** Send AvailableTestDataDomains to parent gateway Fenix using gRPC-call ****
 		addressToDial := getParentAddressAndPort()
 

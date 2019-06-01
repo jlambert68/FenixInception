@@ -30,6 +30,11 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 		// ***** Wait for data comes from channel to dispatch engine *****
 		getSupportedTestDomainsToBeForwarded := <-gatewayObject.supportedTestDataDomainsRequestChannel
 
+		// Check number of messages in channel
+		channelSinaling(len(gatewayObject.testInstructionMessageChannel),
+			"supportedTestDataDomainsRequestChannel",
+			"3c85d4c4-260d-4612-a153-2eeeff864621")
+
 		logger.WithFields(logrus.Fields{
 			"ID":                                   "05f9ae3c-dc0f-4107-ae85-ae57d6dde6c1",
 			"testExecutionLogMessageToBeForwarded": getSupportedTestDomainsToBeForwarded,

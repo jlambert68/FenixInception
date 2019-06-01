@@ -111,3 +111,12 @@ type clientsAddressAndPort_struct struct {
 	clientAddress string
 	clientPort    string
 }
+
+// The number of messages that all internal gateway channels supports
+const SUPPORTED_NUMBER_CHANNEL_MESSAGE = 100
+
+// When gateway should start signal a INFO in log that queue in channel reached a limit
+const CHANNEL_LOWER_MESSAGE_TO_BE_SIGNALED = 10
+
+// When gateway should start signal a WARNING in log that queue in channel reached a limit
+const CHANNEL_UPPER_MESSAGE_TO_BE_SIGNALED = 90

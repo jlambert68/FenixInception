@@ -30,6 +30,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 		// ***** Wait for data comes from channel to transmit engine ****
 		testExecutionLogMessageToBeForwarded := <-gatewayObject.testExecutionLogMessageChannel
 
+		// Check number of messages in channel
+		channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
+			"testExecutionLogMessageChannel",
+			"975c747f-1d0f-4fe4-a851-8fe2e17d7561")
+
 		logger.WithFields(logrus.Fields{
 			"ID":                                   "5c9fe63a-fd82-4ccd-8386-2b9c049e51a1",
 			"testExecutionLogMessageToBeForwarded": testExecutionLogMessageToBeForwarded,
