@@ -210,3 +210,34 @@ func getParentAddressInfo() {
 
 	}
 }
+
+// *******************************************************************
+// Start all Services
+func startAllServices() {
+
+	// Ensure that all services don't start before everything has been started
+	gatewayMustStopProcessing = true
+
+	// Initiate Database
+
+	// Start 'dispatchEngineForTestInstructions'
+	gatewayTowardsPluginObject.initiateDispatchEngineForTestInstructiona()
+
+	// Start 'dispatchEngineForSupportedTestDomains'
+	gatewayTowardsPluginObject.initiateDispatchEngineForSupportedTestDomains()
+
+	// Start 'transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix'
+	gatewayTowardsFenixObject.initiateRegistrateAvailableTestDataDomainsTowardsFenix()
+
+	// Start 'transmitEngineForSendMessageToFenix'
+	gatewayTowardsFenixObject.initiateSendMessageToFenix()
+
+	// Start 'transmitEngineForSendTestExecutionLogTowardsFenix'
+	gatewayTowardsFenixObject.initiateSendTestExecutionLogTowardsFenix()
+
+	// Start 'transmitEngineForSendTestInstructionTimeOutTowardsFenix'
+	gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix()
+
+	// Start all services at the same time
+	gatewayMustStopProcessing = false
+}

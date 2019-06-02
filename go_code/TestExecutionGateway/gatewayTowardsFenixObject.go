@@ -43,7 +43,7 @@ type gatewayTowardsFenixObject_struct struct {
 }
 
 var (
-	gatewayTowardsFenixObject         *gatewayTowardsPluginObject_struct
+	gatewayTowardsFenixObject         *gatewayTowardsFenixObject_struct
 	registerGatewayTowardsFenixServer *grpc.Server
 	gatewayTowardsFenixListener       net.Listener
 

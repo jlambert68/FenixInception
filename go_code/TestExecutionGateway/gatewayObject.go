@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"time"
 )
 
 var (
@@ -121,3 +122,9 @@ const CHANNEL_LOWER_MESSAGE_TO_BE_SIGNALED = 10
 
 // When gateway should start signal a WARNING in log that queue in channel reached a limit
 const CHANNEL_UPPER_MESSAGE_TO_BE_SIGNALED = 90
+
+// Variable used for sync all services to be able to start and stop them at the same time
+var gatewayMustStopProcessing bool = true
+
+// Number of seconds that Services are asleep when 'gatewayMustStopProcessing  == true'
+const SERVICE_SLEEP_TIME time.Duration = 10

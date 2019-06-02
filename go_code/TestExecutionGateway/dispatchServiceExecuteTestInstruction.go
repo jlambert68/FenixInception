@@ -26,67 +26,39 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDispatchEngineFo
 func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestInstructions() {
 
 	for {
-		// TODO for all traffic to PLugins  processing must support HALTing of sending
-		// TODO Should be supported per SystemDomain and Total stop
 
-		// Wait for data comes from channel to dispatch engine
-		testInstructionToBeForwarded := <-gatewayObject.testInstructionMessageChannel
+		// Service can be started and Stopped by central control of the Gateway
+		if gatewayMustStopProcessing == true {
+			// Service should be stopped from processing any messages
+			time.Sleep(SERVICE_SLEEP_TIME * time.Second)
 
-		// Check number of messages in channel
-		channelSinaling(len(gatewayObject.testInstructionMessageChannel),
-			"testInstructionTimeOutMessageChannel",
-			"9c89b05d-7f4d-4971-b21b-7c7fa9d42e9c")
-
-		logger.WithFields(logrus.Fields{
-			"ID":                           "f015de87-d51f-4025-8e27-cf818bbe255d",
-			"testInstructionToBeForwarded": testInstructionToBeForwarded,
-		}).Debug("Received a new TestInstruction from channel that shoud be forwarded")
-
-		// Send TestInstruction to client using gRPC-call
-		addressToDial := getClientAddressAndPort(testInstructionToBeForwarded.PluginId)
-
-		// Set up connection to Client Gateway or Plugin
-		remoteChildServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
-		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"ID":            "3ad75b4a-4c7d-44eb-b781-c8cfd18c4fcf",
-				"addressToDial": addressToDial,
-				"error message": err,
-			}).Error("Did not connect to Child (Gateway or Plugin) Server!")
-
-			//Send Error information to Fenix
-			localInformationMessageChannel <- &gRPC.InformationMessage{
-				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
-				MessageId:             generateUUID(),
-				MessageType:           gRPC.InformationMessage_ERROR,
-				Message:               "Did not connect to Child (Gateway or Plugin) Server!",
-				OrginalCreateDateTime: generaTimeStampUTC(),
-			}
 		} else {
+			// Run service and process messages
+
+			// Wait for data comes from channel to dispatch engine
+			testInstructionToBeForwarded := <-gatewayObject.testInstructionMessageChannel
+
+			// Check number of messages in channel
+			channelSinaling(len(gatewayObject.testInstructionMessageChannel),
+				"testInstructionTimeOutMessageChannel",
+				"9c89b05d-7f4d-4971-b21b-7c7fa9d42e9c")
+
 			logger.WithFields(logrus.Fields{
-				"ID":            "4510ae97-1753-4d4c-a7f5-3987054bd969",
-				"addressToDial": addressToDial,
-			}).Debug("gRPC connection OK to child-gateway- or Plugin-Server!")
+				"ID":                           "f015de87-d51f-4025-8e27-cf818bbe255d",
+				"testInstructionToBeForwarded": testInstructionToBeForwarded,
+			}).Debug("Received a new TestInstruction from channel that shoud be forwarded")
 
-			// Creates a new gateway Client
-			gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
+			// Send TestInstruction to client using gRPC-call
+			addressToDial := getClientAddressAndPort(testInstructionToBeForwarded.PluginId)
 
-			// ChangeSenderId to this gatway's SenderId before sending the data forward
-			testInstructionToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.callingSystemId
-			testInstructionToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.callingSystemName
-
-			// Do gRPC-call to client gateway or Plugin
-			ctx := context.Background()
-			returnMessage, err := gatewayClient.SendTestInstructionTowardsPlugin(ctx, testInstructionToBeForwarded)
+			// Set up connection to Client Gateway or Plugin
+			remoteChildServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 			if err != nil {
 				logger.WithFields(logrus.Fields{
-					"ID":            "4a0f0753-6394-4115-aa56-cf26c9354f83",
-					"returnMessage": returnMessage,
-					"error":         err,
-				}).Error("Problem to send TestInstruction to child-Gateway or Plugin")
+					"ID":            "3ad75b4a-4c7d-44eb-b781-c8cfd18c4fcf",
+					"addressToDial": addressToDial,
+					"error message": err,
+				}).Error("Did not connect to Child (Gateway or Plugin) Server!")
 
 				//Send Error information to Fenix
 				localInformationMessageChannel <- &gRPC.InformationMessage{
@@ -96,29 +68,33 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestIns
 					SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
 					MessageId:             generateUUID(),
 					MessageType:           gRPC.InformationMessage_ERROR,
-					Message:               "Problem to send TestInstruction to child-Gateway or Plugin",
+					Message:               "Did not connect to Child (Gateway or Plugin) Server!",
 					OrginalCreateDateTime: generaTimeStampUTC(),
 				}
 			} else {
 				logger.WithFields(logrus.Fields{
-					"ID":            "ef7f99b4-dcc0-4583-b16a-de3bf093880f",
+					"ID":            "4510ae97-1753-4d4c-a7f5-3987054bd969",
 					"addressToDial": addressToDial,
-				}).Debug("gRPC-send TestInstruction to child-Gateway or Plugin")
+				}).Debug("gRPC connection OK to child-gateway- or Plugin-Server!")
 
-				// Set New Database Status and Timestamp on TestInstruction
-				testInstructionToBeForwarded.Metadata.DbStatusEnum = gRPC.DbStatusEnum_TESTINSTRUCTION_SENT_TO_CHILD
-				testInstructionToBeForwarded.Metadata.LastUpdatedDateTimeInDB = time.Now().String()
+				// Creates a new gateway Client
+				gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
 
-				// Convert TestInstruction struct into a byte array
-				testInstructionByteArray, err := json.Marshal(testInstructionToBeForwarded)
+				// ChangeSenderId to this gatway's SenderId before sending the data forward
+				testInstructionToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.callingSystemId
+				testInstructionToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.callingSystemName
+
+				// Do gRPC-call to client gateway or Plugin
+				ctx := context.Background()
+				returnMessage, err := gatewayClient.SendTestInstructionTowardsPlugin(ctx, testInstructionToBeForwarded)
 				if err != nil {
 					logger.WithFields(logrus.Fields{
-						"ID":              "b6cbe063-65a1-4d79-90f1-9849fb830e16",
-						"testInstruction": testInstructionToBeForwarded,
-						"err":             err,
-					}).Error("Error when converting TestInstruction into a byte array, stopping futher processing of this TestInstruction")
+						"ID":            "4a0f0753-6394-4115-aa56-cf26c9354f83",
+						"returnMessage": returnMessage,
+						"error":         err,
+					}).Error("Problem to send TestInstruction to child-Gateway or Plugin")
 
-					//TSend Error information to Fenix
+					//Send Error information to Fenix
 					localInformationMessageChannel <- &gRPC.InformationMessage{
 						OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
 						OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
@@ -126,36 +102,29 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestIns
 						SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
 						MessageId:             generateUUID(),
 						MessageType:           gRPC.InformationMessage_ERROR,
-						Message:               "Error when converting TestInstruction into a byte array, stopping futher processing of this TestInstruction",
+						Message:               "Problem to send TestInstruction to child-Gateway or Plugin",
 						OrginalCreateDateTime: generaTimeStampUTC(),
 					}
-
 				} else {
+					logger.WithFields(logrus.Fields{
+						"ID":            "ef7f99b4-dcc0-4583-b16a-de3bf093880f",
+						"addressToDial": addressToDial,
+					}).Debug("gRPC-send TestInstruction to child-Gateway or Plugin")
 
-					// Save TestInstruction to local database, using local channel
-					returnChannel := make(chan dbResultMessage_struct)
+					// Set New Database Status and Timestamp on TestInstruction
+					testInstructionToBeForwarded.Metadata.DbStatusEnum = gRPC.DbStatusEnum_TESTINSTRUCTION_SENT_TO_CHILD
+					testInstructionToBeForwarded.Metadata.LastUpdatedDateTimeInDB = time.Now().String()
 
-					dbMessage := dbMessage_struct{
-						DB_WRITE,
-						"TestInstructions",
-						testInstructionToBeForwarded.TestInstructionGuid,
-						testInstructionByteArray,
-						returnChannel}
-
-					// Send message to Database
-					dbMessageQueue <- dbMessage
-
-					// Wait for result on result channel and then close returnChannel
-					returnDBMessage := <-returnChannel
-					close(returnChannel)
-
-					if returnDBMessage.err != nil {
+					// Convert TestInstruction struct into a byte array
+					testInstructionByteArray, err := json.Marshal(testInstructionToBeForwarded)
+					if err != nil {
 						logger.WithFields(logrus.Fields{
-							"ID":  "69e2f6bd-5ca3-4292-893d-075ff5ac79e0",
-							"err": err,
-						}).Error("Got an error when Saveing to local DB")
+							"ID":              "b6cbe063-65a1-4d79-90f1-9849fb830e16",
+							"testInstruction": testInstructionToBeForwarded,
+							"err":             err,
+						}).Error("Error when converting TestInstruction into a byte array, stopping futher processing of this TestInstruction")
 
-						//Send Error information to Fenix
+						//TSend Error information to Fenix
 						localInformationMessageChannel <- &gRPC.InformationMessage{
 							OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
 							OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
@@ -163,12 +132,50 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestIns
 							SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
 							MessageId:             generateUUID(),
 							MessageType:           gRPC.InformationMessage_ERROR,
-							Message:               "Got an error when Saveing to local DB",
+							Message:               "Error when converting TestInstruction into a byte array, stopping futher processing of this TestInstruction",
 							OrginalCreateDateTime: generaTimeStampUTC(),
 						}
 
-					}
+					} else {
 
+						// Save TestInstruction to local database, using local channel
+						returnChannel := make(chan dbResultMessage_struct)
+
+						dbMessage := dbMessage_struct{
+							DB_WRITE,
+							"TestInstructions",
+							testInstructionToBeForwarded.TestInstructionGuid,
+							testInstructionByteArray,
+							returnChannel}
+
+						// Send message to Database
+						dbMessageQueue <- dbMessage
+
+						// Wait for result on result channel and then close returnChannel
+						returnDBMessage := <-returnChannel
+						close(returnChannel)
+
+						if returnDBMessage.err != nil {
+							logger.WithFields(logrus.Fields{
+								"ID":  "69e2f6bd-5ca3-4292-893d-075ff5ac79e0",
+								"err": err,
+							}).Error("Got an error when Saveing to local DB")
+
+							//Send Error information to Fenix
+							localInformationMessageChannel <- &gRPC.InformationMessage{
+								OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+								OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+								SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+								SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+								MessageId:             generateUUID(),
+								MessageType:           gRPC.InformationMessage_ERROR,
+								Message:               "Got an error when Saveing to local DB",
+								OrginalCreateDateTime: generaTimeStampUTC(),
+							}
+
+						}
+
+					}
 				}
 			}
 		}

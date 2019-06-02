@@ -12,7 +12,7 @@ import (
 func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDB() {
 	var boldDBName string = "bolt.db"
 
-	db, err := bolt.Open(boldDBName, 0644, nil)
+	dbRef, err := bolt.Open(boldDBName, 0644, nil)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"ID":    "e1dbd9be-e790-41a5-9a54-a5cc1952219f",
@@ -21,7 +21,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDB() {
 	}
 
 	// If no errors then save reference to DB in gateway object
-	gatewayObject.gatewayCommonObjects.db = db
+	db = dbRef
 
 	// Start Database Engine as a go-routine
 	go gatewayObject.databaseEngine()
