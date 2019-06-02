@@ -30,15 +30,15 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 		// Wait for data comes from channel to transmit engine
 		informationMessageToBeForwarded := <-gatewayObject.informationMessageChannel
 
-		logger.WithFields(logrus.Fields{
-			"ID":                              "3103a0a5-ff25-4e85-9939-5e8d72e26ba3",
-			"informationMessageToBeForwarded": informationMessageToBeForwarded,
-		}).Debug("Received a new informationMessage from channel that shoud be forwarded")
-
 		// Check number of messages in channel
 		channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
 			"informationMessageChannel",
 			"01411586-7dab-4f34-809c-cdc8af8742c5")
+
+		logger.WithFields(logrus.Fields{
+			"ID":                              "3103a0a5-ff25-4e85-9939-5e8d72e26ba3",
+			"informationMessageToBeForwarded": informationMessageToBeForwarded,
+		}).Debug("Received a new informationMessage from channel that shoud be forwarded")
 
 		// ***** Send ExecutionLog to parent gateway Fenix using gRPC-call ****
 		addressToDial := getParentAddressAndPort()
@@ -55,6 +55,32 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 				err.Error(),
 				"Did not connect to Child (Gateway or Plugin) Server!",
 			)
+
+			// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
+			testExecutionLogMessageToBeForwardedByteArray, err := json.Marshal(*informationMessageToBeForwarded)
+
+			if err != nil {
+				// Error when Unmarshaling to []byte
+				LogErrorAndSendInfoToFenix(
+					"f0a53fd1-b7ee-4c27-b018-1e39a4cf9fa0",
+					gRPC.InformationMessage_FATAL,
+					"testExecutionLogMessageToBeForwarded",
+					informationMessageToBeForwarded.String(),
+					err.Error(),
+					"Error when converting 'informationMessageToBeForwarded' into a byte array, stopping futher processing of this TestInstruction",
+				)
+
+			} else {
+				// Marshaling to []byte OK
+
+				// Save message to local DB for later processing
+				_ = SaveMessageToLocalDB(
+					informationMessageToBeForwarded.MessageId,
+					testExecutionLogMessageToBeForwardedByteArray,
+					BUCKET_RESEND_INFOMESSAGES_TO_FENIX,
+					"42da4af3-a4eb-4498-95e8-e78b13d2365a",
+				)
+			}
 		} else {
 			//Connection OK
 
@@ -75,10 +101,10 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 				// Marshaling to []byte OK
 
 				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
+				_ = SaveMessageToLocalDB(
 					informationMessageToBeForwarded.MessageId,
 					informationMessageToBeForwardedByteArray,
-					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+					BUCKET_RESEND_INFOMESSAGES_TO_FENIX,
 					"8672d03e-4d63-4126-b5ea-8f2c80c44a98",
 				)
 
@@ -104,10 +130,10 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 					)
 
 					// Save message to local DB for later processing
-					SaveMessageToLocalDB(
+					_ = SaveMessageToLocalDB(
 						informationMessageToBeForwarded.MessageId,
 						informationMessageToBeForwardedByteArray,
-						BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+						BUCKET_RESEND_INFOMESSAGES_TO_FENIX,
 						"9782b4bc-afb9-424b-9dc4-43e6f47011b4",
 					)
 

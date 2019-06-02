@@ -67,14 +67,14 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 					"testExecutionLogMessageToBeForwarded",
 					testExecutionLogMessageToBeForwarded.String(),
 					err.Error(),
-					"Error when converting testExecutionLogMessageToBeForwarded into a byte array, stopping futher processing of this TestInstruction",
+					"Error when converting 'testExecutionLogMessageToBeForwarded' into a byte array, stopping futher processing of this TestInstruction",
 				)
 
 			} else {
 				// Marshaling to []byte OK
 
 				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
+				_ = SaveMessageToLocalDB(
 					testExecutionLogMessageToBeForwarded.LogMessageId,
 					testExecutionLogMessageToBeForwardedByteArray,
 					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
@@ -84,27 +84,30 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 
 		} else {
 			//Connection OK
-			logger.WithFields(logrus.Fields{
-				"ID":            "9f72b39f-34c7-417c-bba0-0e0630a4f7a1",
-				"addressToDial": addressToDial,
-			}).Debug("gRPC connection OK to parent-gateway/Fenix!")
 
 			// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-			testExecutionLogMessageToBeForwardedByteArray, err := json.Marshal(*testExecutionLogMessageToBeForwarded)
+			informationMessageToBeForwardedByteArray, err := json.Marshal(*testExecutionLogMessageToBeForwarded)
 
 			if err != nil {
 				// Error when Unmarshaling to []byte
 				LogErrorAndSendInfoToFenix(
-					"20ba7b7d-a27e-4bb1-a846-3f7cde8ecf04",
+					"aa15d9e4-0dc5-4e04-9c21-7a982e1030bd",
 					gRPC.InformationMessage_FATAL,
-					"testExecutionLogMessageToBeForwarded",
+					"informationMessageToBeForwarded",
 					testExecutionLogMessageToBeForwarded.String(),
 					err.Error(),
-					"Error when converting testExecutionLogMessageToBeForwarded into a byte array, stopping futher processing of this TestInstruction",
+					"Error when converting 'informationMessageToBeForwarded' into a byte array, stopping futher processing of this TestInstruction",
 				)
-
 			} else {
 				// Marshaling to []byte OK
+
+				// Save message to local DB for later processing
+				_ = SaveMessageToLocalDB(
+					testExecutionLogMessageToBeForwarded.LogMessageId,
+					informationMessageToBeForwardedByteArray,
+					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
+					"ec1b7180-3501-42bb-a138-9653c53e1673",
+				)
 
 				// Creates a new gateway Client
 				gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
@@ -119,28 +122,28 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				if err != nil {
 					// Error when rending gRPC to parent
 					LogErrorAndSendInfoToFenix(
-						"59939fa7-22b6-4595-a70b-816416cc228f",
+						"5c967203-e5ef-45b1-bab5-521c34555d07",
 						gRPC.InformationMessage_WARNING,
 						"returnMessage",
 						returnMessage.String(),
 						err.Error(),
-						"Problem to send 'testExecutionLogMessageToBeForwarded' to parent-Gateway or Fenix",
+						"Problem to send 'informationMessageToBeForwarded' to parent-Gateway or Fenix",
 					)
 
 					// Save message to local DB for later processing
-					SaveMessageToLocalDB(
+					_ = SaveMessageToLocalDB(
 						testExecutionLogMessageToBeForwarded.LogMessageId,
-						testExecutionLogMessageToBeForwardedByteArray,
+						informationMessageToBeForwardedByteArray,
 						BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
-						"421438e6-a99f-407b-b338-51cb69d061e2",
+						"76c35bba-6655-4381-81ff-fd55dbab57ab",
 					)
 
 				} else {
 					// gRPC Send message OK
 					logger.WithFields(logrus.Fields{
-						"ID":            "fed7b18e-5cd5-485c-b14d-0b90ff720feb",
+						"ID":            "9f1b1a43-98f0-4d65-b91a-928cb0d83a4c",
 						"addressToDial": addressToDial,
-					}).Debug("gRPC-send OK of 'testExecutionLogMessageToBeForwarded' to Parent-Gateway or Fenix")
+					}).Debug("gRPC-send OK of 'informationMessageToBeForwarded' to Parent-Gateway or Fenix")
 
 					// TODO Check for messages to Resend (If so then put them on channel)
 

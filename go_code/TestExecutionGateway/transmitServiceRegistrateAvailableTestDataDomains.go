@@ -78,7 +78,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistra
 				// Marshaling to []byte OK
 
 				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
+				_ = SaveMessageToLocalDB(
 					supportedTestDataDomainsMessageToBeForwarded.MessageId,
 					supportedTestDataDomainsMessageToBeForwardedByteArray,
 					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
@@ -127,7 +127,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForRegistra
 					)
 
 					// Save message to local DB for later processing
-					SaveMessageToLocalDB(
+					_ = SaveMessageToLocalDB(
 						supportedTestDataDomainsMessageToBeForwarded.MessageId,
 						supportedTestDataDomainsMessageToBeForwardedByteArray,
 						BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,

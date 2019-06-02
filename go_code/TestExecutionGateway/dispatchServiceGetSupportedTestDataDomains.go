@@ -74,7 +74,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 				// Marshaling to []byte OK
 
 				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
+				_ = SaveMessageToLocalDB(
 					getSupportedTestDomainsToBeForwarded.MessageId,
 					testExecutionLogMessageToBeForwardedByteArray,
 					BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN,
@@ -128,7 +128,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 					)
 
 					// Save message to local DB for later processing
-					SaveMessageToLocalDB(
+					_ = SaveMessageToLocalDB(
 						getSupportedTestDomainsToBeForwarded.MessageId,
 						testExecutionLogMessageToBeForwardedByteArray,
 						BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN,

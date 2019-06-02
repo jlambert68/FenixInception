@@ -71,7 +71,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 				// Marshaling to []byte OK
 
 				// Save message to local DB for later processing
-				SaveMessageToLocalDB(
+				_ = SaveMessageToLocalDB(
 					testInstructionTimeOutMessageToBeForwarded.MessageId,
 					testInstructionTimeOutMessageToBeForwardedByteArray,
 					BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,
@@ -119,7 +119,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 					)
 
 					// Save message to local DB for later processing
-					SaveMessageToLocalDB(
+					_ = SaveMessageToLocalDB(
 						testInstructionTimeOutMessageToBeForwarded.MessageId,
 						testInstructionTimeOutMessageToBeForwardedByteArray,
 						BUCKET_RESEND_LOG_MESSAGES_TO_FENIX,

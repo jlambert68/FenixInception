@@ -174,7 +174,7 @@ func SaveMessageToLocalDB(
 	valueToStoreInDB []byte,
 	bucket string,
 	id string,
-) {
+) (saveOK bool) {
 
 	// Create return channel for save-status from DB
 	returnChannel := make(chan dbResultMessage_struct)
@@ -203,7 +203,9 @@ func SaveMessageToLocalDB(
 			returnDBMessage.err.Error(),
 			"Got an error when Saveing to local DB, Stopping Gateway",
 		)
+		return false
 	}
+	return true
 }
 
 // *********************************************************************************

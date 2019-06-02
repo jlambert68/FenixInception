@@ -100,6 +100,7 @@ const BUCKET_CLIENTS = "Clients"
 const BUCKET_RESEND_INFOMESSAGES_TO_FENIX = "ReSendInfoMessages"
 const BUCKET_RESEND_LOG_MESSAGES_TO_FENIX = "ReSendLogMessages"
 const BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN = "ReSendGetTestDataDomainsMessages"
+const BUCKET_TEST_INSTRUCTIONS = "TestInstructions"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPort_struct
