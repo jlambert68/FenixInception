@@ -7,27 +7,30 @@ import (
 	"time"
 )
 
-func (gatewayObject *gatewayTowardsPluginObject_struct) InitLogger(filename string) {
-	gatewayObject.logger = logrus.StandardLogger()
+func initLogger(filename string) {
+	logger = logrus.StandardLogger()
 
-	switch LoggingLevel {
+	switch gatewayConfig.loggingLevel.loggingLevel {
 
 	case logrus.DebugLevel:
-		log.Println("'common_config.LoggingLevel': ", LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", gatewayConfig.loggingLevel.loggingLevel)
 
 	case logrus.InfoLevel:
-		log.Println("'common_config.LoggingLevel': ", LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", gatewayConfig.loggingLevel.loggingLevel)
 
 	case logrus.WarnLevel:
-		log.Println("'common_config.LoggingLevel': ", LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", gatewayConfig.loggingLevel.loggingLevel)
+
+	case logrus.FatalLevel:
+		log.Println("'common_config.LoggingLevel': ", gatewayConfig.loggingLevel.loggingLevel)
 
 	default:
-		log.Println("Not correct value for debugging-level, this was used: ", common_config.LoggingLevel)
+		log.Println("Not correct value for debugging-level, this was used: ", gatewayConfig.loggingLevel.loggingLevel)
 		os.Exit(0)
 
 	}
 
-	logrus.SetLevel(LoggingLevel)
+	logrus.SetLevel(gatewayConfig.loggingLevel.loggingLevel)
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,

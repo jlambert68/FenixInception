@@ -66,8 +66,7 @@ func TestExecution_main() {
 
 	defer GatewayObject.cleanup()
 
-	// Init logger
-	GatewayObject.InitLogger("")
+
 
 
 	// At startup Register Gateway to Parent Gateway/Fenix

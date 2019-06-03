@@ -88,7 +88,7 @@ type firstClientPort_struct struct {
 
 // The logging level that the gateway will use during runtime
 type loggingLevel_struct struct {
-	loggingLevel string
+	loggingLevel logrus.Level
 }
 
 //

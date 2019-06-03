@@ -1,6 +1,7 @@
 package TestExecutionGateway
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
@@ -68,6 +69,106 @@ func getParentAddressAndPort() (addressAndPort string) {
 
 	return addressAndPort
 
+}
+
+// *******************************************************************
+// Replace Parent gateway/Fenix IP-address & port info in memory object if previous connection differs from config-file
+//
+func updateMemoryAddressForParentAddressInfo() {
+
+	var parentAddress gRPC.ReRegisterToGatewayMessage
+	var err error
+
+	// Create the channel that the client address should be sent back on
+	returnParentAddressChannel := make(chan dbResultMessage_struct)
+
+	// Get Clients address
+	dbMessage := dbMessage_struct{
+		DB_READ,
+		BUCKET_PARENT_ADDRESS,
+		BUCKET_KEY_PARENT_ADDRESS,
+		nil,
+		returnParentAddressChannel}
+
+	// Send Read message to database to receive address
+	dbMessageQueue <- dbMessage
+
+	// Wait for address from channel, then close the channel
+	parentAddressByteArray := <-returnParentAddressChannel
+	close(returnParentAddressChannel)
+
+	// Convert saved json object into Go-struct
+	err = json.Unmarshal(parentAddressByteArray.value, &parentAddress)
+	if err != nil {
+		// Problem with unmarshal the json object
+		logger.WithFields(logrus.Fields{
+			"ID":                      "261a6391-abc0-4d9f-a59f-3d0a67e5e52c",
+			"parentAddressByteArray,": parentAddressByteArray,
+		}).Error("Can't unmarshal gRPCClients address object from database")
+
+		// Send Error information to Fenix
+		localInformationMessageChannel <- &gRPC.InformationMessage{
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			MessageId:             generateUUID(),
+			MessageType:           gRPC.InformationMessage_ERROR,
+			Message:               "Can't unmarshal gRPCClients address object from database",
+			OrginalCreateDateTime: generaTimeStampUTC(),
+		}
+	} else {
+
+		// If Saved data differs from memory data then change in memory object
+		// First check ip address
+		if parentAddress.GatewayAddress != gatewayConfig.parentgRPCAddress.parentGatewayServer_address {
+			logger.WithFields(logrus.Fields{
+				"ID":                           "560c2b17-c71e-45dd-9a38-a3dfd1a2bbd6",
+				"parentAddress.GatewayAddress": parentAddress.GatewayAddress,
+				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_address": gatewayConfig.parentgRPCAddress.parentGatewayServer_address,
+			}).Warning("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
+
+			//Send Warning  information to Fenix
+			localInformationMessageChannel <- &gRPC.InformationMessage{
+				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+				MessageId:             generateUUID(),
+				MessageType:           gRPC.InformationMessage_WARNING,
+				Message:               "Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
+				OrginalCreateDateTime: generaTimeStampUTC(),
+			}
+
+			// Change Address in memory object
+			gatewayConfig.parentgRPCAddress.parentGatewayServer_address = parentAddress.GatewayAddress
+		}
+
+		// Second check port
+		if parentAddress.GatewayPort != gatewayConfig.parentgRPCAddress.parentGatewayServer_port {
+			logger.WithFields(logrus.Fields{
+				"ID":                        "50a3b7ad-6631-42c5-ab5c-777e04ad9728",
+				"parentAddress.GatewayPort": parentAddress.GatewayPort,
+				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_port": gatewayConfig.parentgRPCAddress.parentGatewayServer_port,
+			}).Warning("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
+
+			//Send Warning information to Fenix
+			localInformationMessageChannel <- &gRPC.InformationMessage{
+				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
+				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
+				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
+				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+				MessageId:             generateUUID(),
+				MessageType:           gRPC.InformationMessage_WARNING,
+				Message:               "Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
+				OrginalCreateDateTime: generaTimeStampUTC(),
+			}
+
+			// Change Port in memory object
+			gatewayConfig.parentgRPCAddress.parentGatewayServer_port = parentAddress.GatewayPort
+		}
+
+	}
 }
 
 // *********************************************************************************
