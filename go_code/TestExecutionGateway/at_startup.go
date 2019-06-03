@@ -31,13 +31,11 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) tryToRegisterGatewayAtPar
 		}
 	}
 
-	//  end message to all known clients that they must reRegister themself to this sgateway server
+	//  TODO end message to all known clients that they must reRegister themself to this sgateway server
 	// Run goroutine and use queue to count down registrations
 
 	//  Regiater this gateway client to parent gateway
 }
-
-// TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
 
 // *******************************************************************
 // Register this gateway/client at parent gateway/Fenix
@@ -53,12 +51,9 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) registerThisGatewayAtPare
 	// Information sent to parent gateway/Fenix
 	registerClientAddressRequest := gRPC.RegisterClientAddressRequest{
 		GRPCVersion:            gRPC.CurrentVersionEnum_VERSION_0_1_0,
-		CallingSystemId:        gatewayConfig.gatewayIdentification.callingSystemId,
-		CallingSystemName:      gatewayConfig.gatewayIdentification.callingSystemName,
-		CallingSystemIpAddress: gatewayConfig.gatewayIdentification.callingSystemIpAddress}
-
-	// If no port received from parent Gateway/Fenix then port should be cleared
-	incomingPortForCallsFromParentGateway = ""
+		CallingSystemId:        gatewayConfig.gatewayIdentification.gatewayId,
+		CallingSystemName:      gatewayConfig.gatewayIdentification.gatewayName,
+		CallingSystemIpAddress: gatewayConfig.gatewayIdentification.gatewayIpAddress}
 
 	// Set up connection to Parent Gateway/Fenix Server
 	remoteGatewayServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
@@ -110,9 +105,17 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) registerThisGatewayAtPare
 			}
 		}
 
-		// Take care of port-information sent back from Parent Gateway/Fenix
-		incomingPortForCallsFromParentGateway = registerClientAddressResponse.ClientPort
-		// TODO Save port in DB for use if gateway restarts
+		// Save Port to memory object
+		gatewayConfig.parentgRPCAddress.parentGatewayServer_port = registerClientAddressResponse.ClientPort
+
+		// Update address info in local database
+		updateDatabaseFromMemoryForParentAddressInfo(gRPC.ReRegisterToGatewayMessage{
+			GatewayAddress:  gatewayConfig.parentgRPCAddress.parentGatewayServer_address,
+			GatewayPort:     gatewayConfig.parentgRPCAddress.parentGatewayServer_port,
+			GatewayId:       gatewayConfig.parentgRPCAddress.parentGatewayId,
+			GatewayName:     gatewayConfig.parentgRPCAddress.parentGatewayName,
+			CreatedDateTime: generaTimeStampUTC(),
+		})
 
 	}
 	return true, nil
@@ -120,20 +123,70 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) registerThisGatewayAtPare
 }
 
 // *******************************************************************
+// Cleanup before closing down
+//
+var cleanupProcessed bool = false
+
+func cleanup() {
+
+	if cleanupProcessed == false {
+
+		cleanupProcessed = true
+
+		// CLose database
+		db.Close()
+		logger.WithFields(logrus.Fields{
+			"ID": "4f2f77ba-d105-47bc-8120-6b2874faa98d",
+		}).Info("Closing local database")
+
+		// Close gRPC connection to Parent gateway/Fenix
+		registerGatewayTowardsFenixServer.GracefulStop()
+
+		logger.WithFields(logrus.Fields{
+			"ID": "ed85f1c6-98d9-4c08-bf52-2364a42a5bad",
+		}).Info("Gracefull stop for: 'registerGatewayTowardsFenixServer'")
+
+		// Close gRPC connection to Children
+		registerGatewayTowardsPluginerver.GracefulStop()
+
+		logger.WithFields(logrus.Fields{
+			"ID": "a7ee0eea-3bf2-44b7-a5e1-942a15d0d7fd",
+		}).Info("Gracefull stop for: 'registerGatewayTowardsPluginerver'")
+
+		// Stop listening towards parent gateway/Fenix
+		gatewayTowardsFenixListener.Close()
+		logger.WithFields(logrus.Fields{
+			"ID": "6fe1108d-31af-4db0-a70a-6bf5fe02b6f8",
+		}).Info("Stop listening, from Parent, on port: " + gatewayConfig.gatewayIdentification.gatewaParentCallOnThisPort)
+
+		// Stop listening towards clients
+		gatewayTowardsFenixListener.Close()
+		logger.WithFields(logrus.Fields{
+			"ID": "35b35f32-7e5b-420c-8544-072e868e5bbb",
+		}).Info("Stop listening, from Children, on port: " + gatewayConfig.gatewayIdentification.gatewayChildrenCallOnThisPort)
+
+	}
+}
+
+// *******************************************************************
 // Start all Services
 //
 func startAllServices() {
 
+	// Cleanup all gRPC connections
+	defer cleanup()
+
 	// Ensure that all services don't start before everything has been started
 	gatewayMustStopProcessing = true
-
-	// Init logger
-	initLogger("")
 
 	// Read 'gatewayConfig.toml' for config parameters
 	processConfigFile()
 
+	// Init logger
+	initLogger("localLogFile")
+
 	// Initiate Database
+	initiateDB("") // Use default database file name
 
 	// Start 'dispatchEngineForTestInstructions'
 	gatewayTowardsPluginObject.initiateDispatchEngineForTestInstructiona()
@@ -156,7 +209,12 @@ func startAllServices() {
 	// Start all services at the same time
 	gatewayMustStopProcessing = false
 
+	// Update Memory information about parent address and port with that saved in database, database overrule config-file
+	updateMemoryAddressForParentAddressInfo()
+
 	// Try to Register this Gateway At Parent
 	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
 
+	// Ask clients to ReRegister them self to this gateway
+	// TODO Make all Clients ReRegister them self
 }

@@ -8,7 +8,7 @@ import (
 )
 
 // ********************************************************************************************
-// Call from parent Gateway/Fenix for incoming TestInstructions that should be sent towards Plugin
+// Call from parent Gateway/Fenix that this gateway should register itself to parent
 //
 func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAddress(ctx context.Context, reRegisterToGatewayMessage *gRPC.ReRegisterToGatewayMessage) (*gRPC.AckNackResponse, error) {
 
@@ -30,10 +30,10 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAd
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:             generateUUID(),
 			MessageType:           gRPC.InformationMessage_ERROR,
 			Message:               "Error when converting reRegisterToGatewayMessage into a byte array, stopping futher processing of Reregistration.",
@@ -72,10 +72,10 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAd
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:             generateUUID(),
 			MessageType:           gRPC.InformationMessage_ERROR,
 			Message:               "Got an error when Saveing to local DB",

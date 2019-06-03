@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"strconv"
 	"time"
 )
 
@@ -65,14 +66,14 @@ func getParentAddressAndPort() (addressAndPort string) {
 	// Get Parent-info object from Clients-memory-object
 	ParentAddressAndPortInfo := gatewayConfig.parentgRPCAddress
 
-	addressAndPort = ParentAddressAndPortInfo.parentGatewayServer_address + ParentAddressAndPortInfo.parentGatewayServer_port
+	addressAndPort = ParentAddressAndPortInfo.parentGatewayServer_address + ":" + strconv.Itoa(ParentAddressAndPortInfo.parentGatewayServer_port)
 
 	return addressAndPort
 
 }
 
 // *******************************************************************
-// Replace Parent gateway/Fenix IP-address & port info in memory object if previous connection differs from config-file
+// Replace Parent gateway/Fenix IP-address & port info in memory object if previous connection, saved in database, differs from config-file
 //
 func updateMemoryAddressForParentAddressInfo() {
 
@@ -104,17 +105,17 @@ func updateMemoryAddressForParentAddressInfo() {
 		logger.WithFields(logrus.Fields{
 			"ID":                      "261a6391-abc0-4d9f-a59f-3d0a67e5e52c",
 			"parentAddressByteArray,": parentAddressByteArray,
-		}).Error("Can't unmarshal gRPCClients address object from database")
+		}).Error("Can't unmarshal gRPCParent-address object from database")
 
-		// Send Error information to Fenix
+		// Send FATAL information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_ERROR,
-			Message:               "Can't unmarshal gRPCClients address object from database",
+			MessageType:           gRPC.InformationMessage_FATAL,
+			Message:               "Can't unmarshal gRPCParent-address object from database",
 			OrginalCreateDateTime: generaTimeStampUTC(),
 		}
 	} else {
@@ -126,16 +127,16 @@ func updateMemoryAddressForParentAddressInfo() {
 				"ID":                           "560c2b17-c71e-45dd-9a38-a3dfd1a2bbd6",
 				"parentAddress.GatewayAddress": parentAddress.GatewayAddress,
 				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_address": gatewayConfig.parentgRPCAddress.parentGatewayServer_address,
-			}).Warning("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
+			}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 			//Send Warning  information to Fenix
 			localInformationMessageChannel <- &gRPC.InformationMessage{
-				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+				OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+				OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+				SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+				SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 				MessageId:             generateUUID(),
-				MessageType:           gRPC.InformationMessage_WARNING,
+				MessageType:           gRPC.InformationMessage_INFO,
 				Message:               "Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
 				OrginalCreateDateTime: generaTimeStampUTC(),
 			}
@@ -150,14 +151,14 @@ func updateMemoryAddressForParentAddressInfo() {
 				"ID":                        "50a3b7ad-6631-42c5-ab5c-777e04ad9728",
 				"parentAddress.GatewayPort": parentAddress.GatewayPort,
 				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_port": gatewayConfig.parentgRPCAddress.parentGatewayServer_port,
-			}).Warning("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
+			}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 			//Send Warning information to Fenix
 			localInformationMessageChannel <- &gRPC.InformationMessage{
-				OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-				OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-				SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-				SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+				OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+				OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+				SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+				SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 				MessageId:             generateUUID(),
 				MessageType:           gRPC.InformationMessage_WARNING,
 				Message:               "Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
@@ -168,6 +169,39 @@ func updateMemoryAddressForParentAddressInfo() {
 			gatewayConfig.parentgRPCAddress.parentGatewayServer_port = parentAddress.GatewayPort
 		}
 
+	}
+}
+
+// *******************************************************************
+// Replace Parent gateway/Fenix IP-address & port info in databse, from Memory if previous connection differs from memory object
+//
+
+func updateDatabaseFromMemoryForParentAddressInfo(reRegisterToGatewayMessage gRPC.ReRegisterToGatewayMessage) {
+
+	// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
+	reRegisterToGatewayMessageToSavedAsByteArray, err := json.Marshal(reRegisterToGatewayMessage)
+
+	if err != nil {
+		// Error when Unmarshaling to []byte
+		LogErrorAndSendInfoToFenix(
+			"6366259e-a206-42b1-b99a-d4a18a56da96",
+			gRPC.InformationMessage_FATAL,
+			"reRegisterToGatewayMessage",
+			reRegisterToGatewayMessage.String(),
+			err.Error(),
+			"Error when converting 'reRegisterToGatewayMessage' into a byte array, stopping processing and stopping Gateway",
+		)
+
+	} else {
+		// Marshaling to []byte OK
+
+		// Save message to local DB for later processing
+		_ = SaveMessageToLocalDB(
+			BUCKET_KEY_PARENT_ADDRESS,
+			reRegisterToGatewayMessageToSavedAsByteArray,
+			BUCKET_PARENT_ADDRESS,
+			"f1ae7544-a190-4e36-b527-5abdd86c0c61",
+		)
 	}
 }
 
@@ -200,10 +234,10 @@ func LogErrorAndSendInfoToFenix(
 
 		// Send information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:             generateUUID(),
 			MessageType:           gRPC.InformationMessage_INFO,
 			Message:               message,
@@ -220,10 +254,10 @@ func LogErrorAndSendInfoToFenix(
 
 		// Send Warning information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:             generateUUID(),
 			MessageType:           gRPC.InformationMessage_WARNING,
 			Message:               message,
@@ -240,10 +274,10 @@ func LogErrorAndSendInfoToFenix(
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.callingSystemId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.callingSystemName,
-			SenderId:              gatewayConfig.gatewayIdentification.callingSystemId,
-			SenderName:            gatewayConfig.gatewayIdentification.callingSystemName,
+			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:             generateUUID(),
 			MessageType:           gRPC.InformationMessage_ERROR,
 			Message:               message,

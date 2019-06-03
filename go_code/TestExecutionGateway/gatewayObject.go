@@ -57,33 +57,38 @@ type tomlConfig_struct struct {
 	gatewayIdentification gatewayIdentification_struct `toml:"gatewayIdentification"`
 	systemDomain          systemDomain_struct          `toml:"systemDomain"`
 	parentgRPCAddress     parentgRPCAddress_struct     `toml:"parentgRPCAddress"`
-	firstClientPort       firstClientPort_struct       `toml:"firstClientPort"`
+	initialClientPort     initialClientPort_struct     `toml:"initialClientPort"`
 	loggingLevel          loggingLevel_struct          `toml:"loggingLevel"`
 }
 
 // local gateway information for toml-file
 type gatewayIdentification_struct struct {
-	callingSystemId        string
-	callingSystemName      string
-	callingSystemIpAddress string
+	gatewayId                     string
+	gatewayName                   string
+	gatewayIpAddress              string
+	gatewaParentCallOnThisPort    int
+	gatewayChildrenCallOnThisPort int
 }
 
 // Ovelall domain for toml-file, Custody Cash, Compis etc.
 type systemDomain_struct struct {
-	callingSystemDomainId   string
-	callingSystemDomainName string
+	gatewayDomainId   string
+	gatewayDomainName string
 }
 
 // Parents address informaiton for toml-file
 type parentgRPCAddress_struct struct {
 	parentGatewayId             string
+	parentGatewayName           string
 	parentGatewayServer_address string
-	parentGatewayServer_port    string
+	parentGatewayServer_port    int
+	createdDateTime             string
 }
 
-// The first client must listen on this port, toml-file
-type firstClientPort_struct struct {
-	firstClientPort string
+// The first client, for every ip address, must listen on this port, toml-file
+// Every aftercoming client , on same ip address, will add +1 to port number
+type initialClientPort_struct struct {
+	initialClientPort int
 }
 
 // The logging level that the gateway will use during runtime

@@ -258,7 +258,7 @@ message RegisterClientAddressRequest {
 
 // Prefered Port, where the client will called upon
 message RegisterClientAddressResponse {
-    string ClientPort = 1; //The port where the client will be called upon
+    int32 ClientPort = 1; //The port where the client will be called upon
     bool acknack = 2; // True=Ack, False=Nack
     string comments = 3; //Comments if needed
 }

@@ -120,8 +120,8 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 					gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					informationMessageToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.callingSystemId
-					informationMessageToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.callingSystemName
+					informationMessageToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.gatewayId
+					informationMessageToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.gatewayName
 
 					// Do gRPC-call to client gateway or Fenix
 					ctx := context.Background()

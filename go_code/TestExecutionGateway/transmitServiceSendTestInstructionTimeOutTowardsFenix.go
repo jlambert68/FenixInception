@@ -111,8 +111,8 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTest
 					gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					testInstructionTimeOutMessageToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.callingSystemId
-					testInstructionTimeOutMessageToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.callingSystemName
+					testInstructionTimeOutMessageToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.gatewayId
+					testInstructionTimeOutMessageToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.gatewayName
 
 					// Do gRPC-call to client gateway or Fenix
 					ctx := context.Background()

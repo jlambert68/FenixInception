@@ -12,9 +12,6 @@ var (
 	remoteGatewayServerConnection *grpc.ClientConn
 	grpcClient                    gRPC.GatewayTowardsFenixClient
 
-	// Address of Parent Gateway/Fenix
-	parent_address_to_dial string = ParentGatewayServer_address + ParentGatewayServer_port
-
 	// Port where Parent Gateway/Fenix will call this gateway/client
 	incomingPortForCallsFromParentGateway string
 )

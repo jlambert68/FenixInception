@@ -9,28 +9,37 @@ import (
 // ********************************************************************************************
 // Open the database file in same directory as the executable file
 //
-func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDB() {
-	var boldDBName string = "bolt.db"
+func initiateDB(localDBFile string) {
+	var boltDBName string = "bolt.db"
+	var boltDBNameUsed string
 
-	dbRef, err := bolt.Open(boldDBName, 0644, nil)
+	if localDBFile == "" {
+		// No database name attached then use predined name
+		boltDBNameUsed = boltDBName
+	} else {
+		// Database name atteched
+		boltDBNameUsed = localDBFile
+	}
+
+	dbRef, err := bolt.Open(boltDBNameUsed, 0644, nil)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"ID":    "e1dbd9be-e790-41a5-9a54-a5cc1952219f",
 			"error": err,
-		}).Fatal("Error when trying to open databse: '" + boldDBName + "'")
+		}).Fatal("Error when trying to open databse: '" + boltDBNameUsed + "'")
 	}
 
 	// If no errors then save reference to DB in gateway object
 	db = dbRef
 
 	// Start Database Engine as a go-routine
-	go gatewayObject.databaseEngine()
+	go databaseEngine()
 }
 
 // ********************************************************************************************
 // Do Reads and Writes to local database
 //
-func (gatewayObject *gatewayTowardsPluginObject_struct) databaseEngine() {
+func databaseEngine() {
 
 	var err error
 

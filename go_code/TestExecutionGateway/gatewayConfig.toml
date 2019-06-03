@@ -3,9 +3,11 @@
 
 # Identification for the gateway
 [gatewayIdentification]
-callingSystemId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
-callingSystemName = "Gateway #1"
-callingSystemIpAddress = "127.0.0.1"
+gatewayId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
+gatewayName = "Gateway #1"
+gatewayIpAddress = "127.0.0.1"
+gatewaParentCallOnThisPort = 7000
+gatewayChildrenCallOnThisPort = 7001
 
 # Identification of the the domain that this gateway belongs to
 [systemDomain]
@@ -15,12 +17,14 @@ callingSystemDomainName = "Custody Cash"
 # Initial IP and Port for Parent Gateway/Fenix.
 [parentgRPCAddress]
 parentGatewayId ="42744278-1128-4eec-8b75-8817516ca09b"
+parentGatewayName = "This is the name of the Parent  Gateway"
 parentGatewayServer_address = "127.0.0.1"
-parentGatewayServer_port = ":5999"
+parentGatewayServer_port = 5999
+createdDateTime = ""
 
-# The first port in port range for child-gateways or Plugins
-[firstClientPort]
-firstClientPort = "6660"
+# The first port in port range for child-gateways or Plugins, for each ip address
+[initialClientPort]
+initialClientPort = 6660
 
 # The logging level. Inly yse Debug for finding error otherwise use Info as standard logging level
 [loggingLevel]
