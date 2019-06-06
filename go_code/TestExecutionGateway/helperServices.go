@@ -66,7 +66,7 @@ func getParentAddressAndPort() (addressAndPort string) {
 	// Get Parent-info object from Clients-memory-object
 	ParentAddressAndPortInfo := gatewayConfig.parentgRPCAddress
 
-	addressAndPort = ParentAddressAndPortInfo.parentGatewayServer_address + ":" + strconv.Itoa(ParentAddressAndPortInfo.parentGatewayServer_port)
+	addressAndPort = ParentAddressAndPortInfo.parentGatewayServer_address + ":" + strconv.FormatInt(int64(ParentAddressAndPortInfo.parentGatewayServer_port), 10)
 
 	return addressAndPort
 
@@ -109,14 +109,16 @@ func updateMemoryAddressForParentAddressInfo() {
 
 		// Send FATAL information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
-			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_FATAL,
-			Message:               "Can't unmarshal gRPCParent-address object from database",
-			OrginalCreateDateTime: generaTimeStampUTC(),
+			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			MessageId:                generateUUID(),
+			MessageType:              gRPC.InformationMessage_FATAL,
+			Message:                  "Can't unmarshal gRPCParent-address object from database",
+			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 		}
 	} else {
 
@@ -129,16 +131,18 @@ func updateMemoryAddressForParentAddressInfo() {
 				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_address": gatewayConfig.parentgRPCAddress.parentGatewayServer_address,
 			}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
-			//Send Warning  information to Fenix
+			//Send Warning information to Fenix
 			localInformationMessageChannel <- &gRPC.InformationMessage{
-				OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
-				OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
-				SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
-				SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
-				MessageId:             generateUUID(),
-				MessageType:           gRPC.InformationMessage_INFO,
-				Message:               "Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
-				OrginalCreateDateTime: generaTimeStampUTC(),
+				OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
+				OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
+				SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
+				SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+				MessageId:                generateUUID(),
+				MessageType:              gRPC.InformationMessage_INFO,
+				Message:                  "Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
+				OrginalCreateDateTime:    generaTimeStampUTC(),
+				OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
+				OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 			}
 
 			// Change Address in memory object
@@ -155,14 +159,16 @@ func updateMemoryAddressForParentAddressInfo() {
 
 			//Send Warning information to Fenix
 			localInformationMessageChannel <- &gRPC.InformationMessage{
-				OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
-				OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
-				SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
-				SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
-				MessageId:             generateUUID(),
-				MessageType:           gRPC.InformationMessage_WARNING,
-				Message:               "Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
-				OrginalCreateDateTime: generaTimeStampUTC(),
+				OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
+				OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
+				SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
+				SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+				MessageId:                generateUUID(),
+				MessageType:              gRPC.InformationMessage_WARNING,
+				Message:                  "Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
+				OrginalCreateDateTime:    generaTimeStampUTC(),
+				OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
+				OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 			}
 
 			// Change Port in memory object
@@ -176,20 +182,20 @@ func updateMemoryAddressForParentAddressInfo() {
 // Replace Parent gateway/Fenix IP-address & port info in databse, from Memory if previous connection differs from memory object
 //
 
-func updateDatabaseFromMemoryForParentAddressInfo(reRegisterToGatewayMessage gRPC.ReRegisterToGatewayMessage) {
+func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(gatewayIdentification gatewayIdentification_struct) {
 
 	// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-	reRegisterToGatewayMessageToSavedAsByteArray, err := json.Marshal(reRegisterToGatewayMessage)
+	reRegisterToGatewayMessageToSavedAsByteArray, err := json.Marshal(gatewayIdentification)
 
 	if err != nil {
 		// Error when Unmarshaling to []byte
 		LogErrorAndSendInfoToFenix(
 			"6366259e-a206-42b1-b99a-d4a18a56da96",
 			gRPC.InformationMessage_FATAL,
-			"reRegisterToGatewayMessage",
-			reRegisterToGatewayMessage.String(),
+			"gatewayIdentification",
+			"no data available...",
 			err.Error(),
-			"Error when converting 'reRegisterToGatewayMessage' into a byte array, stopping processing and stopping Gateway",
+			"Error when converting 'gatewayIdentification' into a byte array, stopping processing and stopping Gateway",
 		)
 
 	} else {
@@ -234,14 +240,16 @@ func LogErrorAndSendInfoToFenix(
 
 		// Send information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
-			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_INFO,
-			Message:               message,
-			OrginalCreateDateTime: generaTimeStampUTC(),
+			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			MessageId:                generateUUID(),
+			MessageType:              gRPC.InformationMessage_INFO,
+			Message:                  message,
+			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 		}
 
 	case gRPC.InformationMessage_WARNING:
@@ -254,14 +262,16 @@ func LogErrorAndSendInfoToFenix(
 
 		// Send Warning information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
-			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_WARNING,
-			Message:               message,
-			OrginalCreateDateTime: generaTimeStampUTC(),
+			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			MessageId:                generateUUID(),
+			MessageType:              gRPC.InformationMessage_WARNING,
+			Message:                  message,
+			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 		}
 
 	case gRPC.InformationMessage_ERROR:
@@ -274,14 +284,16 @@ func LogErrorAndSendInfoToFenix(
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:      gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:    gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:              gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:            gatewayConfig.gatewayIdentification.gatewayName,
-			MessageId:             generateUUID(),
-			MessageType:           gRPC.InformationMessage_ERROR,
-			Message:               message,
-			OrginalCreateDateTime: generaTimeStampUTC(),
+			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
+			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			MessageId:                generateUUID(),
+			MessageType:              gRPC.InformationMessage_ERROR,
+			Message:                  message,
+			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 		}
 
 	case gRPC.InformationMessage_FATAL:

@@ -21,6 +21,8 @@ parentGatewayName = "This is the name of the Parent  Gateway"
 parentGatewayServer_address = "127.0.0.1"
 parentGatewayServer_port = 5999
 createdDateTime = ""
+connectionToParentDoneAtLeastOnce = false
+connectionToParentLastConnectionDateTime = ""
 
 # The first port in port range for child-gateways or Plugins, for each ip address
 [initialClientPort]

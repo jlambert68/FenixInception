@@ -66,8 +66,9 @@ type gatewayIdentification_struct struct {
 	gatewayId                     string
 	gatewayName                   string
 	gatewayIpAddress              string
-	gatewaParentCallOnThisPort    int
-	gatewayChildrenCallOnThisPort int
+	gatewaParentCallOnThisPort    int32
+	gatewayChildrenCallOnThisPort int32
+	createdDateTime               string
 }
 
 // Ovelall domain for toml-file, Custody Cash, Compis etc.
@@ -78,11 +79,13 @@ type systemDomain_struct struct {
 
 // Parents address informaiton for toml-file
 type parentgRPCAddress_struct struct {
-	parentGatewayId             string
-	parentGatewayName           string
-	parentGatewayServer_address string
-	parentGatewayServer_port    int
-	createdDateTime             string
+	parentGatewayId                          string
+	parentGatewayName                        string
+	parentGatewayServer_address              string
+	parentGatewayServer_port                 int32
+	createdDateTime                          string
+	connectionToParentDoneAtLeastOnce        bool
+	connectionToParentLastConnectionDateTime string
 }
 
 // The first client, for every ip address, must listen on this port, toml-file
@@ -107,6 +110,8 @@ const BUCKET_RESEND_INFOMESSAGES_TO_FENIX = "ReSendInfoMessages"
 const BUCKET_RESEND_LOG_MESSAGES_TO_FENIX = "ReSendLogMessages"
 const BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN = "ReSendGetTestDataDomainsMessages"
 const BUCKET_TEST_INSTRUCTIONS = "TestInstructions"
+const BUCKET_GATEWAY_IDENTIFICATION_INFO = "GateWayIdentifaction"
+const BUCKET_KEY_GATEWAY_IDENTIFICATION_INFO = "GateWayIdentifactionId"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPort_struct
