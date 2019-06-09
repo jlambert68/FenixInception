@@ -37,6 +37,24 @@ func initiateDB(localDBFile string) {
 }
 
 // ********************************************************************************************
+// Close the database file
+//
+func closeDB() {
+
+	err := db.Close()
+	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"ID":  "bfee7b43-d719-45b2-a099-54e09b53b3ab",
+			"err": err,
+		}).Error("Error when closing local database")
+	} else {
+		logger.WithFields(logrus.Fields{
+			"ID": "377091eb-f4a0-42a0-9d25-46b50a0862ec",
+		}).Info("SUccess in closing local database")
+	}
+}
+
+// ********************************************************************************************
 // Do Reads and Writes to local database
 //
 func databaseEngine() {
@@ -54,7 +72,7 @@ func databaseEngine() {
 
 		// Decide if it's a Read- or Write-instruction
 		switch messageToDbEngine.messageType {
-		case DB_READ:
+		case DbRead:
 			// Read data from Database and send back using incoming return-channel
 			err = db.View(func(tx *bolt.Tx) error {
 				bucket := tx.Bucket([]byte(messageToDbEngine.bucket))
@@ -83,7 +101,7 @@ func databaseEngine() {
 				}).Debug("Success in reading Key")
 
 				// Send back value using attached channel
-				readResultMessage := dbResultMessage_struct{
+				readResultMessage := dbResultMessageStruct{
 					err,
 					messageToDbEngine.key,
 					value}
@@ -92,7 +110,7 @@ func databaseEngine() {
 				return nil
 			})
 
-		case DB_WRITE:
+		case DbWrite:
 			// Store incoming data in defined bucket
 			err = db.Update(func(tx *bolt.Tx) error {
 				// Create Bucket if it not exist
@@ -134,7 +152,7 @@ func databaseEngine() {
 				}
 
 				// Send back value using attached channel
-				dbWritedResultMessage := dbResultMessage_struct{
+				dbWritedResultMessage := dbResultMessageStruct{
 					err,
 					messageToDbEngine.key,
 					nil}
@@ -153,7 +171,7 @@ func databaseEngine() {
 
 			// Send back value using attached channel
 			var errorMessage = errors.New("messageToDbEngine.messageType is not a known type")
-			dbUnknownResultMessage := dbResultMessage_struct{
+			dbUnknownResultMessage := dbResultMessageStruct{
 				errorMessage,
 				messageToDbEngine.key,
 				nil}

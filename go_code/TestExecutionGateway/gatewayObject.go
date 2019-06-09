@@ -15,7 +15,7 @@ var (
 	db *bolt.DB
 
 	// Database queue used for sending questions to databse
-	dbMessageQueue chan dbMessage_struct
+	dbMessageQueue chan dbMessageStruct
 
 	// Channel for informationMessage initiated in this gateway
 	localInformationMessageChannel chan *gRPC.InformationMessage
@@ -24,22 +24,22 @@ var (
 // TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
 
 // Defines the message sent to Database Engine
-type dbMessage_struct struct {
-	messageType  int                           // Will be (DB_READ, DB_WRITE)
-	bucket       string                        // The Bucket for the message
-	key          string                        // Key to be Read or Written
-	value        []byte                        // Only used for writing messages to DB
-	resultsQueue chan<- dbResultMessage_struct // Sending function sends in which channel tp pass back the results on
+type dbMessageStruct struct {
+	messageType  int                          // Will be (DbRead, DbWrite)
+	bucket       string                       // The Bucket for the message
+	key          string                       // Key to be Read or Written
+	value        []byte                       // Only used for writing messages to DB
+	resultsQueue chan<- dbResultMessageStruct // Sending function sends in which channel tp pass back the results on
 }
 
 // Used for defining Write/Read message to Database Engine
 const (
-	DB_READ = iota
-	DB_WRITE
+	DbRead = iota
+	DbWrite
 )
 
 // Message used for sending back Read-instructions from Database
-type dbResultMessage_struct struct {
+type dbResultMessageStruct struct {
 	err   error  // Error message
 	key   string // Key that was Read or Written
 	value []byte // The result found in Database
@@ -50,19 +50,19 @@ type dbResultMessage_struct struct {
 //
 
 // All config parameter will be stored in the following parameter
-var gatewayConfig tomlConfig_struct
+var gatewayConfig tomlConfigStruct
 
 // Main struct for toml-file
-type tomlConfig_struct struct {
-	gatewayIdentification gatewayIdentification_struct `toml:"gatewayIdentification"`
-	systemDomain          systemDomain_struct          `toml:"systemDomain"`
-	parentgRPCAddress     parentgRPCAddress_struct     `toml:"parentgRPCAddress"`
-	initialClientPort     initialClientPort_struct     `toml:"initialClientPort"`
-	loggingLevel          loggingLevel_struct          `toml:"loggingLevel"`
+type tomlConfigStruct struct {
+	gatewayIdentification gatewayIdentificationStruct `toml:"gatewayIdentification"`
+	systemDomain          systemDomainStruct          `toml:"systemDomain"`
+	parentgRPCAddress     parentgRPCAddressStruct     `toml:"parentgRPCAddress"`
+	initialClientPort     initialClientPortStruct     `toml:"initialClientPort"`
+	loggingLevel          loggingLevelStruct          `toml:"loggingLevel"`
 }
 
 // local gateway information for toml-file
-type gatewayIdentification_struct struct {
+type gatewayIdentificationStruct struct {
 	gatewayId                     string
 	gatewayName                   string
 	gatewayIpAddress              string
@@ -72,17 +72,17 @@ type gatewayIdentification_struct struct {
 }
 
 // Ovelall domain for toml-file, Custody Cash, Compis etc.
-type systemDomain_struct struct {
+type systemDomainStruct struct {
 	gatewayDomainId   string
 	gatewayDomainName string
 }
 
 // Parents address informaiton for toml-file
-type parentgRPCAddress_struct struct {
+type parentgRPCAddressStruct struct {
 	parentGatewayId                          string
 	parentGatewayName                        string
-	parentGatewayServer_address              string
-	parentGatewayServer_port                 int32
+	parentGatewayServerAddress               string
+	parentGatewayServerPort                  int32
 	createdDateTime                          string
 	connectionToParentDoneAtLeastOnce        bool
 	connectionToParentLastConnectionDateTime string
@@ -90,12 +90,12 @@ type parentgRPCAddress_struct struct {
 
 // The first client, for every ip address, must listen on this port, toml-file
 // Every aftercoming client , on same ip address, will add +1 to port number
-type initialClientPort_struct struct {
-	initialClientPort int
+type initialClientPortStruct struct {
+	initialClientPort int32
 }
 
 // The logging level that the gateway will use during runtime
-type loggingLevel_struct struct {
+type loggingLevelStruct struct {
 	loggingLevel logrus.Level
 }
 
@@ -103,38 +103,41 @@ type loggingLevel_struct struct {
 // *******************************************************************
 
 // Bucket name, and some keys used in DB
-const BUCKET_PARENT_ADDRESS = "Parent"
-const BUCKET_KEY_PARENT_ADDRESS = "ParentId"
-const BUCKET_CLIENTS = "Clients"
-const BUCKET_RESEND_INFOMESSAGES_TO_FENIX = "ReSendInfoMessages"
-const BUCKET_RESEND_LOG_MESSAGES_TO_FENIX = "ReSendLogMessages"
-const BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN = "ReSendGetTestDataDomainsMessages"
-const BUCKET_TEST_INSTRUCTIONS = "TestInstructions"
-const BUCKET_GATEWAY_IDENTIFICATION_INFO = "GateWayIdentifaction"
-const BUCKET_KEY_GATEWAY_IDENTIFICATION_INFO = "GateWayIdentifactionId"
+const BucketForParentAddress = "Parent"
+const BucketKeyForParentAddress = "ParentId"
+const BucketForClients = "Clients"
+const BucketForResendOfInfoMessagesToFenix = "ReSendInfoMessages"
+const BucketForResendOfLogMesagesToFenix = "ReSendLogMessages"
+const BucketForResendOfGetTestdataDomainsToPlugin = "ReSendGetTestDataDomainsMessages"
+const BucketForTestInstructions = "TestInstructions"
+const BucketForGatewayIdentificationInfo = "GateWayIdentifaction"
+const BucketKeyForGatewayIdentificationInfo = "GateWayIdentifactionId"
 
 // Memory Object for all clients
-var clientsAddressAndPort map[string]clientsAddressAndPort_struct
+var clientsAddressAndPort map[string]clientsAddressAndPortStruct
 
 // Definition for memory Object for all clients
-type clientsAddressAndPort_struct struct {
+type clientsAddressAndPortStruct struct {
 	clientId      string
 	clientName    string
 	clientAddress string
-	clientPort    string
+	clientPort    int32
 }
 
+// Memory Object for keeping track of next port for each client ip-address
+var nextFreeClientPort map[string]int32
+
 // The number of messages that all internal gateway channels supports
-const SUPPORTED_NUMBER_CHANNEL_MESSAGE = 100
+const SuppertedNumberOfMessagesInChannels = 100
 
 // When gateway should start signal a INFO in log that queue in channel reached a limit
-const CHANNEL_LOWER_MESSAGE_TO_BE_SIGNALED = 10
+const LowerBounderyForSignalingMessagesInChannel = 10
 
 // When gateway should start signal a WARNING in log that queue in channel reached a limit
-const CHANNEL_UPPER_MESSAGE_TO_BE_SIGNALED = 90
+const UpperBounderyForSignalingMessagesInChannel = 90
 
 // Variable used for sync all services to be able to start and stop them at the same time
-var gatewayMustStopProcessing bool = true
+var gatewayMustStopProcessing = true
 
 // Number of seconds that Services are asleep when 'gatewayMustStopProcessing  == true'
-const SERVICE_SLEEP_TIME time.Duration = 10
+const ServieSleepTime time.Duration = 10

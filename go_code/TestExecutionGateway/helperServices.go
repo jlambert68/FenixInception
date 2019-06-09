@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"net"
 	"strconv"
 	"time"
 )
@@ -45,7 +46,7 @@ func getClientAddressAndPort(pluginId string) (addressAndPort string) {
 	clientsAddressAndPortInfo, keyExists := clientsAddressAndPort[pluginId]
 
 	if keyExists == true {
-		addressAndPort = clientsAddressAndPortInfo.clientAddress + clientsAddressAndPortInfo.clientPort
+		addressAndPort = clientsAddressAndPortInfo.clientAddress + strconv.FormatInt(int64(clientsAddressAndPortInfo.clientPort), 10)
 
 	} else {
 		// Key not found, send message to Fenix about Error
@@ -66,7 +67,7 @@ func getParentAddressAndPort() (addressAndPort string) {
 	// Get Parent-info object from Clients-memory-object
 	ParentAddressAndPortInfo := gatewayConfig.parentgRPCAddress
 
-	addressAndPort = ParentAddressAndPortInfo.parentGatewayServer_address + ":" + strconv.FormatInt(int64(ParentAddressAndPortInfo.parentGatewayServer_port), 10)
+	addressAndPort = ParentAddressAndPortInfo.parentGatewayServerAddress + ":" + strconv.FormatInt(int64(ParentAddressAndPortInfo.parentGatewayServerPort), 10)
 
 	return addressAndPort
 
@@ -81,13 +82,13 @@ func updateMemoryAddressForParentAddressInfo() {
 	var err error
 
 	// Create the channel that the client address should be sent back on
-	returnParentAddressChannel := make(chan dbResultMessage_struct)
+	returnParentAddressChannel := make(chan dbResultMessageStruct)
 
 	// Get Clients address
-	dbMessage := dbMessage_struct{
-		DB_READ,
-		BUCKET_PARENT_ADDRESS,
-		BUCKET_KEY_PARENT_ADDRESS,
+	dbMessage := dbMessageStruct{
+		DbRead,
+		BucketForParentAddress,
+		BucketKeyForParentAddress,
 		nil,
 		returnParentAddressChannel}
 
@@ -124,11 +125,11 @@ func updateMemoryAddressForParentAddressInfo() {
 
 		// If Saved data differs from memory data then change in memory object
 		// First check ip address
-		if parentAddress.GatewayAddress != gatewayConfig.parentgRPCAddress.parentGatewayServer_address {
+		if parentAddress.GatewayAddress != gatewayConfig.parentgRPCAddress.parentGatewayServerAddress {
 			logger.WithFields(logrus.Fields{
 				"ID":                           "560c2b17-c71e-45dd-9a38-a3dfd1a2bbd6",
 				"parentAddress.GatewayAddress": parentAddress.GatewayAddress,
-				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_address": gatewayConfig.parentgRPCAddress.parentGatewayServer_address,
+				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_address": gatewayConfig.parentgRPCAddress.parentGatewayServerAddress,
 			}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 			//Send Warning information to Fenix
@@ -146,15 +147,15 @@ func updateMemoryAddressForParentAddressInfo() {
 			}
 
 			// Change Address in memory object
-			gatewayConfig.parentgRPCAddress.parentGatewayServer_address = parentAddress.GatewayAddress
+			gatewayConfig.parentgRPCAddress.parentGatewayServerAddress = parentAddress.GatewayAddress
 		}
 
 		// Second check port
-		if parentAddress.GatewayPort != gatewayConfig.parentgRPCAddress.parentGatewayServer_port {
+		if parentAddress.GatewayPort != gatewayConfig.parentgRPCAddress.parentGatewayServerPort {
 			logger.WithFields(logrus.Fields{
 				"ID":                        "50a3b7ad-6631-42c5-ab5c-777e04ad9728",
 				"parentAddress.GatewayPort": parentAddress.GatewayPort,
-				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_port": gatewayConfig.parentgRPCAddress.parentGatewayServer_port,
+				"gatewayConfig.parentgRPCAddress.parentGatewayInitialServer_port": gatewayConfig.parentgRPCAddress.parentGatewayServerPort,
 			}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 			//Send Warning information to Fenix
@@ -172,7 +173,7 @@ func updateMemoryAddressForParentAddressInfo() {
 			}
 
 			// Change Port in memory object
-			gatewayConfig.parentgRPCAddress.parentGatewayServer_port = parentAddress.GatewayPort
+			gatewayConfig.parentgRPCAddress.parentGatewayServerPort = parentAddress.GatewayPort
 		}
 
 	}
@@ -182,7 +183,7 @@ func updateMemoryAddressForParentAddressInfo() {
 // Replace Parent gateway/Fenix IP-address & port info in databse, from Memory if previous connection differs from memory object
 //
 
-func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(gatewayIdentification gatewayIdentification_struct) {
+func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(gatewayIdentification gatewayIdentificationStruct) {
 
 	// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
 	reRegisterToGatewayMessageToSavedAsByteArray, err := json.Marshal(gatewayIdentification)
@@ -203,9 +204,9 @@ func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(gatewayIdentif
 
 		// Save message to local DB for later processing
 		_ = SaveMessageToLocalDB(
-			BUCKET_KEY_PARENT_ADDRESS,
+			BucketKeyForParentAddress,
 			reRegisterToGatewayMessageToSavedAsByteArray,
-			BUCKET_PARENT_ADDRESS,
+			BucketForParentAddress,
 			"f1ae7544-a190-4e36-b527-5abdd86c0c61",
 		)
 	}
@@ -324,10 +325,10 @@ func SaveMessageToLocalDB(
 ) (saveOK bool) {
 
 	// Create return channel for save-status from DB
-	returnChannel := make(chan dbResultMessage_struct)
+	returnChannel := make(chan dbResultMessageStruct)
 
-	dbMessage := dbMessage_struct{
-		DB_WRITE,
+	dbMessage := dbMessageStruct{
+		DbWrite,
 		bucket,
 		key,
 		valueToStoreInDB,
@@ -364,7 +365,7 @@ func channelSinaling(
 	channelName string,
 	id string) {
 	// if channel items is greater than upper warning levels then lg warning
-	if numberOfMessagesInChannel >= CHANNEL_UPPER_MESSAGE_TO_BE_SIGNALED {
+	if numberOfMessagesInChannel >= UpperBounderyForSignalingMessagesInChannel {
 
 		LogErrorAndSendInfoToFenix(
 			id,
@@ -374,7 +375,7 @@ func channelSinaling(
 			"",
 			"Upper WARNING level reached for number of items in channel")
 	} else {
-		if numberOfMessagesInChannel >= CHANNEL_LOWER_MESSAGE_TO_BE_SIGNALED {
+		if numberOfMessagesInChannel >= LowerBounderyForSignalingMessagesInChannel {
 			logger.WithFields(logrus.Fields{
 				"ID": id,
 				"Number of message in Channel '" + channelName + "'": numberOfMessagesInChannel,
@@ -386,4 +387,114 @@ func channelSinaling(
 			}).Debug("Number of items in channel")
 		}
 	}
+}
+
+// *********************************************************************************
+// Get highest gRPC version
+//
+
+func getHighestGRPCVersion() (currentVersion string) {
+	maxVersionCount := int32(len(gRPC.CurrentVersionEnum_name) - 1)
+
+	maxVersion := gRPC.CurrentVersionEnum_name[maxVersionCount]
+	return maxVersion
+}
+
+// *********************************************************************************
+// Get next free Client port
+//
+
+func getNextFreeClientPort(ipAddress string) (port int32) {
+	// If decide if incoming ip-address is localhost, 127.0.0.1, 0.0.0.0, localhost, 192.168.2.x="this gateways ip)
+
+	var thisGataewaysIpAddress string
+	var childUseSamteIp bool
+
+	// Get this gateways IP-address
+	thisGataewaysIpAddress = GetOutboundIP()
+
+	// Decide if child-gateway use the IP-address as this gateway
+	switch ipAddress {
+	case "127.0.0.1":
+		childUseSamteIp = true
+	case "0.0.0.0":
+		childUseSamteIp = true
+	case "localhost":
+		childUseSamteIp = true
+	case thisGataewaysIpAddress:
+		childUseSamteIp = true
+	default:
+		childUseSamteIp = false
+	}
+
+	// If childs address is the same as gateway address then use 127.0.0.1 as address as key
+	if childUseSamteIp == true {
+
+		logger.WithFields(logrus.Fields{
+			"ID":        "291e7759-a002-4363-bbfa-3604bd3255a0",
+			"ipAddress": ipAddress,
+		}).Debug("Child gateway/Plugin ip-address is the same as this gateway's ip address, will use '127.0.0.1' as key in memory DB.")
+
+		ipAddress = "127.0.0.1"
+
+	}
+
+	// Try to get vaule from key and check if it exits
+	clientAddresAndPortInfo, ifExists := clientsAddressAndPort[ipAddress]
+	if ifExists == true {
+		// IP-address exists, Add +1 to current port-counter and save in memory DB
+		logger.WithFields(logrus.Fields{
+			"ID":                      "8800e41f-d46c-4857-b7f3-8ec23f904f77",
+			"ipAddress":               ipAddress,
+			"clientAddresAndPortInfo": clientAddresAndPortInfo,
+		}).Debug("Current ip-address exists in memory DB.")
+
+		clientAddresAndPortInfo.clientPort = clientAddresAndPortInfo.clientPort + 1
+		clientsAddressAndPort[ipAddress] = clientAddresAndPortInfo
+	} else {
+		// IP-address does not exists, Use start Port from config and save in memory DB
+		logger.WithFields(logrus.Fields{
+			"ID":                      "35528300-e5ee-4c0a-b41a-15a5d37d8186",
+			"ipAddress":               ipAddress,
+			"clientAddresAndPortInfo": gatewayConfig.initialClientPort.initialClientPort,
+		}).Debug("IP-address not used before, will use standard start port")
+
+		clientAddresAndPortInfo.clientPort = gatewayConfig.initialClientPort.initialClientPort
+		clientsAddressAndPort[ipAddress] = clientAddresAndPortInfo
+
+	}
+
+	return clientAddresAndPortInfo.clientPort
+}
+
+// *********************************************************************************
+//  Get preferred outbound ip of this machine
+//
+func GetOutboundIP() string {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"ID":                      "118517f0-6839-49b5-9f8f-850e82d3de23",
+			"err":                     err,
+			"clientAddresAndPortInfo": gatewayConfig.initialClientPort.initialClientPort,
+		}).Fatal("Error when getting this gateways IP-address")
+	}
+
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"ID":  "1805f803f-6bfd-49d0-82b6-947677a539bb",
+				"err": err,
+			}).Fatal("Fatal ERROR when closing udp-connection when checking local IP-address in function 'GetOutboundIP()'")
+		}
+	}()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	logger.WithFields(logrus.Fields{
+		"ID":        "2a2a4450-2a09-4084-bc1b-c5ac6ee58bcb",
+		"localAddr": localAddr,
+	}).Debug("This gateways address info")
+
+	return localAddr.IP.String()
 }

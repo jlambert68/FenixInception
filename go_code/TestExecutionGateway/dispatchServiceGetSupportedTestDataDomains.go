@@ -30,7 +30,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 		// Service can be started and Stopped by central control of the Gateway
 		if gatewayMustStopProcessing == true {
 			// Service should be stopped from processing any messages
-			time.Sleep(SERVICE_SLEEP_TIME * time.Second)
+			time.Sleep(ServieSleepTime * time.Second)
 
 		} else {
 			// Run service and process messages
@@ -85,7 +85,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 					_ = SaveMessageToLocalDB(
 						getSupportedTestDomainsToBeForwarded.MessageId,
 						testExecutionLogMessageToBeForwardedByteArray,
-						BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN,
+						BucketForResendOfGetTestdataDomainsToPlugin,
 						"1abe7614-c951-4186-821f-deb2b4203f64",
 					)
 				}
@@ -139,7 +139,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupport
 						_ = SaveMessageToLocalDB(
 							getSupportedTestDomainsToBeForwarded.MessageId,
 							testExecutionLogMessageToBeForwardedByteArray,
-							BUCKET_RESEND_GET_TESTDATA_DOMAINS_TO_PLUGIN,
+							BucketForResendOfGetTestdataDomainsToPlugin,
 							"9446b644-66f3-452a-9436-add798b0dad9",
 						)
 

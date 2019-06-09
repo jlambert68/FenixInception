@@ -30,7 +30,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestIns
 		// Service can be started and Stopped by central control of the Gateway
 		if gatewayMustStopProcessing == true {
 			// Service should be stopped from processing any messages
-			time.Sleep(SERVICE_SLEEP_TIME * time.Second)
+			time.Sleep(ServieSleepTime * time.Second)
 
 		} else {
 			// Run service and process messages
@@ -145,10 +145,10 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestIns
 					} else {
 
 						// Save TestInstruction to local database, using local channel
-						returnChannel := make(chan dbResultMessage_struct)
+						returnChannel := make(chan dbResultMessageStruct)
 
-						dbMessage := dbMessage_struct{
-							DB_WRITE,
+						dbMessage := dbMessageStruct{
+							DbWrite,
 							"TestInstructions",
 							testInstructionToBeForwarded.TestInstructionGuid,
 							testInstructionByteArray,

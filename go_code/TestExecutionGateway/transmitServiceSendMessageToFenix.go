@@ -30,7 +30,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 		// Service can be started and Stopped by central control of the Gateway
 		if gatewayMustStopProcessing == true {
 			// Service should be stopped from processing any messages
-			time.Sleep(SERVICE_SLEEP_TIME * time.Second)
+			time.Sleep(ServieSleepTime * time.Second)
 
 		} else {
 			// Run service and process messages
@@ -85,7 +85,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 					_ = SaveMessageToLocalDB(
 						informationMessageToBeForwarded.MessageId,
 						testExecutionLogMessageToBeForwardedByteArray,
-						BUCKET_RESEND_INFOMESSAGES_TO_FENIX,
+						BucketForResendOfInfoMessagesToFenix,
 						"42da4af3-a4eb-4498-95e8-e78b13d2365a",
 					)
 				}
@@ -112,7 +112,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 					_ = SaveMessageToLocalDB(
 						informationMessageToBeForwarded.MessageId,
 						informationMessageToBeForwardedByteArray,
-						BUCKET_RESEND_INFOMESSAGES_TO_FENIX,
+						BucketForResendOfInfoMessagesToFenix,
 						"8672d03e-4d63-4126-b5ea-8f2c80c44a98",
 					)
 
@@ -141,7 +141,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendMess
 						_ = SaveMessageToLocalDB(
 							informationMessageToBeForwarded.MessageId,
 							informationMessageToBeForwardedByteArray,
-							BUCKET_RESEND_INFOMESSAGES_TO_FENIX,
+							BucketForResendOfInfoMessagesToFenix,
 							"9782b4bc-afb9-424b-9dc4-43e6f47011b4",
 						)
 

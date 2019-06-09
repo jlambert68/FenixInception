@@ -8,33 +8,62 @@ import (
 )
 
 // ********************************************************************************************
-// Call from parent Gateway/Fenix that this gateway should register itself to parent
+// Call from Client Gateway/Plugin with an registration of itself
 //
-func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAddress(ctx context.Context, reRegisterToGatewayMessage *gRPC.ReRegisterToGatewayMessage) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsFenixObject_struct) RegisterClientAddress(ctx context.Context, registerClientAddressRequest *gRPC.RegisterClientAddressRequest) (*gRPC.RegisterClientAddressResponse, error) {
 
-	var returnMessage *gRPC.AckNackResponse
-	var parentgRPCAddress parentgRPCAddressStruct
+	var registerClientAddressResponse *gRPC.RegisterClientAddressResponse
+	var clientRPCAddress clientsAddressAndPortStruct
 
 	logger.WithFields(logrus.Fields{
-		"ID":                         "b9e6bde2-0a59-4459-83c4-d723d50a080c",
-		"reRegisterToGatewayMessage": reRegisterToGatewayMessage,
-	}).Info("Incoming gRPC: 'PleaseReRegisterClientAddress'")
+		"ID":                           "b88ad310-944f-44ed-bfca-6b06337b81be",
+		"registerClientAddressRequest": registerClientAddressRequest,
+	}).Info("Incoming gRPC: 'RegisterClientAddress'")
 
+	// Check if calling client is using an old gRPC-version-defitnition file (wrong version)
+	// TODO Denna jämförelse är troligen som Äpplen och Päron
+	if registerClientAddressRequest.GRPCVersion.String() != getHighestGRPCVersion() {
+		// Send Error information to Fenix
+		localInformationMessageChannel <- &gRPC.InformationMessage{
+			OriginalSenderId:         registerClientAddressRequest.CallingSystemId,
+			OriginalSenderName:       registerClientAddressRequest.CallingSystemName,
+			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
+			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			MessageId:                generateUUID(),
+			MessageType:              gRPC.InformationMessage_ERROR,
+			Message:                  "Child gateway/Plugin is using wrong version of gRPC-defition",
+			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+		}
+
+		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
+			ClientPort: 0,
+			Acknack:    false,
+			Comments:   "This gateway/Plugin is using wrong version of gRPC-defition",
+		}
+
+		return registerClientAddressResponse, nil
+	}
+
+	// *** Save Clents Address Info in local database ***
+	//TODO hämta nästa lediga klient-port
+	Input
 	//Move data into object that should be save in DB
-	parentgRPCAddress.parentGatewayId = reRegisterToGatewayMessage.GatewayId
-	parentgRPCAddress.parentGatewayName = reRegisterToGatewayMessage.GatewayName
-	parentgRPCAddress.parentGatewayServerAddress = reRegisterToGatewayMessage.GatewayAddress
+	clientRPCAddress.clientId = registerClientAddressRequest.CallingSystemId
+	clientRPCAddress.clientName = registerClientAddressRequest.CallingSystemName
+	clientRPCAddress.clientAddress = registerClientAddressRequest.CallingSystemIpAddress
 	parentgRPCAddress.parentGatewayServerPort = reRegisterToGatewayMessage.GatewayPort
 	parentgRPCAddress.createdDateTime = generaTimeStampUTC()
 
-	// Convert Parent Gateway address info-struct into a byte array
-	parentgRPCAddressByteArray, err := json.Marshal(reRegisterToGatewayMessage)
+	// Convert Client Gateway/Plugin address info-struct into a byte array
+	childgRPCAddressByteArray, err := json.Marshal(registerClientAddressRequest)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"ID":                "6df384d3-ebe9-4a65-947f-e51814c8544c",
-			"parentgRPCAddress": parentgRPCAddress,
-			"err":               err,
-		}).Error("Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of Reregistration.")
+			"ID":                           "6df384d3-ebe9-4a65-947f-e51814c8544c",
+			"registerClientAddressRequest": registerClientAddressRequest,
+			"err":                          err,
+		}).Error("Error when converting 'registerClientAddressRequest' into a byte array, stopping futher processing of Reregistration.")
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
@@ -56,7 +85,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAd
 
 	}
 
-	// Save parentgRPCAddressByteArray to local database, using local channel
+	// Save childgRPCAddressByteArray to local database, using local channel
 	// Return Channel
 	returnChannel := make(chan dbResultMessageStruct)
 
@@ -64,7 +93,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAd
 		DbWrite,
 		BucketForParentAddress,
 		BucketKeyForParentAddress, // Key allways hardcoded due to one gateway or plugin can only have one parent
-		parentgRPCAddressByteArray,
+		childgRPCAddressByteArray,
 		returnChannel}
 
 	// Send message to Database
@@ -104,29 +133,6 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) PleaseReRegisterClientAd
 		"ID": "fdf7081a-e7da-4bf1-a87c-82c51b8f575b",
 	}).Debug("Reregistration info was saved in local database")
 
-	// Start Registration of this Gateway/Plugin
-	// **** TODO Put message on channel to register this client ****
-	registerSuccess, err := registerThisGatewayAtParentGateway()
-
-	if registerSuccess == true {
-		logger.WithFields(logrus.Fields{
-			"ID": "14ae3650-c0dd-4e23-b197-9706d5dfc8bd",
-		}).Debug("Rereregistration to parent gateway/Fenix was successful")
-
-		// Create message back to parent Gateway/Fenix
-		returnMessage.Comments = "Reregistration was done"
-		returnMessage.Acknack = true
-		return returnMessage, nil
-
-	} else {
-		logger.WithFields(logrus.Fields{
-			"ID":  "e5c273a8-f257-4c9f-bcbe-1697a2de1663",
-			"err": err,
-		}).Error("Rereregistration to parent gateway/Fenix could not be done")
-
-		returnMessage.Comments = "Reregistration could not be done"
-		returnMessage.Acknack = false
-		return returnMessage, nil
-	}
+	// Return port to listen to
 
 }

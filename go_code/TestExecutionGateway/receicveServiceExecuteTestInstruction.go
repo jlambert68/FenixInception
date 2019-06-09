@@ -47,7 +47,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) SendTestInstructionTowar
 	saveOK := SaveMessageToLocalDB(
 		testInstruction.TestInstructionGuid,
 		testInstructionByteArray,
-		BUCKET_TEST_INSTRUCTIONS,
+		BucketForTestInstructions,
 		"275bebe1-cb7e-4790-b2b5-070acedfff9a",
 	)
 

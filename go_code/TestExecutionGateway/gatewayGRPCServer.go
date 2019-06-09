@@ -11,7 +11,7 @@ import (
 // ***************************************************************
 // Start gateways gRPC-server for messages towards Plugins
 //
-func (gatewayObject *gatewayTowardsPluginObject_struct) startGatewayGRPCServerForMessagesTowardsPlugins() {
+func startGatewayGRPCServerForMessagesTowardsPlugins() {
 
 	var err error
 
@@ -105,7 +105,7 @@ func stopGatewayGRPCServerForMessagesTowardsPlugins() {
 // ***************************************************************
 // Start gateways gRPC-server for messages towards Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObject_struct) startGatewayGRPCServerForMessagesTowardsFenix() {
+func startGatewayGRPCServerForMessagesTowardsFenix() {
 
 	var err error
 
