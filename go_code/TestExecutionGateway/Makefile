@@ -4,7 +4,7 @@
 
 build:
 	@echo "go build..."
-	go build taxi_server.go taxi_payment_request_generation.go taxi_server_api.go logrus_logger.go
+	 go build -o gateway
 
 run:
 	./taxi_server

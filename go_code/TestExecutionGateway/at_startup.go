@@ -209,6 +209,9 @@ func startAllServices() {
 	// Cleanup all gRPC connections
 	defer cleanup()
 
+	//  Initiate the memory structure to hold all client gateway/plugin's address information
+	initiateClientAddressMemoryDB()
+
 	// Ensure that all services don't start before everything has been started
 	gatewayMustStopProcessing = true
 

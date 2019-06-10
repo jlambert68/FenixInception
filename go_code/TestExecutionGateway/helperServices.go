@@ -14,10 +14,10 @@ import (
 // Generate a new unique uuid
 //
 func generateUUID() string {
-	var new_uuid_string string = ""
+	var newUuidString = ""
 
-	new_uuid, err := uuid.NewUUID()
-	new_uuid_string = new_uuid.String()
+	newUuid, err := uuid.NewUUID()
+	newUuidString = newUuid.String()
 
 	if err != nil {
 		logger.WithFields(logrus.Fields{
@@ -27,7 +27,7 @@ func generateUUID() string {
 
 	}
 	// Return newly created UUID
-	return new_uuid_string
+	return newUuidString
 }
 
 // *********************************************************************************
@@ -401,6 +401,13 @@ func getHighestGRPCVersion() (currentVersion string) {
 }
 
 // *********************************************************************************
+// Initiate map for clients addresses
+//
+func initiateClientAddressMemoryDB() {
+	clientsAddressAndPort = make(map[string]clientsAddressAndPortStruct)
+}
+
+// *********************************************************************************
 // Get next free Client port
 //
 
@@ -427,7 +434,7 @@ func getNextFreeClientPort(ipAddress string) (port int32) {
 		childUseSamteIp = false
 	}
 
-	// If childs address is the same as gateway address then use 127.0.0.1 as address as key
+	// If child's address is the same as gateway address then use 127.0.0.1 as address as key
 	if childUseSamteIp == true {
 
 		logger.WithFields(logrus.Fields{

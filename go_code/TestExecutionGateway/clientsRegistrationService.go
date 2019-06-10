@@ -47,23 +47,22 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) RegisterClientAddress(ctx
 	}
 
 	// *** Save Clents Address Info in local database ***
-	//TODO hämta nästa lediga klient-port
-	Input
+	nextPort := getNextFreeClientPort(registerClientAddressRequest.CallingSystemIpAddress)
+
 	//Move data into object that should be save in DB
 	clientRPCAddress.clientId = registerClientAddressRequest.CallingSystemId
 	clientRPCAddress.clientName = registerClientAddressRequest.CallingSystemName
 	clientRPCAddress.clientAddress = registerClientAddressRequest.CallingSystemIpAddress
-	parentgRPCAddress.parentGatewayServerPort = reRegisterToGatewayMessage.GatewayPort
-	parentgRPCAddress.createdDateTime = generaTimeStampUTC()
+	clientRPCAddress.clientPort = nextPort
 
 	// Convert Client Gateway/Plugin address info-struct into a byte array
-	childgRPCAddressByteArray, err := json.Marshal(registerClientAddressRequest)
+	childgRPCAddressByteArray, err := json.Marshal(clientRPCAddress)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"ID":                           "6df384d3-ebe9-4a65-947f-e51814c8544c",
-			"registerClientAddressRequest": registerClientAddressRequest,
-			"err":                          err,
-		}).Error("Error when converting 'registerClientAddressRequest' into a byte array, stopping futher processing of Reregistration.")
+			"ID":                        "f0b16a20-649f-4b69-97f2-649bc686a5a3",
+			"childgRPCAddressByteArray": childgRPCAddressByteArray,
+			"err":                       err,
+		}).Error("Error when converting 'childgRPCAddressByteArray' into a byte array, stopping futher processing of RegisterClientAddress.")
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
@@ -73,15 +72,19 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) RegisterClientAddress(ctx
 			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
-			Message:                  "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of Reregistration.",
+			Message:                  "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress.",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 		}
 
-		returnMessage.Comments = "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of Reregistration."
-		returnMessage.Acknack = false
-		return returnMessage, nil
+		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
+			ClientPort: 0,
+			Acknack:    false,
+			Comments:   "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress..",
+		}
+
+		return registerClientAddressResponse, nil
 
 	}
 
@@ -123,16 +126,30 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) RegisterClientAddress(ctx
 			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
 		}
 
-		// Create message back to parent Gateway/Fenix
-		returnMessage.Comments = "Error when saving to local DB, stopping futher processing of Reregistration"
-		returnMessage.Acknack = false
-		return returnMessage, nil
+		// Create message back to child Gateway/Plugin
+		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
+			ClientPort: 0,
+			Acknack:    false,
+			Comments:   "Got an error when Saveing to local DB",
+		}
+
+		return registerClientAddressResponse, nil
+
+	} else {
+
+		// Return port for client to listen to
+		logger.WithFields(logrus.Fields{
+			"ID": "b6be47f6-c6ee-44c8-b21c-d64891e70038",
+		}).Debug("Registration of client was done")
+
+		// Create message back to child Gateway/Plugin
+		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
+			ClientPort: nextPort,
+			Acknack:    true,
+			Comments:   "Success in doing registration, please listen on attached port",
+		}
+
+		return registerClientAddressResponse, nil
 	}
-
-	logger.WithFields(logrus.Fields{
-		"ID": "fdf7081a-e7da-4bf1-a87c-82c51b8f575b",
-	}).Debug("Reregistration info was saved in local database")
-
-	// Return port to listen to
 
 }
