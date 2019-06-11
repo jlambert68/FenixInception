@@ -13,7 +13,7 @@ import (
 // Initiate Dispatch Engine for SendTestExecutionLogTowardsFenix
 //
 
-func (gatewayObject *gatewayTowardsFenixObject_struct) initiateSendTestExecutionLogTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateSendTestExecutionLogTowardsFenix() {
 
 	// Start Transmit Engine, for TestExecutionLogs as a go-routine
 	go gatewayObject.transmitEngineForSendTestExecutionLogTowardsFenix()
@@ -23,7 +23,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) initiateSendTestExecution
 // Forward InformationMessage-messages from incoming channel towards Fenix
 //
 
-func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTestExecutionLogTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendTestExecutionLogTowardsFenix() {
 
 	for {
 

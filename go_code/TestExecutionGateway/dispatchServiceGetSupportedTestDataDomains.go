@@ -13,7 +13,7 @@ import (
 // Initiate Dispatch Engine for SupportedTestDomains
 //
 
-func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDispatchEngineForSupportedTestDomains() {
+func (gatewayObject *gatewayTowardsPluginObjectStruct) initiateDispatchEngineForSupportedTestDomains() {
 
 	// Start Dispatch Engine, for SupportedTestDomains as a go-routine
 	go gatewayObject.dispatchEngineForSupportedTestDomains()
@@ -23,7 +23,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDispatchEngineFo
 // Forward getSupportedTestDomains-messages from incoming channel to child gateway or plugin
 //
 
-func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForSupportedTestDomains() {
+func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForSupportedTestDomains() {
 
 	for {
 

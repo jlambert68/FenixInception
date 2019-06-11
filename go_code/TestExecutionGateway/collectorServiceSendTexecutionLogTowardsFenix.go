@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a TestExecutionLogMessage toward Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObject_struct) SendTestExecutionLogTowardsFenix(ctx context.Context, testExecutionLogMessage *gRPC.TestExecutionLogMessage) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) SendTestExecutionLogTowardsFenix(ctx context.Context, testExecutionLogMessage *gRPC.TestExecutionLogMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 

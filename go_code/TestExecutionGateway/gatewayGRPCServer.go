@@ -56,7 +56,7 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 		}).Info("Starting Gateway gRPC Server")
 
 		registerGatewayTowardsPluginerver = grpc.NewServer()
-		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &gatewayTowardsPluginObject_struct{})
+		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &gatewayTowardsPluginObjectStruct{})
 
 		logger.WithFields(logrus.Fields{
 			"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",
@@ -150,7 +150,7 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 		}).Info("Starting Gateway gRPC Server")
 
 		registerGatewayTowardsPluginerver = grpc.NewServer()
-		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &gatewayTowardsPluginObject_struct{})
+		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &gatewayTowardsPluginObjectStruct{})
 
 		logger.WithFields(logrus.Fields{
 			"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",

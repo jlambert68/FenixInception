@@ -13,7 +13,7 @@ import (
 // Initiate Transmit Engine for InformationMessage-messages
 //
 
-func (gatewayObject *gatewayTowardsFenixObject_struct) initiateSendTestInstructionTimeOutTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateSendTestInstructionTimeOutTowardsFenix() {
 
 	// Start Transmit Engine, for InformationMessage-messages as a go-routine
 	go gatewayObject.transmitEngineForSendTestInstructionTimeOutTowardsFenix()
@@ -23,7 +23,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) initiateSendTestInstructi
 // Forward InformationMessage-messages from incoming channel towards Fenix
 //
 
-func (gatewayObject *gatewayTowardsFenixObject_struct) transmitEngineForSendTestInstructionTimeOutTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendTestInstructionTimeOutTowardsFenix() {
 
 	for {
 

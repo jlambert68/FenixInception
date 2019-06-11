@@ -275,8 +275,94 @@ message RegisterClientAddressResponse {
 
 // Data and Information regarding a specific TestInstruction offered by a specific plugin
 message AvailbleTestInstructionAtPluginMessage {
-    string asasd = 1; //
+    string OriginalSenderId = 1; // Then Id of the plugin that created the message
+    string OriginalSenderName = 2; // Then name of the plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string MessageId = 5; // A unique id generated when sent from Plugin
+    string OrginalCreateDateTime = 6; // The timestamp when the orignal message was created
+    string OriginalSystemDomainId = 7; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 8; // The Domain/system's Name where the Sender operates
+
+    repeated TestInstruction TestInstructions = 9; // All supported TestInstructions from plugin
+    // Message thats defines a specific Test Instruction
+    message TestInstruction {
+        string PliginGuid = 1; // Used as unique id for the plugin
+        string PluginName = 2; // Used as unique name for the plugin
+        string SystemDomainId = 3; // The Domain/system's Id where the Sender operates
+        string SystemDomainName = 4; // The Domain/system's Name where the Sender operates
+        string TestInstructionTypeGuid = 5; // The unique guid for the Type of TestInstruction. Set by Client system
+        string TestInstructionTypeName = 6; // The name for the Type of TestInstruction. Set by Client system
+        string TestInstructionGuid = 7; // The unique guid for the TestInstruction. Set when used in Editor
+        string TestInstructionName = 8; // The name of the TestInstruction
+        string TestInstructionDescription = 9; // The description of the TestInstruction
+        string TestInstructionMouseOver = 10; // The mouse over test for the TestInstruction
+        string TestInstructionVisible = 11; // Should the TestInstruction be visible in GUI or not
+        string TestInstructionEnable = 12; // Should the TestInstruction be enabled or not
+        string TestInstructionColor = 13; // The color used for presenting the TestInstructionBlock, e.g. #FAF437
+        repeated string DropIDs = 14; // A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs
+        repeated string LandingZoneGuid = 16; //  List with IDs of all available LandingZones for TestInstruction
+        string ChoosenLandingZone = 17; // The choosen LandingZone for this TestInstructionBlock
+        repeated TestInstructionAttribute TestInstructionAttributes = 15; // List with IDs of all attributes for the TestInstruction
+
+        // A specific Attribute for a Test Instruction
+        message TestInstructionAttribute {
+            string TestInstructionAttributeGuid = 1; // The unique guid for the TestInstructionAttribute, set when used in Editor
+            string TestInstructionAttributeTypeGuid = 2; // The unique guid for the TestInstructionAttribute-type, set by client system
+            string TestInstructionAttributeName = 3; // The name of the TestInstructionAttribute
+            string TestInstructionAttributeDescription = 4; // The description of the TestInstructionAttribute
+            string TestInstructionAttributeMouseOver = 5; // The mouse over test for the TestInstructionAttribute
+            bool TestInstructionAttributeVisible = 6; // Should the TestInstructionAttribute be visible in attributes list in GUI or not
+            bool TestInstructionAttributeEnable = 7; // Should the TestInstructionAttribute be enabled or not
+            bool TestInstructionAttributeMandatory = 8; // Should the TestInstructionAttribute be mandatory or not
+            bool TestInstructionAttributeVisibleInBlockArea = 9; // Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not
+            TestInstructionAttributeTypeEnum TestInstructionAttributeType = 10; // The choosen Enum value for what type the instruction attribute should be
+            // The TestInstructionAttribute can one of the folowing type: "TextBox", "ComboBox", "FileSelector", "FunctionSelector"
+            enum TestInstructionAttributeTypeEnum {
+                TEXTBOX = 0; // Defines that TestInstructionAttriebute of type "TextBox"
+                COMBOBOX = 1; // Defines that TestInstructionAttriebute of type ComboBox
+                FILESELECTOR = 2; // Defines that TestInstructionAttriebute of type FileSelector
+                FUNCTIONSLECTOR = 3; // Defines that TestInstructionAttriebute of type FunctionSelector
+            }
+
+            TestInstructionAttributeInputTextBoxProperty inputTextBoxProperty = 11; // If the attribute is a textbox then all properties can be found in structure
+            // Properties for TextBox attribute
+            message TestInstructionAttributeInputTextBoxProperty {
+                string TestInstructionAttributeInputTextBoxGuid = 1; // The unique guid for the TestInstructionAttributeInputTextBoxProperties, set when used in Editor
+                string TestInstructionAttributeInputTextBoxName = 2; // The name of the TestInstructionAttributeInputTextBoxProperties
+                bool TextBoxEditable = 3; // Should the the TextBox be editable or not
+                string TextBoxInputMask = 4; // Inputmask for the TextBox
+                string TextBoxAttributeTypeGuid = 5; // The unique guid for the Type of the TextBox. Used for datamanupulation
+                string TextBoxAttributeTypeName = 6; // The Name for the Type of the TextBox.
+                string TextBoxAttributeValue = 7; // The value for the the TextBox, used for preset values
+            }
+
+            TestInstructionAttributeInputComboBoxProperty InputComboBoxProperty = 12; // If the attribute is a combobox then all properties can be found in structure
+            // Properties for ComboBox attribute
+            message TestInstructionAttributeInputComboBoxProperty {
+                string TestInstructionAttributeComboBoxGuid = 1; // The unique guid for the TestInstructionAttributeComboBoxProperties, set when used in Editor
+                string TestInstructionAttributeComboBoxName = 2; // The name of the TestInstructionAttributeComboBoxProperties
+                bool ComboBoxEditable = 3; // Should the the ComboBox be editable or not
+                string ComboBoxInputMask = 4; // Inputmask for the ComboBox
+                string ComboBoxAttributeTypeGuid = 5; // The unique guid for the Type of the ComboBox Used for datamanupulation
+                string ComboBoxAttributeTypeName = 6; // The Name for the Type of the ComboBox
+                string ComboBoxAttributeValueGuid = 7; // The guid of the value for the the ComboBox
+                string ComboBoxAttributeValue = 8; // The value for the the ComboBox
+            }
+
+            TestInstructionAttributeInputFileSelectorProperty InputFileSelectorProperty = 13; // If the attribute is a combobox then all properties can be found in structure
+            // Properties for FileSelector attribute
+            message TestInstructionAttributeInputFileSelectorProperty {
+                string TestInstructionAttributeFileSelectorGuid = 1; // The unique guid for the TestInstructionAttributeFileSelectorProperties, set when used in Editor
+                string TestInstructionAttributeFileSelectorName = 2; // The name of the TestInstructionAttributeFileSelectorProperties
+            }
+
+            //TODO Skapa ett attribute för funktioner oxo
+
+        }
+    }
 }
+
 
 // **********
 // END

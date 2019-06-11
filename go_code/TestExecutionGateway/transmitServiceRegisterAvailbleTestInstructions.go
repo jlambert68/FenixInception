@@ -13,21 +13,21 @@ import (
 // Initiate Transmit Engine for SupportedTestDataDomainsMessage-messages
 //
 
-func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateRegistrateAvailableTestDataDomainsTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateRegistrateAvailableTestInstructionsTowardsFenix() {
 
 	// Start Transmit Engine, for SupportedTestDataDomainsMessage-messages as a go-routine
 	logger.WithFields(logrus.Fields{
-		"ID": "c9b7074f-5529-4ad7-a2b9-19c27b59ddd3",
-	}).Info("Initiate: 'transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix'")
+		"ID": "9c1a8e90-fd0a-469d-8c74-ecb8a16b9b61",
+	}).Info("Initiate: 'transmitEngineForRegistrateAvailableTestInstructionsTowardsFenix'")
 
-	go gatewayObject.transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix()
+	go gatewayObject.transmitEngineForRegistrateAvailableTestInstructionsTowardsFenix()
 }
 
 // ********************************************************************************************
 // Forward supportedTestDataDomainsMessageToBeForwarded-messages from incoming channel towards Fenix
 //
 
-func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrateAvailableTestInstructionsTowardsFenix() {
 
 	for {
 
@@ -40,17 +40,17 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			// Run service and process messages
 
 			// Wait for data comes from channel to transmit engine
-			supportedTestDataDomainsMessageToBeForwarded := <-gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel
+			availbleTestInstructionAtPluginMessageTowardsFenix:= <-gatewayObject.availbleTestInstructionAtPluginMessageTowardsFenixChannel
 
 			logger.WithFields(logrus.Fields{
-				"ID": "0259aa0d-a161-45de-ae77-17d317605a0b",
-				"supportedTestDataDomainsMessageToBeForwarded": supportedTestDataDomainsMessageToBeForwarded,
+				"ID": "bf74025f-3872-46d8-8abd-5ed58ebeec1b",
+				"supportedTestDataDomainsMessageToBeForwarded": availbleTestInstructionAtPluginMessageTowardsFenix,
 			}).Debug("Received a new 'supportedTestDataDomainsMessageToBeForwarded' from channel that shoud be forwarded")
 
 			// Check number of messages in channel
 			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
 				"supportedTestDataDomainsMessageTowardsFenixChannel",
-				"7f51813f-07f2-4e05-9143-ecc40e59bb17")
+				"ddf637ab-a7ca-4676-b347-aa5a88cf62b57")
 
 			// ***** Send AvailableTestDataDomains to parent gateway Fenix using gRPC-call ****
 			addressToDial := getParentAddressAndPort()
@@ -60,7 +60,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			if err != nil {
 				// Connection Not OK
 				LogErrorAndSendInfoToFenix(
-					"b479a416-c783-4b3a-9f8d-5c008d85fa9f",
+					"7ad2be08-2846-4704-ac69-af1a53101f22",
 					gRPC.InformationMessage_WARNING,
 					"addressToDial",
 					addressToDial,
@@ -69,15 +69,15 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 				)
 
 				// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-				supportedTestDataDomainsMessageToBeForwardedByteArray, err := json.Marshal(*supportedTestDataDomainsMessageToBeForwarded)
+				supportedTestDataDomainsMessageToBeForwardedByteArray, err := json.Marshal(*availbleTestInstructionAtPluginMessageTowardsFenix)
 
 				if err != nil {
 					// Error when Unmarshaling to []byte
 					LogErrorAndSendInfoToFenix(
-						"661b6fb7-d125-4e8f-91b4-3d655d39963a",
+						"3a90e5d5-1d03-49a5-ad47-3554064206f8",
 						gRPC.InformationMessage_FATAL,
 						"testExecutionLogMessageToBeForwarded",
-						supportedTestDataDomainsMessageToBeForwarded.String(),
+						availbleTestInstructionAtPluginMessageTowardsFenix.String(),
 						err.Error(),
 						"Error when converting testExecutionLogMessageToBeForwarded into a byte array, stopping futher processing of this TestInstruction",
 					)
@@ -86,10 +86,10 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 
 					// Save message to local DB for later processing
 					_ = SaveMessageToLocalDB(
-						supportedTestDataDomainsMessageToBeForwarded.MessageId,
+						availbleTestInstructionAtPluginMessageTowardsFenix. MessageId,
 						supportedTestDataDomainsMessageToBeForwardedByteArray,
 						BucketForResendOfLogMesagesToFenix,
-						"0a71308b-a172-4342-b3da-b45cf923860b",
+						"2f548354-bb20-454e-904a-36932f341826",
 					)
 				}
 
@@ -97,15 +97,15 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 				//Connection OK
 
 				// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-				supportedTestDataDomainsMessageToBeForwardedByteArray, err := json.Marshal(*supportedTestDataDomainsMessageToBeForwarded)
+				supportedTestDataDomainsMessageToBeForwardedByteArray, err := json.Marshal(*availbleTestInstructionAtPluginMessageTowardsFenix)
 
 				if err != nil {
 					// Error when Unmarshaling to []byte
 					LogErrorAndSendInfoToFenix(
-						"891a385e-03eb-4cbd-9f2b-2ba1f70655fd",
+						"c5e1e433-5c66-4dea-991d-5c5faaade743",
 						gRPC.InformationMessage_FATAL,
 						"testExecutionLogMessageToBeForwarded",
-						supportedTestDataDomainsMessageToBeForwarded.String(),
+						availbleTestInstructionAtPluginMessageTowardsFenix.String(),
 						err.Error(),
 						"Error when converting testExecutionLogMessageToBeForwarded into a byte array, stopping futher processing of this TestInstruction",
 					)
@@ -116,16 +116,16 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 					gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					supportedTestDataDomainsMessageToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.gatewayId
-					supportedTestDataDomainsMessageToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.gatewayName
+					availbleTestInstructionAtPluginMessageTowardsFenix.SenderId = gatewayConfig.gatewayIdentification.gatewayId
+					availbleTestInstructionAtPluginMessageTowardsFenix.SenderName = gatewayConfig.gatewayIdentification.gatewayName
 
 					// Do gRPC-call to client gateway or Fenix
 					ctx := context.Background()
-					returnMessage, err := gatewayClient.RegistrateAvailableTestDataDomains(ctx, supportedTestDataDomainsMessageToBeForwarded)
+					returnMessage, err := gatewayClient.RegistrateAvailableTestDataDomains(ctx, availbleTestInstructionAtPluginMessageTowardsFenix supportedTestDataDomainsMessageToBeForwarded)
 					if err != nil {
 						// Error when rending gRPC to parent
 						LogErrorAndSendInfoToFenix(
-							"256bb8ba-3348-436b-8817-aef590d312f1",
+							"9a9698f7-b09f-4ea6-84aa-76ba744916a3",
 							gRPC.InformationMessage_WARNING,
 							"returnMessage",
 							returnMessage.String(),
@@ -135,16 +135,16 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 
 						// Save message to local DB for later processing
 						_ = SaveMessageToLocalDB(
-							supportedTestDataDomainsMessageToBeForwarded.MessageId,
+							availbleTestInstructionAtPluginMessageTowardsFenix.MessageId,
 							supportedTestDataDomainsMessageToBeForwardedByteArray,
 							BucketForResendOfLogMesagesToFenix,
-							"338075e7-b43f-4cbf-be84-b5096c4658c1",
+							"cf0d3d61-3dec-4d56-b0eb-c399ca5d28e6",
 						)
 
 					} else {
 						// gRPC Send message OK
 						logger.WithFields(logrus.Fields{
-							"ID":            "8a0daa7f-c9ee-4c59-a982-75c741daeebd",
+							"ID":            "71bb9c49-4a32-436f-8645-6d519e4cad5f",
 							"addressToDial": addressToDial,
 						}).Debug("gRPC-send OK of 'testExecutionLogMessageToBeForwarded' to Parent-Gateway or Fenix")
 

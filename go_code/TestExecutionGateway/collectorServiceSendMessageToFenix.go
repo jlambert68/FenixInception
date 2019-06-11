@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a InfoMessage toward Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObject_struct) SendMessageToFenix(ctx context.Context, informationMessage *gRPC.InformationMessage) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) SendMessageToFenix(ctx context.Context, informationMessage *gRPC.InformationMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
@@ -39,7 +39,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) SendMessageToFenix(ctx co
 // Initiate xxxx Engine for SupportedTestDataDomainsMessage-messages
 //
 
-func (gatewayObject *gatewayTowardsFenixObject_struct) initiateSendLocalMessageToFenixEngine() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateSendLocalMessageToFenixEngine() {
 
 	// Start Transmit Engine, for SupportedTestDataDomainsMessage-messages as a go-routine
 	logger.WithFields(logrus.Fields{
@@ -52,7 +52,7 @@ func (gatewayObject *gatewayTowardsFenixObject_struct) initiateSendLocalMessageT
 // ********************************************************************************************
 // Local call from this Gateway, when local errors/warnings/problems for sending a InfoMessage towards Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObject_struct) sendLocalMessageToFenixEngine() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) sendLocalMessageToFenixEngine() {
 
 	for {
 		// Wait for data comes from 'local' channel for messages initiated in this gateway

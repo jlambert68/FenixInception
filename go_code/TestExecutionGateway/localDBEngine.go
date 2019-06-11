@@ -10,7 +10,7 @@ import (
 // Open the database file in same directory as the executable file
 //
 func initiateDB(localDBFile string) {
-	var boltDBName string = "bolt.db"
+	var boltDBName = "bolt.db"
 	var boltDBNameUsed string
 
 	if localDBFile == "" {

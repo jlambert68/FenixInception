@@ -22,7 +22,7 @@ var (
 	gatewayClientHasBeenConnectedToParentGateway bool
 )
 
-type gatewayTowardsFenixObject_struct struct {
+type gatewayTowardsFenixObjectStruct struct {
 
 	// *** Internal queues used by the gateway ***
 
@@ -37,10 +37,13 @@ type gatewayTowardsFenixObject_struct struct {
 
 	// supportedTestDataDomainsMessage towards Fenix
 	supportedTestDataDomainsMessageTowardsFenixChannel chan *gRPC.SupportedTestDataDomainsMessage
+
+	// availbleTestInstructionAtPluginMessage towards Fenix
+	availbleTestInstructionAtPluginMessageTowardsFenixChannel chan *gRPC.AvailbleTestInstructionAtPluginMessage
 }
 
 var (
-	gatewayTowardsFenixObject         *gatewayTowardsFenixObject_struct
+	gatewayTowardsFenixObject         *gatewayTowardsFenixObjectStruct
 	registerGatewayTowardsFenixServer *grpc.Server
 	gatewayTowardsFenixListener       net.Listener
 

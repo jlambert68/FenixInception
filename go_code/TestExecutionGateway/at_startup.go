@@ -12,7 +12,7 @@ import (
 // *******************************************************************
 // Start up this gateway by register it to parent gateway/Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObject_struct) tryToRegisterGatewayAtParent() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) tryToRegisterGatewayAtParent() {
 
 	// Register gateway/client at parent Gateway/Fenix
 	resultBool, err := registerThisGatewayAtParentGateway()
@@ -178,7 +178,7 @@ func askClientsToReRegisterTHemSelf() {
 // *******************************************************************
 // Cleanup before closing down
 //
-var cleanupProcessed bool = false
+var cleanupProcessed = false
 
 func cleanup() {
 

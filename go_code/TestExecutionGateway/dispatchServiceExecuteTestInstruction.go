@@ -13,7 +13,7 @@ import (
 // Initiate Dispatch Engine for TestInstructions to be executed
 //
 
-func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDispatchEngineForTestInstructiona() {
+func (gatewayObject *gatewayTowardsPluginObjectStruct) initiateDispatchEngineForTestInstructiona() {
 
 	// Start Dispatch Engine, for TestInstruction to be executed, as a go-routine
 	go gatewayObject.dispatchEngineForTestInstructions()
@@ -23,7 +23,7 @@ func (gatewayObject *gatewayTowardsPluginObject_struct) initiateDispatchEngineFo
 // Forward TestInstructions from incoming channel to child gateway or plugin
 //
 
-func (gatewayObject *gatewayTowardsPluginObject_struct) dispatchEngineForTestInstructions() {
+func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInstructions() {
 
 	for {
 

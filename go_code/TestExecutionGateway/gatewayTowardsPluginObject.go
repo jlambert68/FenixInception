@@ -7,7 +7,7 @@ import (
 )
 
 // Data structures for clients (child-gateways and plugins) that register towards a gateway or Fenix
-type gRPCClientAddress_struct struct {
+type gRPCClientAddressStruct struct {
 	clientHasRegistered            bool
 	clientIp                       string
 	clientPort                     string
@@ -15,7 +15,7 @@ type gRPCClientAddress_struct struct {
 	clientLastRegistrationDateTime string
 }
 
-type gatewayTowardsPluginObject_struct struct {
+type gatewayTowardsPluginObjectStruct struct {
 
 	// Internal queues used by the gateway
 	// TestInstruction Towards Plugin
@@ -26,7 +26,7 @@ type gatewayTowardsPluginObject_struct struct {
 }
 
 var (
-	gatewayTowardsPluginObject        *gatewayTowardsPluginObject_struct
+	gatewayTowardsPluginObject        *gatewayTowardsPluginObjectStruct
 	registerGatewayTowardsPluginerver *grpc.Server
 	gatewayTowardsPluginListener      net.Listener
 

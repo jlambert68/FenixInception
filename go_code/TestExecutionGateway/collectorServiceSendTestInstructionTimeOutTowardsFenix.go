@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a InfoMessage toward Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObject_struct) SendTestInstructionTimeOutTowardsFenix(ctx context.Context, testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) SendTestInstructionTimeOutTowardsFenix(ctx context.Context, testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 

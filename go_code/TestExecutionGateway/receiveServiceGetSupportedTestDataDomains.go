@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from parent Gateway/Fenix for incoming request for supported TestDomains from a certain Plugin
 //
-func (gatewayObject *gatewayTowardsPluginObject_struct) GetSupportedTestDataDomains(ctx context.Context, supportedTestDataDomainsRequest *gRPC.SupportedTestDataDomainsRequest) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsPluginObjectStruct) GetSupportedTestDataDomains(ctx context.Context, supportedTestDataDomainsRequest *gRPC.SupportedTestDataDomainsRequest) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 

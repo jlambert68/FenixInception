@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a SupportedTestDataDomainsMessage toward Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObject_struct) RegistrateAvailableTestDataDomains(ctx context.Context, supportedTestDataDomainsMessage *gRPC.SupportedTestDataDomainsMessage) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) RegistrateAvailableTestDataDomains(ctx context.Context, supportedTestDataDomainsMessage *gRPC.SupportedTestDataDomainsMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 

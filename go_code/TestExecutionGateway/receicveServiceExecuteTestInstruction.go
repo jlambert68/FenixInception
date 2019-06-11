@@ -11,7 +11,7 @@ import (
 // ********************************************************************************************
 // Call from parent Gateway/Fenix for incoming TestInstructions that should be sent towards Plugin
 //
-func (gatewayObject *gatewayTowardsPluginObject_struct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
+func (gatewayObject *gatewayTowardsPluginObjectStruct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
