@@ -182,7 +182,8 @@ func updateMemoryAddressForParentAddressInfo() {
 // *******************************************************************
 // Replace Parent gateway/Fenix IP-address & port info in databse, from Memory if previous connection differs from memory object
 //
-
+//NOT USED (190612)
+/*
 func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(gatewayIdentification gatewayIdentificationStruct) {
 
 	// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
@@ -210,7 +211,7 @@ func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(gatewayIdentif
 			"f1ae7544-a190-4e36-b527-5abdd86c0c61",
 		)
 	}
-}
+}*/
 
 // *********************************************************************************
 // Log message to local log and then Send message to Fenix
@@ -510,6 +511,10 @@ func GetOutboundIP() string {
 //  Initiate channels used within gatway
 //
 func initiateGatewayChannels() {
+
+	logger.WithFields(logrus.Fields{
+		"ID": "",
+	}).Debug("Initiate local gateway channels")
 
 	// *** Towards Fenix ***
 	// informationMessage-channel towards Fenix
