@@ -287,7 +287,7 @@ message AvailbleTestInstructionAtPluginMessage {
     repeated TestInstruction TestInstructions = 9; // All supported TestInstructions from plugin
     // Message thats defines a specific Test Instruction
     message TestInstruction {
-        string PliginGuid = 1; // Used as unique id for the plugin
+        string PluginGuid = 1; // Used as unique id for the plugin
         string PluginName = 2; // Used as unique name for the plugin
         string SystemDomainId = 3; // The Domain/system's Id where the Sender operates
         string SystemDomainName = 4; // The Domain/system's Name where the Sender operates
@@ -363,6 +363,52 @@ message AvailbleTestInstructionAtPluginMessage {
     }
 }
 
+// **********
+// END
+// *********************************************************
+
+// *********************************************************
+//  rpc RegistrateAailableTestContainers(TestContainerChildObjectMessage) returns (AckNackResponse){
+// START
+// **********
+message AvailbleTestContainersAtPluginMessage {
+    string OriginalSenderId = 1; // Then Id of the plugin that created the message
+    string OriginalSenderName = 2; // Then name of the plugin that created the message
+    string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
+    string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
+    string MessageId = 5; // A unique id generated when sent from Plugin
+    string OrginalCreateDateTime = 6; // The timestamp when the orignal message was created
+    string OriginalSystemDomainId = 7; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 8; // The Domain/system's Name where the Sender operates
+    repeated TestContainerChildObjectMessage TestContainerChildObjectMessages = 9;
+}
+
+
+// A Container that holds block of TestContainerMessages and TestInstructions
+message TestContainerMessage {
+    string PluginGuid = 1; // Used as unique id for the plugin
+    string PluginName = 2; // Used as unique name for the plugin
+    string SystemDomainId = 3; // The Domain/system's Id where the Sender operates
+    string SystemDomainName = 4; // The Domain/system's Name where the Sender operates
+    string TestContainerGuid = 5; // A unique id for the TestContainer
+    string TestContainerName = 6; // A name for the TestContainer
+    TestContainerTypeEnum TestContainerType = 7; // Should container have Serial or Parallell processed children or is it a TestContainer
+    enum TestContainerTypeEnum {
+        IsSerialProcessedContainer = 0; // Container has Serial Processed children
+        IsParallellProcessedContainer = 1; // Container has Parallell Processed children
+    }
+    repeated TestContainerChildObjectMessage TestBlockChildObjectMessages = 8; // An object containing child-TesContainers and TestInstructions
+}
+
+message TestContainerChildObjectMessage {
+    TestInstructionChildTypeEnum ChildType = 1;
+    enum TestInstructionChildTypeEnum {
+        ChildIsTestInstructionContainerMessage = 0;
+        ChildIsTestInstructionMessage = 1;
+    }
+    TestContainerMessage TestInstructionMessageChild = 2;
+    AvailbleTestInstructionAtPluginMessage AvailbleTestInstructionAtPluginMessageChild = 3;
+}
 
 // **********
 // END
