@@ -38,7 +38,7 @@ type gatewayTowardsFenixObjectStruct struct {
 	// supportedTestDataDomainsMessage towards Fenix
 	supportedTestDataDomainsMessageTowardsFenixChannel chan *gRPC.SupportedTestDataDomainsMessage
 
-	// availbleTestInstructionAtPluginMessage towards Fenix
+	// availbleTestInstruction<AtPluginMessage towards Fenix
 	availbleTestInstructionAtPluginMessageTowardsFenixChannel chan *gRPC.AvailbleTestInstructionAtPluginMessage
 }
 

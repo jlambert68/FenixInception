@@ -505,3 +505,33 @@ func GetOutboundIP() string {
 
 	return localAddr.IP.String()
 }
+
+// *********************************************************************************
+//  Initiate channels used within gatway
+//
+func initiateGatewayChannels() {
+
+	// *** Towards Fenix ***
+	// informationMessage-channel towards Fenix
+	gatewayTowardsFenixObject.informationMessageChannel = make(chan *gRPC.InformationMessage, SuppertedNumberOfMessagesInChannels)
+
+	// testInstructionTimeOutMessage-channel towards Fenix
+	gatewayTowardsFenixObject.testInstructionTimeOutMessageChannel = make(chan *gRPC.TestInstructionTimeOutMessage, SuppertedNumberOfMessagesInChannels)
+
+	// testExecutionLogMessage-channel towards Fenix
+	gatewayTowardsFenixObject.testExecutionLogMessageChannel = make(chan *gRPC.TestExecutionLogMessage, SuppertedNumberOfMessagesInChannels)
+
+	// supportedTestDataDomainsMessage-channel towards Fenix
+	gatewayTowardsFenixObject.supportedTestDataDomainsMessageTowardsFenixChannel = make(chan *gRPC.SupportedTestDataDomainsMessage, SuppertedNumberOfMessagesInChannels)
+
+	// availbleTestInstruction<AtPluginMessage-channel towards Fenix
+	gatewayTowardsFenixObject.availbleTestInstructionAtPluginMessageTowardsFenixChannel = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, SuppertedNumberOfMessagesInChannels)
+
+	// *** Towards Plugina ***
+	// TestInstruction Towards Plugin
+	gatewayTowardsPluginObject.testInstructionMessageChannel = make(chan *gRPC.TestInstruction_RT, SuppertedNumberOfMessagesInChannels)
+
+	// supportedTestDataDomainsRequest Towards Plugin
+	gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannel = make(chan *gRPC.SupportedTestDataDomainsRequest, SuppertedNumberOfMessagesInChannels)
+
+}

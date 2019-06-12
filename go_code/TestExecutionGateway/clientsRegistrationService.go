@@ -72,7 +72,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterClientAddress(ctx 
 			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
-			Message:                  "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress.",
+			Message:                  "Error when converting 'clientRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress.",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
@@ -81,7 +81,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterClientAddress(ctx 
 		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
 			ClientPort: 0,
 			Acknack:    false,
-			Comments:   "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress..",
+			Comments:   "Error when converting 'clientRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress..",
 		}
 
 		return registerClientAddressResponse, nil
@@ -94,8 +94,8 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterClientAddress(ctx 
 
 	dbMessage := dbMessageStruct{
 		DbWrite,
-		BucketForParentAddress,
-		BucketKeyForParentAddress, // Key allways hardcoded due to one gateway or plugin can only have one parent
+		BucketForClients,
+		clientRPCAddress.clientId,
 		childgRPCAddressByteArray,
 		returnChannel}
 

@@ -125,9 +125,6 @@ type clientsAddressAndPortStruct struct {
 	clientPort    int32
 }
 
-// Memory Object for keeping track of next port for each client ip-address
-var nextFreeClientPort map[string]int32
-
 // The number of messages that all internal gateway channels supports
 const SuppertedNumberOfMessagesInChannels = 100
 
