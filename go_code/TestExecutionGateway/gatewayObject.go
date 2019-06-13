@@ -113,6 +113,7 @@ const BucketForTestInstructions = "TestInstructions"
 const BucketForGatewayIdentificationInfo = "GateWayIdentifaction"
 const BucketKeyForGatewayIdentificationInfo = "GateWayIdentifactionId"
 const BucketForResendOfAvailableTestInstructionsToFenix = "ReSendAvailableTestInstructions"
+const BucketForResendOfAvailableTestContainers = "ReSendAvailableTestContainers"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPortStruct

@@ -368,7 +368,7 @@ message AvailbleTestInstructionAtPluginMessage {
 // *********************************************************
 
 // *********************************************************
-//  rpc RegistrateAailableTestContainers(TestContainerChildObjectMessage) returns (AckNackResponse){
+//  rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
 // START
 // **********
 message AvailbleTestContainersAtPluginMessage {
@@ -527,9 +527,13 @@ service GatewayTowardsFenix {
     rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
     }
 
+    // Register the different Testdata Domains that is supported
     rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
     }
 
+    // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
+    rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
+    }
 
     // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
     rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse) {

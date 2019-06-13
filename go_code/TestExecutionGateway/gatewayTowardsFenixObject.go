@@ -40,6 +40,9 @@ type gatewayTowardsFenixObjectStruct struct {
 
 	// availbleTestInstruction<AtPluginMessage towards Fenix
 	availbleTestInstructionAtPluginMessageTowardsFenixChannel chan *gRPC.AvailbleTestInstructionAtPluginMessage
+
+	//availbleTestContainersAtPluginMessage towars Fenix
+	availbleTestContainersAtPluginMessageTowardsFenixChannel chan *gRPC.AvailbleTestContainersAtPluginMessage
 }
 
 var (
