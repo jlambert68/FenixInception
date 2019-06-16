@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// Variable for handling when Gateway is in IntegrationTest-mode
+var gatewayIsInIntegrationTestMode = false
+
 var (
 	// Common logger for the gateway
 	logger *logrus.Logger
@@ -50,53 +53,69 @@ type dbResultMessageStruct struct {
 //
 
 // All config parameter will be stored in the following parameter
-var gatewayConfig tomlConfigStruct
+var gatewayConfig TomlConfigStruct
 
 // Main struct for toml-file
-type tomlConfigStruct struct {
-	gatewayIdentification gatewayIdentificationStruct `toml:"gatewayIdentification"`
-	systemDomain          systemDomainStruct          `toml:"systemDomain"`
-	parentgRPCAddress     parentgRPCAddressStruct     `toml:"parentgRPCAddress"`
-	initialClientPort     initialClientPortStruct     `toml:"initialClientPort"`
-	loggingLevel          loggingLevelStruct          `toml:"loggingLevel"`
+/*
+type TomlConfigStruct struct {
+	GatewayIdentification GatewayIdentificationStruct `toml:"GatewayIdentification"`
+	SystemDomain          SystemDomainStruct          `toml:"SystemDomain"`
+	ParentgRPCAddress     ParentgRPCAddressStruct     `toml:"ParentgRPCAddress"`
+	InitialClientPort     InitialClientPortStruct     `toml:"InitialClientPort"`
+	LoggingLevel          LoggingLevelStruct          `toml:"LoggingLevel"`
+}
+*/
+type TomlConfigStruct2 struct {
+	GatewayIdentification GatewayIdentificationStruct
+	SystemDomain          SystemDomainStruct
+	ParentgRPCAddress     ParentgRPCAddressStruct
+	InitialClientPort     InitialClientPortStruct
+	//	LoggingLevel          LoggingLevelStruct
+}
+type TomlConfigStruct struct {
+	GatewayIdentification GatewayIdentificationStruct
+	SystemDomain          SystemDomainStruct
+	ParentgRPCAddress     ParentgRPCAddressStruct
+	InitialClientPort     InitialClientPortStruct
+	LoggingLevel          LoggingLevelStruct
 }
 
 // local gateway information for toml-file
-type gatewayIdentificationStruct struct {
-	gatewayId                     string
-	gatewayName                   string
-	gatewayIpAddress              string
-	gatewaParentCallOnThisPort    int32
-	gatewayChildrenCallOnThisPort int32
-	createdDateTime               string
+type GatewayIdentificationStruct struct {
+	GatewayId                     string
+	GatewayName                   string
+	GatewayIpAddress              string
+	GatewaParentCallOnThisPort    int32
+	GatewayChildrenCallOnThisPort int32
+	CreatedDateTime               string
 }
 
 // Ovelall domain for toml-file, Custody Cash, Compis etc.
-type systemDomainStruct struct {
-	gatewayDomainId   string
-	gatewayDomainName string
+type SystemDomainStruct struct {
+	GatewayDomainId   string
+	GatewayDomainName string
 }
 
 // Parents address informaiton for toml-file
-type parentgRPCAddressStruct struct {
-	parentGatewayId                          string
-	parentGatewayName                        string
-	parentGatewayServerAddress               string
-	parentGatewayServerPort                  int32
-	createdDateTime                          string
-	connectionToParentDoneAtLeastOnce        bool
-	connectionToParentLastConnectionDateTime string
+type ParentgRPCAddressStruct struct {
+	ParentGatewayId                          string
+	ParentGatewayName                        string
+	ParentGatewayServerAddress               string
+	ParentGatewayServerPort                  int32
+	CreatedDateTime                          string
+	ConnectionToParentDoneAtLeastOnce        bool
+	ConnectionToParentLastConnectionDateTime string
 }
 
 // The first client, for every ip address, must listen on this port, toml-file
 // Every aftercoming client , on same ip address, will add +1 to port number
-type initialClientPortStruct struct {
-	initialClientPort int32
+type InitialClientPortStruct struct {
+	InitialClientPort int32
 }
 
 // The logging level that the gateway will use during runtime
-type loggingLevelStruct struct {
-	loggingLevel logrus.Level
+type LoggingLevelStruct struct {
+	LoggingLevel logrus.Level
 }
 
 //

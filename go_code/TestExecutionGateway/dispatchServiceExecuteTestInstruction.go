@@ -62,16 +62,16 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInst
 
 				//Send Error information to Fenix
 				localInformationMessageChannel <- &gRPC.InformationMessage{
-					OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-					OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-					SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-					SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+					SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 					MessageId:                generateUUID(),
 					MessageType:              gRPC.InformationMessage_ERROR,
 					Message:                  "Did not connect to Child (Gateway or Plugin) Server!",
 					OrginalCreateDateTime:    generaTimeStampUTC(),
-					OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-					OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+					OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+					OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 				}
 			} else {
 				logger.WithFields(logrus.Fields{
@@ -83,8 +83,8 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInst
 				gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
 
 				// ChangeSenderId to this gatway's SenderId before sending the data forward
-				testInstructionToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.gatewayId
-				testInstructionToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.gatewayName
+				testInstructionToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+				testInstructionToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 				// Do gRPC-call to client gateway or Plugin
 				ctx := context.Background()
@@ -98,16 +98,16 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInst
 
 					//Send Error information to Fenix
 					localInformationMessageChannel <- &gRPC.InformationMessage{
-						OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-						OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-						SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-						SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+						OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+						OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+						SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+						SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 						MessageId:                generateUUID(),
 						MessageType:              gRPC.InformationMessage_ERROR,
 						Message:                  "Problem to send TestInstruction to child-Gateway or Plugin",
 						OrginalCreateDateTime:    generaTimeStampUTC(),
-						OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-						OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+						OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+						OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 					}
 				} else {
 					logger.WithFields(logrus.Fields{
@@ -130,16 +130,16 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInst
 
 						//TSend Error information to Fenix
 						localInformationMessageChannel <- &gRPC.InformationMessage{
-							OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-							OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-							SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-							SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+							OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+							OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+							SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+							SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 							MessageId:                generateUUID(),
 							MessageType:              gRPC.InformationMessage_ERROR,
 							Message:                  "Error when converting TestInstruction into a byte array, stopping futher processing of this TestInstruction",
 							OrginalCreateDateTime:    generaTimeStampUTC(),
-							OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-							OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+							OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+							OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 						}
 
 					} else {
@@ -169,16 +169,16 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInst
 
 							//Send Error information to Fenix
 							localInformationMessageChannel <- &gRPC.InformationMessage{
-								OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-								OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-								SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-								SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+								OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+								OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+								SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+								SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 								MessageId:                generateUUID(),
 								MessageType:              gRPC.InformationMessage_ERROR,
 								Message:                  "Got an error when Saveing to local DB",
 								OrginalCreateDateTime:    generaTimeStampUTC(),
-								OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-								OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+								OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+								OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 							}
 
 						}

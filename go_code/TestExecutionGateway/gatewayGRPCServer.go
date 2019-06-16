@@ -16,7 +16,7 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 	var err error
 
 	// If no port from Parent Gateway/Fenix has been received then exit this function
-	if gatewayConfig.parentgRPCAddress.connectionToParentDoneAtLeastOnce == false {
+	if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
 		// Gateway har never had a successful connection to parent gateway/Fenx
 		logger.WithFields(logrus.Fields{
 			"ID": "f6398d61-fd34-49f4-a6e5-18b2318428cb",
@@ -94,11 +94,11 @@ func stopGatewayGRPCServerForMessagesTowardsPlugins() {
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"ID": "35b35f32-7e5b-420c-8544-072e868e5bbb",
-		}).Error("Couldn't Stop listening, from Children, on port: " + strconv.FormatInt(int64(gatewayConfig.gatewayIdentification.gatewayChildrenCallOnThisPort), 10))
+		}).Error("Couldn't Stop listening, from Children, on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 	} else {
 		logger.WithFields(logrus.Fields{
 			"ID": "35b35f32-7e5b-420c-8544-072e868e5bbb",
-		}).Info("Stop listening, from Children, on port: " + strconv.FormatInt(int64(gatewayConfig.gatewayIdentification.gatewayChildrenCallOnThisPort), 10))
+		}).Info("Stop listening, from Children, on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 	}
 }
 
@@ -110,7 +110,7 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 	var err error
 
 	// If no port from Parent Gateway/Fenix has been received then exit this function
-	if gatewayConfig.parentgRPCAddress.connectionToParentDoneAtLeastOnce == false {
+	if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
 		// Gateway har never had a successful connection to parent gateway/Fenx
 		logger.WithFields(logrus.Fields{
 			"ID": "92da53d1-345b-493c-bf01-023b882bcbc2",
@@ -188,10 +188,10 @@ func stopGatewayGRPCServerForMessagesTowardsFenix() {
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"ID": "3d18cec5-6d65-4a71-87ac-e43ca88e459f",
-		}).Error("Couldn't Stop listening, from Parent, on port: " + strconv.FormatInt(int64(gatewayConfig.gatewayIdentification.gatewaParentCallOnThisPort), 10))
+		}).Error("Couldn't Stop listening, from Parent, on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 	} else {
 		logger.WithFields(logrus.Fields{
 			"ID": "87ea079f-b7a2-444e-b1f2-adbfebe3d804",
-		}).Info("Stop listening, from Parent, on port: " + strconv.FormatInt(int64(gatewayConfig.gatewayIdentification.gatewaParentCallOnThisPort), 10))
+		}).Info("Stop listening, from Parent, on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 	}
 }

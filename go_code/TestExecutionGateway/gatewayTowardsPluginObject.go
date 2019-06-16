@@ -26,7 +26,7 @@ type gatewayTowardsPluginObjectStruct struct {
 }
 
 var (
-	gatewayTowardsPluginObject        *gatewayTowardsPluginObjectStruct
+	gatewayTowardsPluginObject        gatewayTowardsPluginObjectStruct
 	registerGatewayTowardsPluginerver *grpc.Server
 	gatewayTowardsPluginListener      net.Listener
 

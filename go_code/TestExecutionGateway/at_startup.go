@@ -19,10 +19,18 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) tryToRegisterGatewayAtPare
 	if err != nil || resultBool == false {
 		// If this gateway never has been connected to parent gateway/Fenix then Exit
 		// due to that parent doesn't know this gateways address yet
-		if gatewayConfig.parentgRPCAddress.connectionToParentDoneAtLeastOnce == false {
-			logger.WithFields(logrus.Fields{
-				"ID": "c7ea051f-37b2-41d2-820e-5050a560cfbb",
-			}).Fatal("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+		if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
+			if gatewayIsInIntegrationTestMode == false {
+				// Gateway is NOT in IntegrationTestMode
+				logger.WithFields(logrus.Fields{
+					"ID": "c7ea051f-37b2-41d2-820e-5050a560cfbb",
+				}).Fatal("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+			} else {
+				// Gateway IS in IntegrationTestMode
+				logger.WithFields(logrus.Fields{
+					"ID": "580d2c7d-b8d3-40f7-b238-eb096d859355",
+				}).Error("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+			}
 		} else {
 			logger.WithFields(logrus.Fields{
 				"ID": "35b7981d-ed97-48bf-8f5e-9807da4cced4",
@@ -45,14 +53,14 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 	var addressToDial string
 
 	// Find parents address and port to call
-	addressToDial = gatewayConfig.parentgRPCAddress.parentGatewayServerAddress + ":" + strconv.FormatInt(int64(gatewayConfig.parentgRPCAddress.parentGatewayServerPort), 10)
+	addressToDial = gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress + ":" + strconv.FormatInt(int64(gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort), 10)
 
 	// Information sent to parent gateway/Fenix
 	registerClientAddressRequest := gRPC.RegisterClientAddressRequest{
 		GRPCVersion:            gRPC.CurrentVersionEnum_VERSION_0_1_0,
-		CallingSystemId:        gatewayConfig.gatewayIdentification.gatewayId,
-		CallingSystemName:      gatewayConfig.gatewayIdentification.gatewayName,
-		CallingSystemIpAddress: gatewayConfig.gatewayIdentification.gatewayIpAddress}
+		CallingSystemId:        gatewayConfig.GatewayIdentification.GatewayId,
+		CallingSystemName:      gatewayConfig.GatewayIdentification.GatewayName,
+		CallingSystemIpAddress: gatewayConfig.GatewayIdentification.GatewayIpAddress}
 
 	// Set up connection to Parent Gateway/Fenix Server
 	remoteGatewayServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
@@ -105,14 +113,14 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 		}
 
 		// Save Port to memory object
-		gatewayConfig.gatewayIdentification.gatewaParentCallOnThisPort = registerClientAddressResponse.ClientPort
+		gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort = registerClientAddressResponse.ClientPort
 
 		// Save information that about that registration was successful. Used for knowning that registration was made at least once
-		gatewayConfig.parentgRPCAddress.connectionToParentDoneAtLeastOnce = true
-		gatewayConfig.parentgRPCAddress.connectionToParentLastConnectionDateTime = generaTimeStampUTC()
+		gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce = true
+		gatewayConfig.ParentgRPCAddress.ConnectionToParentLastConnectionDateTime = generaTimeStampUTC()
 
 		// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-		gatewayIdentificationByteArray, err := json.Marshal(gatewayConfig.gatewayIdentification)
+		gatewayIdentificationByteArray, err := json.Marshal(gatewayConfig.GatewayIdentification)
 
 		if err != nil {
 			// Error when Marshaling to []byte
@@ -122,7 +130,7 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 				"gatewayIdentificationByteArray",
 				"No data available...",
 				err.Error(),
-				"Error when converting 'gatewayConfig.gatewayIdentification' into a byte array, stopping futher processing.",
+				"Error when converting 'gatewayConfig.GatewayIdentification' into a byte array, stopping futher processing.",
 			)
 		} else {
 			// Marshaling to []byte OK
@@ -137,7 +145,7 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 		}
 
 		// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-		parentgRPCAddressByteArray, err := json.Marshal(gatewayConfig.parentgRPCAddress)
+		parentgRPCAddressByteArray, err := json.Marshal(gatewayConfig.ParentgRPCAddress)
 
 		if err != nil {
 			// Error when Marshaling to []byte
@@ -147,7 +155,7 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 				"parentgRPCAddressByteArray",
 				"No data available...",
 				err.Error(),
-				"Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing.",
+				"Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing.",
 			)
 		} else {
 			// Marshaling to []byte OK
@@ -202,9 +210,11 @@ func cleanup() {
 // Start all Services
 //
 func startAllServices() {
+	// Read 'gatewayConfig.toml' for config parameters
+	processConfigFile("") // Use default toml-config-file name
 
 	// Init logger
-	initLogger("localLogFile")
+	initLogger("localLogFile.log")
 
 	// Cleanup all gRPC connections
 	defer cleanup()
@@ -217,9 +227,6 @@ func startAllServices() {
 
 	// Ensure that all services don't start before everything has been started
 	gatewayMustStopProcessing = true
-
-	// Read 'gatewayConfig.toml' for config parameters
-	processConfigFile()
 
 	// Initiate Database
 	initiateDB("") // Use default database file name
@@ -242,12 +249,6 @@ func startAllServices() {
 	// Start 'transmitEngineForSendTestInstructionTimeOutTowardsFenix'
 	gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix()
 
-	// Update Memory information about parent address and port with that saved in database, database overrule config-file
-	updateMemoryAddressForParentAddressInfo()
-
-	// Start all services at the same time
-	gatewayMustStopProcessing = false
-
 	// Try to Register this Gateway At Parent
 	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
 
@@ -256,6 +257,12 @@ func startAllServices() {
 
 	// Listen to gRPC-calls from child gateway/Plugin
 	startGatewayGRPCServerForMessagesTowardsPlugins()
+
+	// Update Memory information about parent address and port with that saved in database, database overrule config-file
+	updateMemoryAddressForParentAddressInfo()
+
+	// Start all services at the same time
+	gatewayMustStopProcessing = false
 
 	// Ask clients to ReRegister them self to this gateway
 	// TODO Make all Clients ReRegister them self

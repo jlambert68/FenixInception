@@ -27,14 +27,14 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterClientAddress(ctx 
 		localInformationMessageChannel <- &gRPC.InformationMessage{
 			OriginalSenderId:         registerClientAddressRequest.CallingSystemId,
 			OriginalSenderName:       registerClientAddressRequest.CallingSystemName,
-			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Child gateway/Plugin is using wrong version of gRPC-defition",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
@@ -66,16 +66,16 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterClientAddress(ctx 
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Error when converting 'clientRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress.",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
@@ -114,16 +114,16 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterClientAddress(ctx 
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Got an error when Saveing to local DB",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		// Create message back to child Gateway/Plugin

@@ -116,8 +116,8 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 					gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					availbleTestInstructionAtPluginMessageTowardsFenix.SenderId = gatewayConfig.gatewayIdentification.gatewayId
-					availbleTestInstructionAtPluginMessageTowardsFenix.SenderName = gatewayConfig.gatewayIdentification.gatewayName
+					availbleTestInstructionAtPluginMessageTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+					availbleTestInstructionAtPluginMessageTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 					// Do gRPC-call to client gateway or Fenix
 					ctx := context.Background()

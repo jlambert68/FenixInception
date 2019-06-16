@@ -13,7 +13,7 @@ import (
 func (gatewayObject *gatewayTowardsPluginObjectStruct) PleaseReRegisterClientAddress(ctx context.Context, reRegisterToGatewayMessage *gRPC.ReRegisterToGatewayMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
-	var parentgRPCAddress parentgRPCAddressStruct
+	var parentgRPCAddress ParentgRPCAddressStruct
 
 	logger.WithFields(logrus.Fields{
 		"ID":                         "b9e6bde2-0a59-4459-83c4-d723d50a080c",
@@ -21,36 +21,36 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) PleaseReRegisterClientAdd
 	}).Info("Incoming gRPC: 'PleaseReRegisterClientAddress'")
 
 	//Move data into object that should be save in DB
-	parentgRPCAddress.parentGatewayId = reRegisterToGatewayMessage.GatewayId
-	parentgRPCAddress.parentGatewayName = reRegisterToGatewayMessage.GatewayName
-	parentgRPCAddress.parentGatewayServerAddress = reRegisterToGatewayMessage.GatewayAddress
-	parentgRPCAddress.parentGatewayServerPort = reRegisterToGatewayMessage.GatewayPort
-	parentgRPCAddress.createdDateTime = generaTimeStampUTC()
+	parentgRPCAddress.ParentGatewayId = reRegisterToGatewayMessage.GatewayId
+	parentgRPCAddress.ParentGatewayName = reRegisterToGatewayMessage.GatewayName
+	parentgRPCAddress.ParentGatewayServerAddress = reRegisterToGatewayMessage.GatewayAddress
+	parentgRPCAddress.ParentGatewayServerPort = reRegisterToGatewayMessage.GatewayPort
+	parentgRPCAddress.CreatedDateTime = generaTimeStampUTC()
 
 	// Convert Parent Gateway address info-struct into a byte array
 	parentgRPCAddressByteArray, err := json.Marshal(reRegisterToGatewayMessage)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"ID":                "6df384d3-ebe9-4a65-947f-e51814c8544c",
-			"parentgRPCAddress": parentgRPCAddress,
+			"ParentgRPCAddress": parentgRPCAddress,
 			"err":               err,
-		}).Error("Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of Reregistration.")
+		}).Error("Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration.")
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
-			Message:                  "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of Reregistration.",
+			Message:                  "Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration.",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
-		returnMessage.Comments = "Error when converting 'parentgRPCAddress' into a byte array, stopping futher processing of Reregistration."
+		returnMessage.Comments = "Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration."
 		returnMessage.Acknack = false
 		return returnMessage, nil
 
@@ -82,16 +82,16 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) PleaseReRegisterClientAdd
 
 		// Send Error information to Fenix
 		localInformationMessageChannel <- &gRPC.InformationMessage{
-			OriginalSenderId:         gatewayConfig.gatewayIdentification.gatewayId,
-			OriginalSenderName:       gatewayConfig.gatewayIdentification.gatewayName,
-			SenderId:                 gatewayConfig.gatewayIdentification.gatewayId,
-			SenderName:               gatewayConfig.gatewayIdentification.gatewayName,
+			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Got an error when Saveing to local DB",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.systemDomain.gatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.systemDomain.gatewayDomainName,
+			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		// Create message back to parent Gateway/Fenix

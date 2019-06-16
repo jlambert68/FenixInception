@@ -46,7 +46,7 @@ type gatewayTowardsFenixObjectStruct struct {
 }
 
 var (
-	gatewayTowardsFenixObject         *gatewayTowardsFenixObjectStruct
+	gatewayTowardsFenixObject         gatewayTowardsFenixObjectStruct
 	registerGatewayTowardsFenixServer *grpc.Server
 	gatewayTowardsFenixListener       net.Listener
 

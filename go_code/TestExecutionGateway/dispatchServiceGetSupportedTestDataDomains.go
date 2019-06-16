@@ -118,8 +118,8 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForSupporte
 					gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					getSupportedTestDomainsToBeForwarded.SenderId = gatewayConfig.gatewayIdentification.gatewayId
-					getSupportedTestDomainsToBeForwarded.SenderName = gatewayConfig.gatewayIdentification.gatewayName
+					getSupportedTestDomainsToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+					getSupportedTestDomainsToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 					// Do gRPC-call to child gateway or Plugin
 					ctx := context.Background()
