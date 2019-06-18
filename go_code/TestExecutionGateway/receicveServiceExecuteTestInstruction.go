@@ -11,7 +11,7 @@ import (
 // ********************************************************************************************
 // Call from parent Gateway/Fenix for incoming TestInstructions that should be sent towards Plugin
 //
-func (gatewayObject *gatewayTowardsPluginObjectStruct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
@@ -64,7 +64,7 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) SendTestInstructionToward
 		}).Debug("TestInstructions was saved in local database")
 
 		// Put TestInstruction on queue for further processing
-		gatewayObject.testInstructionMessageChannel <- testInstruction
+		gatewayTowardsPluginObject.testInstructionMessageChannel <- testInstruction
 
 		logger.WithFields(logrus.Fields{
 			"ID":              "73e44541-c793-4ccd-8bc8-c94320f49f29",

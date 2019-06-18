@@ -13,7 +13,7 @@ var (
 	grpcClient                    gRPC.GatewayTowardsFenixClient
 
 	// Port where Parent Gateway/Fenix will call this gateway/client
-	incomingPortForCallsFromParentGateway string
+	//incomingPortForCallsFromParentGateway string
 )
 
 // The following variables is saved in DB and reloaded At Startup
@@ -43,6 +43,12 @@ type gatewayTowardsFenixObjectStruct struct {
 
 	//availbleTestContainersAtPluginMessage towars Fenix
 	availbleTestContainersAtPluginMessageTowardsFenixChannel chan *gRPC.AvailbleTestContainersAtPluginMessage
+
+	//availbleTestContainersAtPluginMessage towars Fenix
+	testInstructionExecutionResultMessageTowardsFenixChannel chan *gRPC.TestInstructionExecutionResultMessage
+
+	//supportedTestDataDomainsWithHeadersMessage towars Fenix
+	supportedTestDataDomainsWithHeadersMessageTowardsFenixChannel chan *gRPC.SupportedTestDataDomainsWithHeadersMessage
 }
 
 var (
@@ -54,4 +60,4 @@ var (
 
 )
 
-type GRPCServerTowardsFenix struct{}
+type GRPCServerTowardsFenixStruct struct{}

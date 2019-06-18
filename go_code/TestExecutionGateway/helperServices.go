@@ -540,3 +540,14 @@ func initiateGatewayChannels() {
 	gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannel = make(chan *gRPC.SupportedTestDataDomainsRequest, SuppertedNumberOfMessagesInChannels)
 
 }
+
+// *********************************************************************************
+//  Update Memory object with parameters that was recceived at start up using flags
+//
+func updateMemoryObjectWithFlagOverrideParameters() {
+
+	// THis gateway should listen on this port from calls from clients
+	if GatewayInIntegrationTestMode.ListeningOnThisPortAsParent != 0 {
+		gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort = int32(GatewayInIntegrationTestMode.ListeningOnThisPortAsParent)
+	}
+}

@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a SupportedTestDataDomainsMessage toward Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterAvailbleTestInstructions(ctx context.Context, availbleTestInstructionAtPluginMessage *gRPC.AvailbleTestInstructionAtPluginMessage) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) RegisterAvailbleTestInstructions(ctx context.Context, availbleTestInstructionAtPluginMessage *gRPC.AvailbleTestInstructionAtPluginMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
@@ -19,7 +19,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterAvailbleTestInstru
 	}).Debug("Incoming gRPC: 'RegisterAvailbleTestInstructions'")
 
 	// Put availbleTestInstructionAtPluginMessage on queue for further processing
-	gatewayObject.availbleTestInstructionAtPluginMessageTowardsFenixChannel <- availbleTestInstructionAtPluginMessage
+	gatewayTowardsFenixObject.availbleTestInstructionAtPluginMessageTowardsFenixChannel <- availbleTestInstructionAtPluginMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "e6ed9172-39ad-4a7c-bb07-b76f2555b36a",
 	}).Debug("'availbleTestInstructionAtPluginMessage' was put on the channel")

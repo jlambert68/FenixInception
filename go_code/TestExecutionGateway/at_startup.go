@@ -14,32 +14,39 @@ import (
 //
 func (gatewayObject *gatewayTowardsFenixObjectStruct) tryToRegisterGatewayAtParent() {
 
-	// Register gateway/client at parent Gateway/Fenix
-	resultBool, err := registerThisGatewayAtParentGateway()
-	if err != nil || resultBool == false {
-		// If this gateway never has been connected to parent gateway/Fenix then Exit
-		// due to that parent doesn't know this gateways address yet
-		if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
-			if gatewayIsInIntegrationTestMode == false {
-				// Gateway is NOT in IntegrationTestMode
-				logger.WithFields(logrus.Fields{
-					"ID": "c7ea051f-37b2-41d2-820e-5050a560cfbb",
-				}).Fatal("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+	// Check if this gateway i used in integration test mode and only should start without any connection to parent gateway
+	if GatewayInIntegrationTestMode.StartWithOutAnyParent == false {
+		// Register gateway/client at parent Gateway/Fenix
+		resultBool, err := registerThisGatewayAtParentGateway()
+		if err != nil || resultBool == false {
+			// If this gateway never has been connected to parent gateway/Fenix then Exit
+			// due to that parent doesn't know this gateways address yet
+			if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
+				if GatewayInIntegrationTestMode.IsInSelfIntegrationTestMode == false {
+					// Gateway is NOT in IsInSelfIntegrationTestMode
+					logger.WithFields(logrus.Fields{
+						"ID": "c7ea051f-37b2-41d2-820e-5050a560cfbb",
+					}).Fatal("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+				} else {
+					// Gateway IS in IsInSelfIntegrationTestMode
+					logger.WithFields(logrus.Fields{
+						"ID": "580d2c7d-b8d3-40f7-b238-eb096d859355",
+					}).Error("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+				}
 			} else {
-				// Gateway IS in IntegrationTestMode
 				logger.WithFields(logrus.Fields{
-					"ID": "580d2c7d-b8d3-40f7-b238-eb096d859355",
-				}).Error("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+					"ID": "35b7981d-ed97-48bf-8f5e-9807da4cced4",
+				}).Warning("Parent Gateway/Fenix is not alive so Waiting for Gateway/Fenix to reconnect")
 			}
 		} else {
 			logger.WithFields(logrus.Fields{
-				"ID": "35b7981d-ed97-48bf-8f5e-9807da4cced4",
-			}).Warning("Parent Gateway/Fenix is not alive so Waiting for Gateway/Fenix to reconnect")
+				"ID": "9401d538-0d13-4213-bab8-d5e546784738",
+			}).Debug("Success in connectiing to parent Gateway/Fenix ")
 		}
 	} else {
 		logger.WithFields(logrus.Fields{
-			"ID": "9401d538-0d13-4213-bab8-d5e546784738",
-		}).Debug("Success in connectiing to parent Gateway/Fenix ")
+			"ID": "db3709f2-a848-44be-82a0-509cc4bc08db",
+		}).Debug("No Connection done to parent Gateway/Fenix. This gateway is used for Integrations Tests ")
 	}
 
 }
@@ -216,9 +223,6 @@ func startAllServices() {
 	// Init logger
 	initLogger("localLogFile.log")
 
-	// Cleanup all gRPC connections
-	defer cleanup()
-
 	// Initiate internal gatewau channels
 	initiateGatewayChannels()
 
@@ -249,11 +253,14 @@ func startAllServices() {
 	// Start 'transmitEngineForSendTestInstructionTimeOutTowardsFenix'
 	gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix()
 
+	// Update Memory object with parameters that was recceived at start up using flags
+	updateMemoryObjectWithFlagOverrideParameters()
+
 	// Try to Register this Gateway At Parent
 	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
 
 	// Listen to gRPC-calls from parent gateway/Fenix
-	startGatewayGRPCServerForMessagesTowardsFenix()
+	//startGatewayGRPCServerForMessagesTowardsFenix()
 
 	// Listen to gRPC-calls from child gateway/Plugin
 	startGatewayGRPCServerForMessagesTowardsPlugins()

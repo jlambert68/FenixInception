@@ -13,17 +13,17 @@ import (
 // Initiate Dispatch Engine for TestInstructions to be executed
 //
 
-func (gatewayObject *gatewayTowardsPluginObjectStruct) initiateDispatchEngineForTestInstructiona() {
+func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) initiateDispatchEngineForTestInstructiona() {
 
 	// Start Dispatch Engine, for TestInstruction to be executed, as a go-routine
-	go gatewayObject.dispatchEngineForTestInstructions()
+	go gatewayTowardsPluginObject.dispatchEngineForTestInstructions()
 }
 
 // ********************************************************************************************
 // Forward TestInstructions from incoming channel to child gateway or plugin
 //
 
-func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInstructions() {
+func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInstructions() {
 
 	for {
 
@@ -36,10 +36,10 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForTestInst
 			// Run service and process messages
 
 			// Wait for data comes from channel to dispatch engine
-			testInstructionToBeForwarded := <-gatewayObject.testInstructionMessageChannel
+			testInstructionToBeForwarded := <-gatewayTowardsPluginObject.testInstructionMessageChannel
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.testInstructionMessageChannel),
+			channelSinaling(len(gatewayTowardsPluginObject.testInstructionMessageChannel),
 				"testInstructionTimeOutMessageChannel",
 				"9c89b05d-7f4d-4971-b21b-7c7fa9d42e9c")
 

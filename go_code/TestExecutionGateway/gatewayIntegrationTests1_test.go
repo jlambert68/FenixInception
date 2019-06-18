@@ -1,4 +1,4 @@
-// +build integration1
+// +build integration2
 
 package TestExecutionGateway
 
@@ -28,7 +28,7 @@ var (
 
 func TestMain(m *testing.M) {
 
-	// Set Gateway in IntegrationTestMode
+	// Set Gateway in IsInSelfIntegrationTestMode
 	gatewayIsInIntegrationTestMode = true
 
 	// Parse flags
@@ -72,7 +72,7 @@ func TestMain(m *testing.M) {
 		}
 	*/
 
-	fmt.Println("ending now")
+	fmt.Println("ending test now")
 	os.Exit(result)
 }
 

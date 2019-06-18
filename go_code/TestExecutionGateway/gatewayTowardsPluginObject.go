@@ -7,6 +7,7 @@ import (
 )
 
 // Data structures for clients (child-gateways and plugins) that register towards a gateway or Fenix
+
 type gRPCClientAddressStruct struct {
 	clientHasRegistered            bool
 	clientIp                       string
@@ -34,4 +35,4 @@ var (
 
 )
 
-type GRPCServerTowardsPlugin struct{}
+type GRPCServerTowardsPluginStruct struct{}

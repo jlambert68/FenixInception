@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a InfoMessage toward Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObjectStruct) SendMessageToFenix(ctx context.Context, informationMessage *gRPC.InformationMessage) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendMessageToFenix(ctx context.Context, informationMessage *gRPC.InformationMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
@@ -19,7 +19,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) SendMessageToFenix(ctx con
 	}).Debug("Incoming gRPC: 'SendMessageToFenix'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	gatewayObject.informationMessageChannel <- informationMessage
+	gatewayTowardsFenixObject.informationMessageChannel <- informationMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("InformationMessage was put on the channel")

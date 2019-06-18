@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a InfoMessage toward Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObjectStruct) SendTestInstructionTimeOutTowardsFenix(ctx context.Context, testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendTestInstructionTimeOutTowardsFenix(ctx context.Context, testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
@@ -19,7 +19,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) SendTestInstructionTimeOut
 	}).Debug("Incoming gRPC: 'SendTestInstructionTimeOutTowardsFenix'")
 
 	// Put testInstructionTimeOutMessage on queue for further processing
-	gatewayObject.testInstructionTimeOutMessageChannel <- testInstructionTimeOutMessage
+	gatewayTowardsFenixObject.testInstructionTimeOutMessageChannel <- testInstructionTimeOutMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "c1845b2f-08fb-4eed-8c07-543c9fe24d45",
 	}).Debug("'testInstructionTimeOutMessage' was put on the channel")

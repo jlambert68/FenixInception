@@ -10,6 +10,9 @@ import (
 
 func TestExecution_main() {
 
+	// Cleanup all gRPC connections
+	defer cleanup()
+
 	// Start all Services
 	startAllServices()
 

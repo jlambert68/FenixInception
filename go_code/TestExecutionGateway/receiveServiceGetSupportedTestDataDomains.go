@@ -9,7 +9,7 @@ import (
 // ********************************************************************************************
 // Call from parent Gateway/Fenix for incoming request for supported TestDomains from a certain Plugin
 //
-func (gatewayObject *gatewayTowardsPluginObjectStruct) GetSupportedTestDataDomains(ctx context.Context, supportedTestDataDomainsRequest *gRPC.SupportedTestDataDomainsRequest) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) GetSupportedTestDataDomains(ctx context.Context, supportedTestDataDomainsRequest *gRPC.SupportedTestDataDomainsRequest) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
@@ -19,7 +19,7 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) GetSupportedTestDataDomai
 	}).Debug("Incoming gRPC: 'GetSupportedTestDataDomains'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	gatewayObject.supportedTestDataDomainsRequestChannel <- supportedTestDataDomainsRequest
+	gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannel <- supportedTestDataDomainsRequest
 	logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("SupportedTestDataDomainsRequest was put on the channel")

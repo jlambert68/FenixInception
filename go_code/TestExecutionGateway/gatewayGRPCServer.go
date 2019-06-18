@@ -15,26 +15,17 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 
 	var err error
 
-	// If no port from Parent Gateway/Fenix has been received then exit this function
-	if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
-		// Gateway har never had a successful connection to parent gateway/Fenx
-		logger.WithFields(logrus.Fields{
-			"ID": "f6398d61-fd34-49f4-a6e5-18b2318428cb",
-		}).Fatal("This Gateway has never been registrated at perent gateway/Fenix, exiting")
-		return
-	}
-
 	// Start gRPC serve
 	logger.WithFields(logrus.Fields{
 		"ID": "225c2b2e-1891-4175-8950-a1c5b721be17",
 	}).Debug("Gateway gRPC server tries to start")
 
 	logger.WithFields(logrus.Fields{
-		"incomingPortForCallsFromParentGateway": incomingPortForCallsFromParentGateway,
-		"ID":                                    "e6eacb4e-1ac4-4b75-87bb-e9bb05e728e1",
-	}).Info("Trying to listening on port: " + incomingPortForCallsFromParentGateway)
+		"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+		"ID": "e6eacb4e-1ac4-4b75-87bb-e9bb05e728e1",
+	}).Info("Trying to listening on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 
-	gatewayTowardsPluginListener, err = net.Listen("tcp", string(incomingPortForCallsFromParentGateway))
+	gatewayTowardsPluginListener, err = net.Listen("tcp", ":"+strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err: ": err,
@@ -43,9 +34,9 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 
 	} else {
 		logger.WithFields(logrus.Fields{
-			"incomingPortForCallsFromParentGateway": incomingPortForCallsFromParentGateway,
-			"ID":                                    "77dd611b-4b76-4ed8-a383-8b336a7b29ec",
-		}).Info("Success in listening on port " + incomingPortForCallsFromParentGateway)
+			"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+			"ID": "77dd611b-4b76-4ed8-a383-8b336a7b29ec",
+		}).Info("Success in listening on port " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 
 	}
 
@@ -56,7 +47,7 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 		}).Info("Starting Gateway gRPC Server")
 
 		registerGatewayTowardsPluginerver = grpc.NewServer()
-		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &gatewayTowardsPluginObjectStruct{})
+		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &GRPCServerTowardsPluginStruct{})
 
 		logger.WithFields(logrus.Fields{
 			"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",
@@ -124,11 +115,11 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 	}).Debug("Gateway gRPC server tries to start")
 
 	logger.WithFields(logrus.Fields{
-		"incomingPortForCallsFromParentGateway": incomingPortForCallsFromParentGateway,
-		"ID":                                    "e6eacb4e-1ac4-4b75-87bb-e9bb05e728e1",
-	}).Info("Trying to listening on port: " + incomingPortForCallsFromParentGateway)
+		"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+		"ID": "e6eacb4e-1ac4-4b75-87bb-e9bb05e728e1",
+	}).Info("Trying to listening on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 
-	gatewayTowardsPluginListener, err = net.Listen("tcp", string(incomingPortForCallsFromParentGateway))
+	gatewayTowardsFenixListener, err = net.Listen("tcp", strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err: ": err,
@@ -137,35 +128,35 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 
 	} else {
 		logger.WithFields(logrus.Fields{
-			"incomingPortForCallsFromParentGateway": incomingPortForCallsFromParentGateway,
-			"ID":                                    "77dd611b-4b76-4ed8-a383-8b336a7b29ec",
-		}).Info("Success in listening on port " + incomingPortForCallsFromParentGateway)
+			"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+			"ID": "77dd611b-4b76-4ed8-a383-8b336a7b29ec",
+		}).Info("Success in listening on port " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 
 	}
 
-	// Creates a new registerGatewayTowardsPluginerver gRPC server
+	// Creates a new registerGatewayTowardsFenixServer gRPC server
 	go func() {
 		logger.WithFields(logrus.Fields{
 			"ID": "3361684d-73f9-49b2-a11a-a2833759363c",
 		}).Info("Starting Gateway gRPC Server")
 
-		registerGatewayTowardsPluginerver = grpc.NewServer()
-		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &gatewayTowardsPluginObjectStruct{})
+		registerGatewayTowardsFenixServer = grpc.NewServer()
+		gRPC.RegisterGatewayTowardsFenixServer(registerGatewayTowardsFenixServer, &GRPCServerTowardsFenixStruct{})
 
 		logger.WithFields(logrus.Fields{
 			"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",
-		}).Debug("registerGatewayTowardsPluginerver for Gateway started")
+		}).Debug("registerGatewayTowardsFenixServer for Gateway started")
 
-		err := registerGatewayTowardsPluginerver.Serve(gatewayTowardsPluginListener)
+		err := registerGatewayTowardsFenixServer.Serve(gatewayTowardsFenixListener)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
 				"ID":  "00c5957f-c2f4-4aa7-a049-159c7fda06ee",
 				"err": err,
-			}).Fatal("Couldn't serve 'registerGatewayTowardsPluginerver.Serve(gatewayTowardsPluginListener)'")
+			}).Fatal("Couldn't serve 'registerGatewayTowardsFenixServer.Serve(gatewayTowardsFenixListener)'")
 		} else {
 			logger.WithFields(logrus.Fields{
 				"ID": "93dfa984-0b9c-48cf-8fae-a5c5403bdd92",
-			}).Debug("Success in serving 'registerGatewayTowardsPluginerver.Serve(gatewayTowardsPluginListener)'")
+			}).Debug("Success in serving 'registerGatewayTowardsFenixServer.Serve(gatewayTowardsFenixListener)'")
 		}
 	}()
 

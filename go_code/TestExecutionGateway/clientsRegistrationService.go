@@ -10,7 +10,7 @@ import (
 // ********************************************************************************************
 // Call from Client Gateway/Plugin with an registration of itself
 //
-func (gatewayObject *gatewayTowardsFenixObjectStruct) RegisterClientAddress(ctx context.Context, registerClientAddressRequest *gRPC.RegisterClientAddressRequest) (*gRPC.RegisterClientAddressResponse, error) {
+func (gRPCServerTowardsFenixStruct *GRPCServerTowardsFenixStruct) RegisterClientAddress(ctx context.Context, registerClientAddressRequest *gRPC.RegisterClientAddressRequest) (*gRPC.RegisterClientAddressResponse, error) {
 
 	var registerClientAddressResponse *gRPC.RegisterClientAddressResponse
 	var clientRPCAddress clientsAddressAndPortStruct

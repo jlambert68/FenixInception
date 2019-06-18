@@ -7,8 +7,25 @@ import (
 	"time"
 )
 
-// Variable for handling when Gateway is in IntegrationTest-mode
-var gatewayIsInIntegrationTestMode = false
+// ****************************************************************
+// object for Integration Override of some vaiables
+// Set up as default as posible
+//
+var GatewayInIntegrationTestMode = &gatewayIsInIntegrationTestModeStruct{
+	IsInSelfIntegrationTestMode: false,
+	StartWithOutAnyParent:       false,
+	ListeningOnThisPortAsParent: 0,
+}
+
+type gatewayIsInIntegrationTestModeStruct struct {
+	IsInSelfIntegrationTestMode bool  // Variable for handling when Gateway is in IntegrationTest-mode
+	StartWithOutAnyParent       bool  // Used for Integration Tests and the gateway could be started without any parent of its own
+	ListeningOnThisPortAsParent int64 //Used for Integration Tests and the gateway shoud used this port
+}
+
+// ****************************************************************
+
+// TODO fortsätt här
 
 var (
 	// Common logger for the gateway
@@ -133,6 +150,7 @@ const BucketForGatewayIdentificationInfo = "GateWayIdentifaction"
 const BucketKeyForGatewayIdentificationInfo = "GateWayIdentifactionId"
 const BucketForResendOfAvailableTestInstructionsToFenix = "ReSendAvailableTestInstructions"
 const BucketForResendOfAvailableTestContainers = "ReSendAvailableTestContainers"
+const BucketForResendOfSupportedTestDataDomains = "ReSendSupportedTestDataDomains"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPortStruct
