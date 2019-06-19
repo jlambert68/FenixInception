@@ -38,6 +38,7 @@ message TestInstructionExecutionResultMessage {
     AvailableTestExecutionResultsEnum TestExecutionResult = 10; // THe current execution status
     string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
+    string MessageId = 13; // A unique id for the message created by plugin
 }
 
 // Status for an ongoing TestExecution of a TestInstruction
