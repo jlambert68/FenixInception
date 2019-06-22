@@ -3,8 +3,8 @@
 
 # Identification for the gateway
 [gatewayIdentification]
-gatewayId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
-gatewayName = "Gateway #1"
+gatewayId = "6e38de17-d341-4eab-80da-297a09bc2e2d"
+gatewayName = "Slave Parent Gateway"
 gatewayIpAddress = "127.0.0.1"
 gatewaParentCallOnThisPort = 7000
 gatewayChildrenCallOnThisPort = 7001
@@ -12,12 +12,12 @@ createdDateTime = ""
 
 # Identification of the the domain that this gateway belongs to
 [systemDomain]
-gatewayDomainId = "77a1a1be-52f6-4931-bcfe-b336979c2600"
+gatewayDomainId = "c2fd9d3c-81e6-4641-8996-79c04d8eb4fb"
 gatewayDomainName = "Custody Cash"
 
 # Initial IP and Port for Parent Gateway/Fenix.
 [parentgRPCAddress]
-parentGatewayId ="42744278-1128-4eec-8b75-8817516ca09b"
+parentGatewayId ="54ec25c1-769a-40b7-9edb-3987563c75ae"
 parentGatewayName = "This is the name of the Parent  Gateway"
 parentGatewayServerAddress = "127.0.0.1"
 parentGatewayServerPort = 5999

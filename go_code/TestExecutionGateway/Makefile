@@ -26,6 +26,5 @@ test1:
 # Parent answer first ever call made
 test2:
 	@echo "Runing IntegrationTest 2...Parent answer first ever call made"
-	go build -o gateway
-	gateway -useWithOutParent=true -listenOnThisPort=5656
+
 	go test -v -tags=integration2

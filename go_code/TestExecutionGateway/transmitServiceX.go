@@ -10,20 +10,20 @@ import (
 )
 
 // ********************************************************************************************
-// Initiate Dispatch Engine for TestInstructionExecutionResultTowardsFenix
+// Initiate Transmit Engine for XTowardsFenix
 //
 
-func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTestInstructionExecutionResultTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTransmitEngineForXTowardsFenix() {
 
-	// Start Transmit Engine, for SupportedTestDataDomains as a go-routine
-	go gatewayObject.transmitEngineForTestInstructionExecutionResultTowardsFenix()
+	// Start Transmit Engine, for X as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix()
 }
 
 // ********************************************************************************************
-// Forward SupportedTestDataDomainsWithHeadersMessage-messages from incoming channel towards Fenix
+// Forward X-messages-messages from channel towards Fenix
 //
 
-func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForTestInstructionExecutionResultTowardsFenix() {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsFenix() {
 
 	for {
 
@@ -36,6 +36,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForTestInstr
 			// Run service and process messages
 
 			// ***** Wait for data comes from channel to transmit engine ****
+
 			testInstructionExecutionResultMessageToBeForwarded := <-gatewayObject.testInstructionExecutionResultMessageTowardsFenixChannel
 
 			// Check number of messages in channel

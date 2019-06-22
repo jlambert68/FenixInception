@@ -216,12 +216,16 @@ func cleanup() {
 // *******************************************************************
 // Start all Services
 //
-func startAllServices() {
+func startAllServices(configFileAndPath string, logfileForTest string, databaseFile string) {
 	// Read 'gatewayConfig.toml' for config parameters
-	processConfigFile("") // Use default toml-config-file name
+	processConfigFile(configFileAndPath) // Use default toml-config-file name
 
 	// Init logger
-	initLogger("localLogFile.log")
+	if logfileForTest == "" {
+		initLogger("localLogFile.log")
+	} else {
+		initLogger(logfileForTest)
+	}
 
 	// Initiate internal gatewau channels
 	initiateGatewayChannels()
@@ -233,7 +237,7 @@ func startAllServices() {
 	gatewayMustStopProcessing = true
 
 	// Initiate Database
-	initiateDB("") // Use default database file name
+	initiateDB(databaseFile) // If "" then Use default database file name
 
 	// Start 'dispatchEngineForTestInstructions'
 	gatewayTowardsPluginObject.initiateDispatchEngineForTestInstructiona()

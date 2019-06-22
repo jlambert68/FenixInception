@@ -546,8 +546,20 @@ func initiateGatewayChannels() {
 //
 func updateMemoryObjectWithFlagOverrideParameters() {
 
+	// **** As slave gateway for tests ****
 	// THis gateway should listen on this port from calls from clients
 	if GatewayInIntegrationTestMode.ListeningOnThisPortAsParent != 0 {
 		gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort = int32(GatewayInIntegrationTestMode.ListeningOnThisPortAsParent)
+	}
+
+	// THis gateway should call parent gateway/Fenix on this adress
+	if GatewayInIntegrationTestMode.parentIsListeningOnThisPort != 0 {
+		gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress = GatewayInIntegrationTestMode.parentIsListeningOnThisAddress
+	}
+
+	// **** As the tested gateway ****
+	// THis gateway should call parent gateway/Fenix on this port
+	if GatewayInIntegrationTestMode.parentIsListeningOnThisPort != 0 {
+		gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort = int32(GatewayInIntegrationTestMode.parentIsListeningOnThisPort)
 	}
 }

@@ -29,7 +29,7 @@ var (
 func TestMain(m *testing.M) {
 
 	// Set Gateway in IsInSelfIntegrationTestMode
-	gatewayIsInIntegrationTestMode = true
+	GatewayInIntegrationTestMode.IsInSelfIntegrationTestMode = true
 
 	// Parse flags
 	flag.Parse()

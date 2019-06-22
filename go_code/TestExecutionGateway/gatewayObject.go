@@ -14,13 +14,23 @@ import (
 var GatewayInIntegrationTestMode = &gatewayIsInIntegrationTestModeStruct{
 	IsInSelfIntegrationTestMode: false,
 	StartWithOutAnyParent:       false,
+	UsedInIntegrationTest:       false,
 	ListeningOnThisPortAsParent: 0,
 }
 
 type gatewayIsInIntegrationTestModeStruct struct {
+	// Gateway is parent or child gateway as a slave for the tested gateway
 	IsInSelfIntegrationTestMode bool  // Variable for handling when Gateway is in IntegrationTest-mode
 	StartWithOutAnyParent       bool  // Used for Integration Tests and the gateway could be started without any parent of its own
-	ListeningOnThisPortAsParent int64 //Used for Integration Tests and the gateway shoud used this port
+	ListeningOnThisPortAsParent int64 // Used for Integration Tests and the gateway should used this port
+	// borde alltid vara 127.0.0.1 ListeningOnThisAddressAsParent int64 // Used for Integration Tests and the gateway should used this address
+
+	// Thia used for the tested gateway
+	parentIsListeningOnThisPort    int64  // Used for Integration Tests and is used for connecting to parent
+	parentIsListeningOnThisAddress string // Used for Integration Tests and is used for connecting to parent
+
+	//
+	UsedInIntegrationTest bool
 }
 
 // ****************************************************************
@@ -82,19 +92,14 @@ type TomlConfigStruct struct {
 	LoggingLevel          LoggingLevelStruct          `toml:"LoggingLevel"`
 }
 */
-type TomlConfigStruct2 struct {
-	GatewayIdentification GatewayIdentificationStruct
-	SystemDomain          SystemDomainStruct
-	ParentgRPCAddress     ParentgRPCAddressStruct
-	InitialClientPort     InitialClientPortStruct
-	//	LoggingLevel          LoggingLevelStruct
-}
+
 type TomlConfigStruct struct {
 	GatewayIdentification GatewayIdentificationStruct
 	SystemDomain          SystemDomainStruct
 	ParentgRPCAddress     ParentgRPCAddressStruct
 	InitialClientPort     InitialClientPortStruct
 	LoggingLevel          LoggingLevelStruct
+	IntegrationTest       IntegrationTestStruct
 }
 
 // local gateway information for toml-file
@@ -135,6 +140,15 @@ type LoggingLevelStruct struct {
 	LoggingLevel logrus.Level
 }
 
+// Used for when gateway is used in Integration tests
+type IntegrationTestStruct struct {
+	UsedInIntegrationTest    bool
+	ActAsParentGatewayInTest bool
+	ActAsMainGatewayInTest   bool
+	ActAsChildGatewayInTest  bool
+	StartWithOutAnyParent    bool
+}
+
 //
 // *******************************************************************
 
@@ -151,6 +165,7 @@ const BucketKeyForGatewayIdentificationInfo = "GateWayIdentifactionId"
 const BucketForResendOfAvailableTestInstructionsToFenix = "ReSendAvailableTestInstructions"
 const BucketForResendOfAvailableTestContainers = "ReSendAvailableTestContainers"
 const BucketForResendOfSupportedTestDataDomains = "ReSendSupportedTestDataDomains"
+const BucketForResendOfTestInstructionExecutionResult = "ReSendTestExecutionResult"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPortStruct
