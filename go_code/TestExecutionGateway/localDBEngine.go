@@ -27,6 +27,10 @@ func initiateDB(localDBFile string) {
 			"ID":    "e1dbd9be-e790-41a5-9a54-a5cc1952219f",
 			"error": err,
 		}).Fatal("Error when trying to open databse: '" + boltDBNameUsed + "'")
+	} else {
+		logger.WithFields(logrus.Fields{
+			"ID": "c702a65c-5417-471b-a00a-1055e864e8e0",
+		}).Debug("Database was initiated with name: '" + boltDBNameUsed + "'")
 	}
 
 	// If no errors then save reference to DB in gateway object
@@ -61,6 +65,17 @@ func databaseEngine() {
 
 	var err error
 
+	logger.WithFields(logrus.Fields{
+		"ID":    "d6b7454e-eb99-4c7d-9ec9-84249a7ee848",
+		"error": err,
+	}).Debug("Database engine started")
+
+	// Used for Debugging
+	defer logger.WithFields(logrus.Fields{
+		"ID":    "ea3e5c3f-0c27-4303-80c5-7d76b875d03b",
+		"error": err,
+	}).Debug("Exiting database engine with 'defer'")
+
 	for {
 
 		// Wait for data comes from channel to dtabase engine
@@ -80,16 +95,27 @@ func databaseEngine() {
 					logger.WithFields(logrus.Fields{
 						"ID":     "f4093818-80ee-48a2-aa47-3fb7a0792045",
 						"err":    err,
-						"Bucket": bucket,
+						"Bucket": messageToDbEngine.bucket,
 					}).Warning("Bucket not found")
+
+					err = errors.New("Bucket not found")
+					// Send back err and empty value using attached channel
+					readResultMessage := dbResultMessageStruct{
+						err,
+						messageToDbEngine.bucket,
+						[]byte("")}
+
+					messageToDbEngine.resultsQueue <- readResultMessage
+
+					return nil
 
 				} else {
 					logger.WithFields(logrus.Fields{
 						"ID":     "8ccfac34-90a0-4b50-8e37-bc4f10d76f62",
 						"Bucket": bucket,
 					}).Debug("Success in finding Bucket")
-				}
 
+				}
 				// Retrieve value from key
 				value := bucket.Get([]byte(messageToDbEngine.key))
 				valueString := string(value)
@@ -121,6 +147,16 @@ func databaseEngine() {
 						"err":    err,
 						"Bucket": bucket,
 					}).Error("Error when creating bucket")
+
+					// Send back err and empty value using attached channel
+					readResultMessage := dbResultMessageStruct{
+						err,
+						messageToDbEngine.bucket,
+						[]byte("")}
+
+					return nil
+
+					messageToDbEngine.resultsQueue <- readResultMessage
 				} else {
 					logger.WithFields(logrus.Fields{
 						"ID":     "e0359bee-de08-420f-b417-9635fc7b1e9b",

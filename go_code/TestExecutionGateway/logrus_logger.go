@@ -46,9 +46,13 @@ func initLogger(filename string) {
 		logger.Out = os.Stdout
 
 	} else {
-		file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
+		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0666) //os.O_CREATE
 		if err == nil {
 			logger.Out = file
+
+			logger.WithFields(logrus.Fields{
+				"ID": "d6b7454e-eb99-4c7d-9ec9-84249a7ee848",
+			}).Info("Logger started")
 		} else {
 			log.Println("Failed to log to file, using default stderr")
 		}

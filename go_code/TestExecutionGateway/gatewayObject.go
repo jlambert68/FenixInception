@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+/*
 // ****************************************************************
 // object for Integration Override of some vaiables
 // Set up as default as posible
@@ -17,6 +18,7 @@ var GatewayInIntegrationTestMode = &gatewayIsInIntegrationTestModeStruct{
 	UsedInIntegrationTest:       false,
 	ListeningOnThisPortAsParent: 0,
 }
+*/
 
 type gatewayIsInIntegrationTestModeStruct struct {
 	// Gateway is parent or child gateway as a slave for the tested gateway

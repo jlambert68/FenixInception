@@ -18,7 +18,7 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 	// Start gRPC serve
 	logger.WithFields(logrus.Fields{
 		"ID": "225c2b2e-1891-4175-8950-a1c5b721be17",
-	}).Debug("Gateway gRPC server tries to start")
+	}).Debug("Gateway gRPC server towards plugin tries to start")
 
 	logger.WithFields(logrus.Fields{
 		"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
@@ -44,7 +44,7 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 	go func() {
 		logger.WithFields(logrus.Fields{
 			"ID": "3361684d-73f9-49b2-a11a-a2833759363c",
-		}).Info("Starting Gateway gRPC Server")
+		}).Info("Starting Gateway gRPC Server towards Fenix")
 
 		registerGatewayTowardsPluginerver = grpc.NewServer()
 		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &GRPCServerTowardsPluginStruct{})
@@ -100,8 +100,13 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 
 	var err error
 
+	// Start gRPC serve
+	logger.WithFields(logrus.Fields{
+		"ID": "57e5c579-975d-46a6-a92b-027bbbefff1e",
+	}).Debug("Gateway gRPC server towards Fenix tries to start")
+
 	// If no port from Parent Gateway/Fenix has been received then exit this function
-	if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
+	if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false && gatewayConfig.IntegrationTest.StartWithOutAnyParent == false {
 		// Gateway har never had a successful connection to parent gateway/Fenx
 		logger.WithFields(logrus.Fields{
 			"ID": "92da53d1-345b-493c-bf01-023b882bcbc2",
@@ -109,28 +114,23 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 		return
 	}
 
-	// Start gRPC serve
 	logger.WithFields(logrus.Fields{
-		"ID": "225c2b2e-1891-4175-8950-a1c5b721be17",
-	}).Debug("Gateway gRPC server tries to start")
-
-	logger.WithFields(logrus.Fields{
-		"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+		"gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort": gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort,
 		"ID": "e6eacb4e-1ac4-4b75-87bb-e9bb05e728e1",
-	}).Info("Trying to listening on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
+	}).Info("Trying to listening on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 
-	gatewayTowardsFenixListener, err = net.Listen("tcp", strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
+	gatewayTowardsFenixListener, err = net.Listen("tcp", ":"+strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err: ": err,
 			"ID":    "2bb724a4-efbf-4d86-b120-735e82d9b920",
-		}).Fatal("failed to listen:")
+		}).Fatal("failed to listen: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 
 	} else {
 		logger.WithFields(logrus.Fields{
-			"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+			"gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort": gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort,
 			"ID": "77dd611b-4b76-4ed8-a383-8b336a7b29ec",
-		}).Info("Success in listening on port " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
+		}).Info("Success in listening on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 
 	}
 
@@ -138,7 +138,7 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 	go func() {
 		logger.WithFields(logrus.Fields{
 			"ID": "3361684d-73f9-49b2-a11a-a2833759363c",
-		}).Info("Starting Gateway gRPC Server")
+		}).Info("Starting Gateway gRPC Server towards Fenix")
 
 		registerGatewayTowardsFenixServer = grpc.NewServer()
 		gRPC.RegisterGatewayTowardsFenixServer(registerGatewayTowardsFenixServer, &GRPCServerTowardsFenixStruct{})

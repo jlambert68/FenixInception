@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strings"
 	"testing"
 )
 
@@ -16,19 +15,27 @@ import (
 //}
 
 var (
-	gatewayUsedInIntegrationTest = flag.Bool("gatewayUsedInIntegrationTest", true, "True/False, deciding if hte gateway should be ran in IntegrationTest mode or not.")
+	gatewayUsedInIntegrationTest = flag.Bool("gatewayUsedInIntegrationTest", true, "true/false, deciding if the gateway should be ran in IntegrationTest mode or not.")
 	databasePath                 = flag.String("datbasePath", "", "Relative path to database. This is a mandatory value, when running in Integration test mode, and must include database-name ending with '.db'.")
-	logPath                      = flag.String("logdPath", "", "Relative path to log. This is a mandatory value, when running in Integration test mode, and must include config-name ending with '.log'.")
+	logPath                      = flag.String("logdPath", "", "Relative path to log. This is a mandatory value, when running in Integration test mode, and must include logfile-name ending with '.log'.")
 	configPath                   = flag.String("configPath", "", "Relative path to toml-config. This is a mandatory value, when running in Integration test mode, and must include config-name ending with '.toml'.")
+	removeFilesAfterTest         = flag.Bool("removeFilesAfterTest", false, "true/false, deciding if temporary files, log and databas should be removed after test is finsihed")
 )
 
 func TestMain(m *testing.M) {
 
-	// Set Gateway in IsInSelfIntegrationTestMode
-	GatewayInIntegrationTestMode.IsInSelfIntegrationTestMode = true
-
 	// Parse flags
 	flag.Parse()
+
+	// Convert to Rune
+	configPathRune := []rune(*configPath)
+	logPathRune := []rune(*logPath)
+	databasePathRune := []rune(*databasePath)
+
+	// Get last part
+	configPathEnding := string(configPathRune[len(*configPath)-5 : len(*configPath)])
+	logPathEnding := string(logPathRune[len(*logPath)-4 : len(*logPath)])
+	databasePathEnding := string(databasePathRune[len(*databasePath)-3 : len(*databasePath)])
 
 	// Check for mandatory and faulty flags
 	var exitBecauseOfMissingFlags = false
@@ -36,7 +43,7 @@ func TestMain(m *testing.M) {
 		log.Println("'databasePath' is a mandtory flag when running in IntegrationTest-mode")
 		exitBecauseOfMissingFlags = true
 	}
-	if *databasePath != "" && strings.Contains(*configPath, ".db") == false {
+	if *databasePath != "" && databasePathEnding != ".db" {
 		log.Println("'databasePath' must end on '.db' to ensure a reference to a db file")
 		exitBecauseOfMissingFlags = true
 	}
@@ -45,7 +52,7 @@ func TestMain(m *testing.M) {
 		log.Println("'logPath' is a mandtory flag when running in IntegrationTest-mode")
 		exitBecauseOfMissingFlags = true
 	}
-	if *logPath != "" && strings.Contains(*configPath, ".log") == false {
+	if *logPath != "" && logPathEnding != ".log" {
 		log.Println("'logPath' must end on '.log' to ensure a reference to a log file")
 		exitBecauseOfMissingFlags = true
 	}
@@ -54,7 +61,7 @@ func TestMain(m *testing.M) {
 		log.Println("'configPath' is a mandtory flag when running in IntegrationTest-mode")
 		exitBecauseOfMissingFlags = true
 	}
-	if *configPath != "" && strings.Contains(*configPath, ".toml") == false {
+	if *configPath != "" && configPathEnding != ".toml" {
 		log.Println("'configPath' must end on '.toml' to ensure a reference to a config file")
 		exitBecauseOfMissingFlags = true
 	}
@@ -76,11 +83,15 @@ func TestMain(m *testing.M) {
 	log.Println("Process 'closeDB'")
 	closeDB()
 
-	// Remove the database file that was created in this test
-	removeFile(*databasePath)
+	// Check if should be removed before finish the test
+	if *removeFilesAfterTest == true {
 
-	// Remove the logfile that was created in this test
-	removeFile(*logPath)
+		// Remove the database file that was created in this test
+		removeFile(*databasePath)
+
+		// Remove the logfile that was created in this test
+		removeFile(*logPath)
+	}
 
 	fmt.Println("ending test now")
 	os.Exit(result)
@@ -139,24 +150,23 @@ func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseF
 	log.Println("Process 'gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix'")
 	gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix()
 
-	// IntegrationTest-parameter, change address and port to parent
-	//gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress = "127.0.0.1"
-	//gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort = 5656
-
 	// Try to Register this Gateway At Parent
 	log.Println("Process 'gatewayTowardsFenixObject.tryToRegisterGatewayAtParent'")
 	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
-	// Validate that log-file contains '580d2c7d-b8d3-40f7-b238-eb096d859355' because Parent Gateway is not started and should have been Exited
-
 	/*
 		// Listen to gRPC-calls from parent gateway/Fenix
 		log.Println("Process 'startGatewayGRPCServerForMessagesTowardsFenix'")
 		startGatewayGRPCServerForMessagesTowardsFenix()
 	*/
+	// Validate that log-file contains '580d2c7d-b8d3-40f7-b238-eb096d859355' because Parent Gateway is not started and should have been Exited
 
 	// Listen to gRPC-calls from child gateway/Plugin
 	log.Println("Process 'startGatewayGRPCServerForMessagesTowardsPlugins'")
 	startGatewayGRPCServerForMessagesTowardsPlugins()
+
+	// Listen to gRPC-calls from child gateway/plugin
+	log.Println("Process 'startGatewayGRPCServerForMessagesTowardsFenix'")
+	startGatewayGRPCServerForMessagesTowardsFenix()
 
 	// Update Memory information about parent address and port with that saved in database, database overrule config-file
 	log.Println("Process 'updateMemoryAddressForParentAddressInfo'")
@@ -210,7 +220,7 @@ func TestDatabase(t *testing.T) {
 
 // Validate that gateway did a simulated exit because there are no parent gateway
 func TestExitBecasueNoParentGatewayExits(t *testing.T) {
-	stringFound := IsExist("580d2c7d-b8d3-40f7-b238-eb096d859355", logfileForTest)
+	stringFound := IsExist("580d2c7d-b8d3-40f7-b238-eb096d859355", *logPath)
 
 	if stringFound == false {
 		t.Errorf("Gateway didn't exit in a correct way")

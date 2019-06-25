@@ -15,14 +15,14 @@ import (
 func (gatewayObject *gatewayTowardsFenixObjectStruct) tryToRegisterGatewayAtParent() {
 
 	// Check if this gateway i used in integration test mode and only should start without any connection to parent gateway
-	if GatewayInIntegrationTestMode.StartWithOutAnyParent == false {
+	if gatewayConfig.IntegrationTest.StartWithOutAnyParent == false {
 		// Register gateway/client at parent Gateway/Fenix
 		resultBool, err := registerThisGatewayAtParentGateway()
 		if err != nil || resultBool == false {
 			// If this gateway never has been connected to parent gateway/Fenix then Exit
 			// due to that parent doesn't know this gateways address yet
 			if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
-				if GatewayInIntegrationTestMode.IsInSelfIntegrationTestMode == false {
+				if gatewayConfig.IntegrationTest.UsedInIntegrationTest == false {
 					// Gateway is NOT in IsInSelfIntegrationTestMode
 					logger.WithFields(logrus.Fields{
 						"ID": "c7ea051f-37b2-41d2-820e-5050a560cfbb",
@@ -31,7 +31,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) tryToRegisterGatewayAtPare
 					// Gateway IS in IsInSelfIntegrationTestMode
 					logger.WithFields(logrus.Fields{
 						"ID": "580d2c7d-b8d3-40f7-b238-eb096d859355",
-					}).Error("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
+					}).Error("USed for IntegrationTest: This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
 				}
 			} else {
 				logger.WithFields(logrus.Fields{
@@ -257,17 +257,17 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	// Start 'transmitEngineForSendTestInstructionTimeOutTowardsFenix'
 	gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix()
 
-	// Update Memory object with parameters that was recceived at start up using flags
-	updateMemoryObjectWithFlagOverrideParameters()
-
 	// Try to Register this Gateway At Parent
 	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
 
 	// Listen to gRPC-calls from parent gateway/Fenix
 	//startGatewayGRPCServerForMessagesTowardsFenix()
 
-	// Listen to gRPC-calls from child gateway/Plugin
+	// Listen to gRPC-calls from parent gateway/Fenix
 	startGatewayGRPCServerForMessagesTowardsPlugins()
+
+	// Listen to gRPC-calls from child gateway/plugin
+	startGatewayGRPCServerForMessagesTowardsFenix()
 
 	// Update Memory information about parent address and port with that saved in database, database overrule config-file
 	updateMemoryAddressForParentAddressInfo()

@@ -37,8 +37,8 @@ loggingLevel = "Debug"
 
 # Used for when gateway is used in Integration tests
 [integrationTest]
-usedInIntegrationTest = false
+usedInIntegrationTest = true
 actAsParentGatewayInTest = false
-actAsMainGatewayInTest = false
+actAsMainGatewayInTest = true
 actAsChildGatewayInTest = false
 startWithOutAnyParent = false

@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-func TestExecution_main(configFileAndPath string , logfileForTest string, databaseFile string) {
+func TestExecution_main(configFileAndPath string, logfileForTest string, databaseFile string) {
 
 	// Cleanup all gRPC connections
 	defer cleanup()
 
 	// Start all Services
-	startAllServices(configFileAndPath , logfileForTest, databaseFile))
+	startAllServices(configFileAndPath, logfileForTest, databaseFile)
 
 	// Just waiting to quit
 	c := make(chan os.Signal, 2)
