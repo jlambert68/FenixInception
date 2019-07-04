@@ -62,36 +62,29 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 	// Use background call in gRPC-call
 	gRpcContexType = context.Background()
 
+	// Check it is possible to dial parent gateway/Fenix
+	addressToDial, dialSuccess, gatewayClient, remoteParentServerConnection = dialParenGateway(addressToDial, dialSuccess, gatewayClient, remoteParentServerConnection)
+
 	// Get address to parent
 	addressToDial = getParentAddressAndPort()
 
 	// Set up connection to Parent Gateway or Fenix
 	remoteParentServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
-	if err != nil {
-		// Connection Not OK
-		LogErrorAndSendInfoToFenix(
-			"16738894-468a-4125-a9cc-32fd97afb767",
-			gRPC.InformationMessage_WARNING,
-			"addressToDial",
-			addressToDial,
-			err.Error(),
-			"Did not connect to Parent (Gateway or Plugin) Server!",
-		)
-	} else {
+	if dialSuccess == true {
 		// Connection OK
-		dialSuccess = true
 
-		// Creates a new gateway Client
-		gatewayClient = gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
-
+		// Wait for messahe on channel
 		// Do gRPC-call to client gateway or Fenix
 
 		for {
 
 			// Service can be started and Stopped by central control of the Gateway
-			if gatewayMustStopProcessing == true {
+			if gatewayMustStopProcessing == true || dialSuccess == false {
 				// Service should be stopped from processing any messages
 				time.Sleep(ServieSleepTime * time.Second)
+
+				// Check it is possible to dial parent gateway/Fenix
+				addressToDial, dialSuccess, gatewayClient, remoteParentServerConnection = dialParenGateway(addressToDial, dialSuccess, gatewayClient, remoteParentServerConnection)
 
 			} else {
 				// Run service and process messages
@@ -282,119 +275,121 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						infoHeader,
 						"db1bd71e-4ad4-40df-aba5-e80f69899e08")
 
-					if dialSuccess == false {
-						// Get newest address to parent
-						addressToDial = getParentAddressAndPort()
+					// Do the gRPC-call to parent gateway or Fenix
+					switch channelType {
+					case channelTypeInformationMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.SendMessageToFenix(gRpcContexType, informationMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-						// Set up a new connection to Parent Gateway or Fenix
-						remoteParentServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
-						if err != nil {
-							// Connection Not OK
-							LogErrorAndSendInfoToFenix(
-								"16738894-468a-4125-a9cc-32fd97afb767",
-								gRPC.InformationMessage_WARNING,
-								"addressToDial",
-								addressToDial,
-								err.Error(),
-								"Did not connect to Parent (Gateway or Plugin) Server!",
-							)
+					case channelTypeTestInstructionTimeOutMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.SendTestInstructionTimeOutTowardsFenix(gRpcContexType, timeOutMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-							// Save message to local DB for later processing
-							_ = SaveMessageToLocalDB(
-								messageId,
-								messageToBeForwardedByteArray,
-								bucket,
-								"7f8f3865-fb41-4c3b-b395-c838c657a6e9",
-							)
-						} else {
-							// Connection OK
-							dialSuccess = true
+					case channelTypeTestExecutionLogMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.SendTestExecutionLogTowardsFenix(gRpcContexType, testExecutionLogMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-							// Creates a new gateway Client
-							gatewayClient = gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
+					case channelTypeSupportedTestDataDomainsMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.RegistrateAvailableTestDataDomains(gRpcContexType, spportedTestDataDomainsMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-							// Do gRPC-call to client gateway or Fenix
+					case channelTypeAvailbleTestInstructionsAtPluginMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.RegisterAvailbleTestInstructions(gRpcContexType, availbleTestInstructionAtPluginMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-							switch channelType {
-							case channelTypeInformationMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.SendMessageToFenix(gRpcContexType, informationMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+					case channelTypeAvailbleTestContainersAtPluginMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.RegistrateAailableTestContainers(gRpcContexType, availbleTestContainersAtPluginMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-							case channelTypeTestInstructionTimeOutMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.SendTestInstructionTimeOutTowardsFenix(gRpcContexType, timeOutMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+					case channelTypeTestInstructionExecutionResultMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.SendTestInstructionResultTowardsFenix(gRpcContexType, testInstructionExecutionResultMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-							case channelTypeTestExecutionLogMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.SendTestExecutionLogTowardsFenix(gRpcContexType, testExecutionLogMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+					case channelTypeSupportedTestDataDomainsWithHeadersMessage:
+						returnMessageAckNackResponse, gRRCerr = gatewayClient.SupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsWithHeadersMessageToBeForwarded)
+						returnMessageString = returnMessageAckNackResponse.String()
 
-							case channelTypeSupportedTestDataDomainsMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.RegistrateAvailableTestDataDomains(gRpcContexType, spportedTestDataDomainsMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+					default:
+						LogErrorAndSendInfoToFenix(
+							"d38c0522-77a6-4f90-b98e-02a4d37f3114",
+							gRPC.InformationMessage_FATAL,
+							"No know 'channelType'",
+							channelType,
+							err.Error(),
+							"No know 'channelType' in TransmitEngine",
+						)
+					}
 
-							case channelTypeAvailbleTestInstructionsAtPluginMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.RegisterAvailbleTestInstructions(gRpcContexType, availbleTestInstructionAtPluginMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+					if gRRCerr != nil {
+						// Error when sending gRPC to parent
+						dialSuccess = false
 
-							case channelTypeAvailbleTestContainersAtPluginMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.RegistrateAailableTestContainers(gRpcContexType, availbleTestContainersAtPluginMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+						LogErrorAndSendInfoToFenix(
+							//TODO SPlit logs into one log per messageType
+							"519cc9e7-5a24-4787-a23e-e58808c22ce5",
+							gRPC.InformationMessage_WARNING,
+							"returnMessage",
+							returnMessageString,
+							err.Error(),
+							"Problem to send 'informationMessageToBeForwarded' to parent-Gateway or Fenix",
+						)
 
-							case channelTypeTestInstructionExecutionResultMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.SendTestInstructionResultTowardsFenix(gRpcContexType, testInstructionExecutionResultMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+						// Save message to local DB for later processing
+						_ = SaveMessageToLocalDB(
+							messageId,
+							messageToBeForwardedByteArray,
+							bucket,
+							"05d6219e-0ab8-40e8-b671-0bea0ea24978",
+						)
 
-							case channelTypeSupportedTestDataDomainsWithHeadersMessage:
-								returnMessageAckNackResponse, gRRCerr = gatewayClient.SupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsWithHeadersMessageToBeForwarded)
-								returnMessageString = returnMessageAckNackResponse.String()
+					} else {
+						// gRPC Send message OK
+						logger.WithFields(logrus.Fields{
+							"ID":            "8820b7be-2495-44bb-8894-ea9b39486848",
+							"addressToDial": addressToDial,
+						}).Debug("gRPC-send OK for '" + infoHeader + "' to Parent-Gateway or Fenix")
 
-							default:
-								LogErrorAndSendInfoToFenix(
-									"d38c0522-77a6-4f90-b98e-02a4d37f3114",
-									gRPC.InformationMessage_FATAL,
-									"No know 'channelType'",
-									channelType,
-									err.Error(),
-									"No know 'channelType' in TransmitEngine",
-								)
-							}
+						// TODO Check for messages to Resend (If so then put them on channel)
 
-							if gRRCerr != nil {
-								// Error when sending gRPC to parent
-								dialSuccess = false
-
-								LogErrorAndSendInfoToFenix(
-									//TODO SPlit logs into one log per messageType
-									"519cc9e7-5a24-4787-a23e-e58808c22ce5",
-									gRPC.InformationMessage_WARNING,
-									"returnMessage",
-									returnMessageString,
-									err.Error(),
-									"Problem to send 'informationMessageToBeForwarded' to parent-Gateway or Fenix",
-								)
-
-								// Save message to local DB for later processing
-								_ = SaveMessageToLocalDB(
-									messageId,
-									messageToBeForwardedByteArray,
-									bucket,
-									"05d6219e-0ab8-40e8-b671-0bea0ea24978",
-								)
-
-							} else {
-								// gRPC Send message OK
-								logger.WithFields(logrus.Fields{
-									"ID":            "8820b7be-2495-44bb-8894-ea9b39486848",
-									"addressToDial": addressToDial,
-								}).Debug("gRPC-send OK for '" + infoHeader + "' to Parent-Gateway or Fenix")
-
-								// TODO Check for messages to Resend (If so then put them on channel)
-
-							}
-						}
 					}
 				}
 			}
 		}
 	}
+}
+
+// ********************************************************************************************
+// Try to dial parent gateway/Fenix
+// input pointer are updated back to their original variables
+
+func dialParenGateway(addressToDial string, dialSuccess bool, gatewayClient gRPC.GatewayTowardsFenixClient, remoteParentServerConnection *grpc.ClientConn) (string, bool, gRPC.GatewayTowardsFenixClient, *grpc.ClientConn) {
+
+	var err error
+	// Get address to parent
+	addressToDial = getParentAddressAndPort()
+
+	// Set up connection to Parent Gateway or Fenix
+	remoteParentServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
+	if err != nil {
+		// Connection Not OK
+		dialSuccess = false
+
+		LogErrorAndSendInfoToFenix(
+			"16738894-468a-4125-a9cc-32fd97afb767",
+			gRPC.InformationMessage_WARNING,
+			"addressToDial",
+			addressToDial,
+			err.Error(),
+			"COuldn't dial Parent (Gateway or Plugin) Server!",
+		)
+	} else {
+		// Connection OK
+		dialSuccess = true
+
+		// Creates a new gateway Client
+		gatewayClient = gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
+
+	}
+
+	return addressToDial, dialSuccess, gatewayClient, remoteParentServerConnection
 }
