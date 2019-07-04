@@ -39,6 +39,14 @@ func generaTimeStampUTC() string {
 }
 
 // *********************************************************************************
+// Genrerate DateTime timestamp - "2019-06-27 21:33:17"
+//
+func generaTimeStampDateDateTime() string {
+	now := time.Now()
+	return now.String()[0:17]
+}
+
+// *********************************************************************************
 // Get Clients IP-address and Port from final PluginId from Memory object
 //
 func getClientAddressAndPort(pluginId string) (addressAndPort string) {
@@ -118,7 +126,7 @@ func updateMemoryAddressForParentAddressInfo() {
 			}).Error("Can't unmarshal gRPCParent-address object from database")
 
 			// Send FATAL information to Fenix
-			localInformationMessageChannel <- &gRPC.InformationMessage{
+			gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 				OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 				OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 				SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -142,7 +150,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				localInformationMessageChannel <- &gRPC.InformationMessage{
+				gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -168,7 +176,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				localInformationMessageChannel <- &gRPC.InformationMessage{
+				gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -228,37 +236,37 @@ func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(GatewayIdentif
 func LogErrorAndSendInfoToFenix(
 	id string,
 	messageType gRPC.InformationMessage_InformationType,
-	infoHeader string,
-	info string,
-	errorMessage string,
-	message string,
+	infoHeaderForLogging string,
+	infoForLogging string,
+	errorMessageForLogging string,
+	messageToFenix string,
 ) {
 
 	switch messageType {
 	case gRPC.InformationMessage_DEBUG:
 		// Only logg information and do not send to Fenix
 		logger.WithFields(logrus.Fields{
-			"ID":       id,
-			infoHeader: info,
-		}).Debug(message)
+			"ID":                 id,
+			infoHeaderForLogging: infoForLogging,
+		}).Debug(messageToFenix)
 
 	case gRPC.InformationMessage_INFO:
 		// Log information
 		logger.WithFields(logrus.Fields{
-			"ID":       id,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Info(message)
+			"ID":                 id,
+			infoHeaderForLogging: infoForLogging,
+			"error":              errorMessageForLogging,
+		}).Info(messageToFenix)
 
 		// Send information to Fenix
-		localInformationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_INFO,
-			Message:                  message,
+			Message:                  messageToFenix,
 			OrginalCreateDateTime:    generaTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
@@ -267,20 +275,20 @@ func LogErrorAndSendInfoToFenix(
 	case gRPC.InformationMessage_WARNING:
 		// Log information
 		logger.WithFields(logrus.Fields{
-			"ID":       id,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Warning(message)
+			"ID":                 id,
+			infoHeaderForLogging: infoForLogging,
+			"error":              errorMessageForLogging,
+		}).Warning(messageToFenix)
 
 		// Send Warning information to Fenix
-		localInformationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_WARNING,
-			Message:                  message,
+			Message:                  messageToFenix,
 			OrginalCreateDateTime:    generaTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
@@ -289,20 +297,20 @@ func LogErrorAndSendInfoToFenix(
 	case gRPC.InformationMessage_ERROR:
 		// Log information
 		logger.WithFields(logrus.Fields{
-			"ID":       id,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Error(message)
+			"ID":                 id,
+			infoHeaderForLogging: infoForLogging,
+			"error":              errorMessageForLogging,
+		}).Error(messageToFenix)
 
 		// Send Error information to Fenix
-		localInformationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
-			Message:                  message,
+			Message:                  messageToFenix,
 			OrginalCreateDateTime:    generaTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
@@ -311,10 +319,10 @@ func LogErrorAndSendInfoToFenix(
 	case gRPC.InformationMessage_FATAL:
 		// Only log and then Terminate Gateway due to problems
 		logger.WithFields(logrus.Fields{
-			"ID":       id,
-			infoHeader: info,
-			"error":    errorMessage,
-		}).Fatal(message)
+			"ID":                 id,
+			infoHeaderForLogging: infoForLogging,
+			"error":              errorMessageForLogging,
+		}).Fatal(messageToFenix)
 
 	default:
 		logger.WithFields(logrus.Fields{
@@ -495,7 +503,7 @@ func GetOutboundIP() string {
 			"ID":                      "118517f0-6839-49b5-9f8f-850e82d3de23",
 			"err":                     err,
 			"clientAddresAndPortInfo": gatewayConfig.InitialClientPort.InitialClientPort,
-		}).Fatal("Error when getting this gateways IP-address")
+		}).Fatal("Error when getting this gateways own IP-address")
 	}
 
 	defer func() {
@@ -512,7 +520,7 @@ func GetOutboundIP() string {
 	logger.WithFields(logrus.Fields{
 		"ID":        "2a2a4450-2a09-4084-bc1b-c5ac6ee58bcb",
 		"localAddr": localAddr,
-	}).Debug("This gateways address info")
+	}).Debug("This gateways own address info")
 
 	return localAddr.IP.String()
 }

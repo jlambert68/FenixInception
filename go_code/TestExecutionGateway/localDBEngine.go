@@ -77,17 +77,22 @@ func databaseEngine() {
 	}).Debug("Exiting database engine with 'defer'")
 
 	for {
-
 		// Wait for data comes from channel to dtabase engine
 		messageToDbEngine := <-dbMessageQueue
 		logger.WithFields(logrus.Fields{
-			"ID":                "5bdb83d8-e913-4933-969b-5035f41e4a70",
-			"messageToDbEngine": messageToDbEngine,
+			"ID":                             "5bdb83d8-e913-4933-969b-5035f41e4a70",
+			"messageToDbEngine.messageType,": messageToDbEngine.messageType,
+			"messageToDbEngine":              messageToDbEngine,
 		}).Debug("Received a new message to Database engine")
 
 		// Decide if it's a Read- or Write-instruction
 		switch messageToDbEngine.messageType {
 		case DbRead:
+			// Infor entering this part in Debug-mode
+			logger.WithFields(logrus.Fields{
+				"ID": "993dc086-84ec-4c45-a9b1-e7c73ea50b50",
+			}).Debug("Entering Read-Database")
+
 			// Read data from Database and send back using incoming return-channel
 			err = db.View(func(tx *bolt.Tx) error {
 				bucket := tx.Bucket([]byte(messageToDbEngine.bucket))
@@ -137,6 +142,11 @@ func databaseEngine() {
 			})
 
 		case DbWrite:
+			// Infor entering this part in Debug-mode
+			logger.WithFields(logrus.Fields{
+				"ID": "5173bc5a-53f2-4a9a-ade6-97e0e875478a",
+			}).Debug("Entering Write-Database")
+
 			// Store incoming data in defined bucket
 			err = db.Update(func(tx *bolt.Tx) error {
 				// Create Bucket if it not exist

@@ -121,6 +121,7 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 
 		// Save Port to memory object
 		gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort = registerClientAddressResponse.ClientPort
+		gatewayConfig.GatewayIdentification.CreatedDateTime = generaTimeStampUTC()
 
 		// Save information that about that registration was successful. Used for knowning that registration was made at least once
 		gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce = true
@@ -222,8 +223,10 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 	// Init logger
 	if logfileForTest == "" {
-		initLogger("localLogFile.log")
+		//logfileForTest = generaTimeStampDateDateTime() + " - " + "localLogFile.log"
+		initLogger(logfileForTest + "localLogFile.log")
 	} else {
+		logfileForTest = logfileForTest
 		initLogger(logfileForTest)
 	}
 

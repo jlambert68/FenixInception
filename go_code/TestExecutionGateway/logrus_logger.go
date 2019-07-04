@@ -50,9 +50,13 @@ func initLogger(filename string) {
 		if err == nil {
 			logger.Out = file
 
+			logger.Info("********* *************** *********")
+			logger.Info("")
 			logger.WithFields(logrus.Fields{
 				"ID": "d6b7454e-eb99-4c7d-9ec9-84249a7ee848",
-			}).Info("Logger started")
+			}).Info("********* Logger started *********")
+			logger.Info("")
+			logger.Info("********* *************** *********")
 		} else {
 			log.Println("Failed to log to file, using default stderr")
 		}

@@ -56,7 +56,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) sendLocalMessageToFenixEng
 
 	for {
 		// Wait for data comes from 'local' channel for messages initiated in this gateway
-		localInformationMessage := <-localInformationMessageChannel
+		localInformationMessage := <-gatewayTowardsFenixObject.informationMessageChannel
 
 		logger.WithFields(logrus.Fields{
 			"ID":                      "f74b3a27-77ad-47a4-8e77-ed680f4c419f",

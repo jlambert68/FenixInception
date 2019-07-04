@@ -35,7 +35,7 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 	} else {
 		logger.WithFields(logrus.Fields{
 			"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
-			"ID": "77dd611b-4b76-4ed8-a383-8b336a7b29ec",
+			"ID": "c36912f1-54ce-458a-b2c3-f64209692ede",
 		}).Info("Success in listening on port " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 
 	}
@@ -43,8 +43,8 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 	// Creates a new registerGatewayTowardsPluginerver gRPC server
 	go func() {
 		logger.WithFields(logrus.Fields{
-			"ID": "3361684d-73f9-49b2-a11a-a2833759363c",
-		}).Info("Starting Gateway gRPC Server towards Fenix")
+			"ID": "025e810f-90ed-4418-ad99-93734e4d0e3f",
+		}).Info("Starting Gateway gRPC Server towards Plugin")
 
 		registerGatewayTowardsPluginerver = grpc.NewServer()
 		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &GRPCServerTowardsPluginStruct{})
@@ -129,7 +129,7 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 	} else {
 		logger.WithFields(logrus.Fields{
 			"gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort": gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort,
-			"ID": "77dd611b-4b76-4ed8-a383-8b336a7b29ec",
+			"ID": "5f86c32d-f143-4853-b35a-35d58548bb7d",
 		}).Info("Success in listening on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 
 	}
@@ -137,7 +137,7 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 	// Creates a new registerGatewayTowardsFenixServer gRPC server
 	go func() {
 		logger.WithFields(logrus.Fields{
-			"ID": "3361684d-73f9-49b2-a11a-a2833759363c",
+			"ID": "8b105bd8-3825-40e5-ab5e-47e78b8a6f86",
 		}).Info("Starting Gateway gRPC Server towards Fenix")
 
 		registerGatewayTowardsFenixServer = grpc.NewServer()

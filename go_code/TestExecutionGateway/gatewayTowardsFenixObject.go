@@ -7,7 +7,6 @@ import (
 )
 
 var (
-
 	// Connection parameters for connecting to parent Gateway/Fenix
 	remoteGatewayServerConnection *grpc.ClientConn
 	grpcClient                    gRPC.GatewayTowardsFenixClient
@@ -22,11 +21,21 @@ var (
 	gatewayClientHasBeenConnectedToParentGateway bool
 )
 
-type gatewayTowardsFenixObjectStruct struct {
+// ChannelType
+const channelTypeInformationMessage = "channelTypeinformationMessage"
+const channelTypeTestInstructionTimeOutMessage = "channelTypeTestInstructionTimeOutMessage"
+const channelTypeTestExecutionLogMessage = "channelTypeTestExecutionLogMessage"
+const channelTypeSupportedTestDataDomainsMessage = "channelTypeSupportedTestDataDomainsMessage"
+const channelTypeAvailbleTestInstructionsAtPluginMessage = "channelTypeAvailbleTestInstructionsAtPluginMessage"
+const channelTypeAvailbleTestContainersAtPluginMessage = "channelTypeAvailbleTestContainersAtPluginMessage"
+const channelTypeTestInstructionExecutionResultMessage = "channelTypeTestInstructionExecutionResultMessage"
+const channelTypeSupportedTestDataDomainsWithHeadersMessage = "channelTypeSupportedTestDataDomainsWithHeadersMessage"
 
+type gatewayTowardsFenixObjectStruct struct {
 	// *** Internal queues used by the gateway ***
 
 	//  informationMessage towards Fenix
+
 	informationMessageChannel chan *gRPC.InformationMessage
 
 	// testInstructionTimeOutMessage towards Fenix

@@ -3,7 +3,6 @@ package TestExecutionGateway
 import (
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
-	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
 	"time"
 )
 
@@ -50,7 +49,8 @@ var (
 	dbMessageQueue chan dbMessageStruct
 
 	// Channel for informationMessage initiated in this gateway
-	localInformationMessageChannel chan *gRPC.InformationMessage
+	// removed becasue it resides in object for messages towards Fenix
+	//      gatewayTowardsFenixObject.informationMessageChannel chan *gRPC.InformationMessage
 )
 
 // TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
@@ -168,6 +168,7 @@ const BucketForResendOfAvailableTestInstructionsToFenix = "ReSendAvailableTestIn
 const BucketForResendOfAvailableTestContainers = "ReSendAvailableTestContainers"
 const BucketForResendOfSupportedTestDataDomains = "ReSendSupportedTestDataDomains"
 const BucketForResendOfTestInstructionExecutionResult = "ReSendTestExecutionResult"
+const BucketForResendOTimeOutMesagesToFenix = "ReSendTimeOutMessages"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPortStruct

@@ -61,7 +61,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 				}).Error("Did not connect to Child (Gateway or Plugin) Server!")
 
 				//Send Error information to Fenix
-				localInformationMessageChannel <- &gRPC.InformationMessage{
+				gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -97,7 +97,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 					}).Error("Problem to send TestInstruction to child-Gateway or Plugin")
 
 					//Send Error information to Fenix
-					localInformationMessageChannel <- &gRPC.InformationMessage{
+					gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 						OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 						OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 						SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -129,7 +129,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 						}).Error("Error when converting TestInstruction into a byte array, stopping futher processing of this TestInstruction")
 
 						//TSend Error information to Fenix
-						localInformationMessageChannel <- &gRPC.InformationMessage{
+						gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 							OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 							OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 							SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -168,7 +168,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 							}).Error("Got an error when Saveing to local DB")
 
 							//Send Error information to Fenix
-							localInformationMessageChannel <- &gRPC.InformationMessage{
+							gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
 								OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 								OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 								SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
