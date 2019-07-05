@@ -170,6 +170,10 @@ const BucketForResendOfSupportedTestDataDomains = "ReSendSupportedTestDataDomain
 const BucketForResendOfTestInstructionExecutionResult = "ReSendTestExecutionResult"
 const BucketForResendOTimeOutMesagesToFenix = "ReSendTimeOutMessages"
 
+// Used for initiate TransmitDispatchENgine
+const dispatchEngineTowardsPlugin = "dispatchEngineTowardsPlugin"
+const transmitEngineTowardsFenix = "transmitEngineTowardsFenix"
+
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPortStruct
 

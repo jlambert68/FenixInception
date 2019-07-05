@@ -233,6 +233,7 @@ func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(GatewayIdentif
 
 // *********************************************************************************
 // Log message to local log and then Send message to Fenix
+//TODO SPlit logs into one log per messageType
 func LogErrorAndSendInfoToFenix(
 	id string,
 	messageType gRPC.InformationMessage_InformationType,

@@ -10,20 +10,41 @@ import (
 )
 
 // ********************************************************************************************
-// Initiate Transmit Engine for XTowardsFenix
+// Initiate Transmit Engines for messages towards Fenix'
 //
-/*
-func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTransmitEngineForXTowardsFenix() {
 
-	// Start Transmit Engine, for X as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(gatewayObject.testInstructionExecutionResultMessageTowardsFenixChannel, types.Chan{})
-}testInstructionExecutionResultMessageTowardsFenixChanneltestInstructionExecutionResultMessageTowardsFenixChannel
-Ä*/
+func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTransmitEnginesTowardsFenix() {
+
+	// Start a Transmit Engine, for 'informationMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeInformationMessage)
+
+	// Start a Transmit Engine, for 'timeOutMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionTimeOutMessage)
+
+	// Start a Transmit Engine, for 'spportedTestDataDomainsMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestExecutionLogMessage)
+
+	// Start a Transmit Engine, for 'availbleTestInstructionAtPluginMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsMessage)
+
+	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestInstructionsAtPluginMessage)
+
+	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestContainersAtPluginMessage)
+
+	// Start a Transmit Engine, for 'testInstructionExecutionResultMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionExecutionResultMessage)
+
+	// Start a Transmit Engine, for 'supportedTestDataDomainsWithHeadersMessageToBeForwarded' as a go-routine
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsWithHeadersMessage)
+
+}
+
 // ********************************************************************************************
-// Forward X-messages-messages from channel towards Fenix
+// Forward X-message from channel towards Fenix
 //
 
-// TODO initiate all channels at once and set channelType at the same time
 func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsFenix(channelType string) {
 
 	var (
@@ -325,13 +346,12 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						dialSuccess = false
 
 						LogErrorAndSendInfoToFenix(
-							//TODO SPlit logs into one log per messageType
-							"519cc9e7-5a24-4787-a23e-e58808c22ce5",
+							"e642a035-fd95-45aa-b625-4dcedd65c3a5",
 							gRPC.InformationMessage_WARNING,
 							"returnMessage",
 							returnMessageString,
 							err.Error(),
-							"Problem to send 'informationMessageToBeForwarded' to parent-Gateway or Fenix",
+							"Problem to send message from '"+channelType+"' to parent-Gateway or Fenix",
 						)
 
 						// Save message to local DB for later processing
@@ -345,7 +365,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 					} else {
 						// gRPC Send message OK
 						logger.WithFields(logrus.Fields{
-							"ID":            "8820b7be-2495-44bb-8894-ea9b39486848",
+							"ID":            "9c3204ea-7f1b-4a34-ae5e-e11d45b1c17f",
 							"addressToDial": addressToDial,
 						}).Debug("gRPC-send OK for '" + infoHeader + "' to Parent-Gateway or Fenix")
 
@@ -360,7 +380,6 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 
 // ********************************************************************************************
 // Try to dial parent gateway/Fenix
-// input pointer are updated back to their original variables
 
 func dialParenGateway(addressToDial string, dialSuccess bool, gatewayClient gRPC.GatewayTowardsFenixClient, remoteParentServerConnection *grpc.ClientConn) (string, bool, gRPC.GatewayTowardsFenixClient, *grpc.ClientConn) {
 
@@ -375,7 +394,7 @@ func dialParenGateway(addressToDial string, dialSuccess bool, gatewayClient gRPC
 		dialSuccess = false
 
 		LogErrorAndSendInfoToFenix(
-			"16738894-468a-4125-a9cc-32fd97afb767",
+			"f1e2922b-d1b8-4c5d-9861-40ba71733383",
 			gRPC.InformationMessage_WARNING,
 			"addressToDial",
 			addressToDial,
