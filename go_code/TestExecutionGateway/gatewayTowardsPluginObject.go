@@ -16,6 +16,10 @@ type gRPCClientAddressStruct struct {
 	clientLastRegistrationDateTime string
 }
 
+// ChannelType
+const channelTypeTestInstructionMessageChannel = "channelTypeTestInstructionMessageChannel"
+const channelTypeSupportedTestDataDomainsRequestMessage = "channelTypeSupportedTestDataDomainsRequestMessage"
+
 type gatewayTowardsPluginObjectStruct struct {
 
 	// Internal queues used by the gateway
