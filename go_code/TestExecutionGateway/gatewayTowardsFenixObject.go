@@ -31,11 +31,10 @@ const channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix = "channelTyp
 const channelTypeTestInstructionExecutionResultMessageTowardsFenix = "channelTypeTestInstructionExecutionResultMessageTowardsFenix"
 const channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix = "channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix"
 
-type gatewayTowardsFenixObjectStruct struct {
-	// *** Internal queues used by the gateway towards Fenix ***
+// *** Internal queues used by the gateway towards Fenix ***
 
-	//  informationMessage towards Fenix
-
+//  informationMessage towards Fenix
+var (
 	informationMessageChannelTowardsFenix chan *gRPC.InformationMessage
 
 	// testInstructionTimeOutMessage towards Fenix
@@ -58,10 +57,9 @@ type gatewayTowardsFenixObjectStruct struct {
 
 	//supportedTestDataDomainsWithHeadersMessage towars Fenix
 	supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix chan *gRPC.SupportedTestDataDomainsWithHeadersMessage
-}
+)
 
 var (
-	gatewayTowardsFenixObject         gatewayTowardsFenixObjectStruct
 	registerGatewayTowardsFenixServer *grpc.Server
 	gatewayTowardsFenixListener       net.Listener
 

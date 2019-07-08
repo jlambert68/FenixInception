@@ -20,18 +20,16 @@ type gRPCClientAddressStruct struct {
 const channelTypeTestInstructionMessageTowardsPlugin = "channelTypeTestInstructionMessageTowardsPlugin"
 const channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin = "channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin"
 
-type gatewayTowardsPluginObjectStruct struct {
-
+var (
 	// Internal queues used by the gateway
 	// TestInstruction Towards Plugin
 	testInstructionMessageChannelTowardsPlugin chan *gRPC.TestInstruction_RT
 
 	// supportedTestDataDomainsRequest Towards Plugin
 	supportedTestDataDomainsRequestChannelTowardsPlugin chan *gRPC.SupportedTestDataDomainsRequest
-}
+)
 
 var (
-	gatewayTowardsPluginObject        gatewayTowardsPluginObjectStruct
 	registerGatewayTowardsPluginerver *grpc.Server
 	gatewayTowardsPluginListener      net.Listener
 
