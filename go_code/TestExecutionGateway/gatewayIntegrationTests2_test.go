@@ -261,7 +261,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 			_ = SaveMessageToLocalDB(
 				informationMessageToBeForwarded.MessageId,
 				informationMessageToBeForwardedByteArray,
-				BucketForResendOfInfoMessagesToFenix,
+				BucketForResendOfInfoMessagesTowardsFenix,
 				"2154b0cc-fdf3-49bd-8e9e-2ebd24710359",
 			)
 		}
@@ -290,7 +290,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 			_ = SaveMessageToLocalDB(
 				informationMessageToBeForwarded.MessageId,
 				informationMessageToBeForwardedByteArray,
-				BucketForResendOfInfoMessagesToFenix,
+				BucketForResendOfInfoMessagesTowardsFenix,
 				"01ed6538-efd9-4ce5-af5c-c7869e8a4eb1",
 			)
 
@@ -319,7 +319,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 				_ = SaveMessageToLocalDB(
 					informationMessageToBeForwarded.MessageId,
 					informationMessageToBeForwardedByteArray,
-					BucketForResendOfInfoMessagesToFenix,
+					BucketForResendOfInfoMessagesTowardsFenix,
 					"0d378676-3dd3-4bb9-a76b-66e410d5c280",
 				)
 				return err

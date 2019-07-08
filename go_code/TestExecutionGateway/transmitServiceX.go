@@ -16,28 +16,28 @@ import (
 func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTransmitEnginesTowardsFenix() {
 
 	// Start a Transmit Engine, for 'informationMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeInformationMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeInformationMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'timeOutMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionTimeOutMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionTimeOutMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'spportedTestDataDomainsMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestExecutionLogMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestExecutionLogMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'availbleTestInstructionAtPluginMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestInstructionsAtPluginMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestContainersAtPluginMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'testInstructionExecutionResultMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionExecutionResultMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionExecutionResultMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'supportedTestDataDomainsWithHeadersMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsWithHeadersMessage, transmitEngineTowardsFenix)
+	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, transmitEngineTowardsFenix)
 
 }
 
@@ -47,15 +47,22 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTransmitEnginesTow
 
 func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsFenix(channelType string, transmitOrDispatchEngineType string) {
 
+	// Messages towards Plugin
 	var (
-		informationMessageToBeForwarded                         *gRPC.InformationMessage
-		timeOutMessageToBeForwarded                             *gRPC.TestInstructionTimeOutMessage
-		testExecutionLogMessageToBeForwarded                    *gRPC.TestExecutionLogMessage
-		spportedTestDataDomainsMessageToBeForwarded             *gRPC.SupportedTestDataDomainsMessage
-		availbleTestInstructionAtPluginMessageToBeForwarded     *gRPC.AvailbleTestInstructionAtPluginMessage
-		availbleTestContainersAtPluginMessageToBeForwarded      *gRPC.AvailbleTestContainersAtPluginMessage
-		testInstructionExecutionResultMessageToBeForwarded      *gRPC.TestInstructionExecutionResultMessage
-		supportedTestDataDomainsWithHeadersMessageToBeForwarded *gRPC.SupportedTestDataDomainsWithHeadersMessage
+		testInstructionMessageToBeForwardedTowardsPlugin                 *gRPC.TestInstruction_RT
+		supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin *gRPC.SupportedTestDataDomainsRequest
+	)
+
+	// Messages towards Fenix
+	var (
+		informationMessageToBeForwardedTowardsFenix                         *gRPC.InformationMessage
+		timeOutMessageToBeForwardedTowardsFenix                             *gRPC.TestInstructionTimeOutMessage
+		testExecutionLogMessageToBeForwardedTowardsFenix                    *gRPC.TestExecutionLogMessage
+		spportedTestDataDomainsMessageToBeForwardedTowardsFenix             *gRPC.SupportedTestDataDomainsMessage
+		availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix     *gRPC.AvailbleTestInstructionAtPluginMessage
+		availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix      *gRPC.AvailbleTestContainersAtPluginMessage
+		testInstructionExecutionResultMessageToBeForwardedTowardsFenix      *gRPC.TestInstructionExecutionResultMessage
+		supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix *gRPC.SupportedTestDataDomainsWithHeadersMessage
 	)
 	var err error
 	var messageId string
@@ -75,8 +82,8 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 		gRpcClientTowardsFenix gRPC.GatewayTowardsFenixClient
 		gRpcClientTowardPlugin gRPC.GatewayTowayPluginClient
 
-		gRpcContexType         context.Context
-		dialSuccess            = false
+		gRpcContexType context.Context
+		dialSuccess    = false
 	)
 
 	var gRRCerr error
@@ -119,13 +126,43 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 				case dispatchEngineTowardsPlugin:
 					//  Decide the correct DispatchEngine to use
 					switch channelType {
-					case channelTypeTestInstructionMessageChannel:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwarded)
-						returnMessageString = returnMessageAckNackResponse.String()
+					case channelTypeTestInstructionMessageTowardsPlugin:
+						testInstructionMessageToBeForwardedTowardsPlugin = <-gatewayTowardsPluginObject.testInstructionMessageChannelTowardsPlugin
+						messageToBeForwardedByteArray, err = json.Marshal(*testInstructionMessageToBeForwardedTowardsPlugin)
+						// If error when marshaling then use the following information
+						id = "22318eb6-5d57-4183-8238-0bc40e16ff7f"
+						infoHeader = "testInstructionMessageToBeForwardedTowardsPlugin"
+						info = ""
+						errorMessage = ""
+						message = "testInstructionMessageToBeForwardedTowardsPlugin"
 
-					case channelTypeSupportedTestDataDomainsRequestMessage:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwarded)
-						returnMessageString = returnMessageAckNackResponse.String()
+						// ChangeSenderId to this gatway's SenderId before sending the data forward
+						testInstructionMessageToBeForwardedTowardsPlugin.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						testInstructionMessageToBeForwardedTowardsPlugin.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+
+						// Information used when saving message to local database
+						messageId = testInstructionMessageToBeForwardedTowardsPlugin.MessageId
+						bucket = BucketForResendTestInstructionTowardsPlugin
+						NumberOfMessagesInChannel = len(gatewayTowardsPluginObject.testInstructionMessageChannelTowardsPlugin)
+
+					case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+						supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin = <-gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannelTowardsPlugin
+						messageToBeForwardedByteArray, err = json.Marshal(*testInstructionMessageToBeForwardedTowardsPlugin)
+						// If error when marshaling then use the following information
+						id = "5f0cc657-97fb-49d0-9c10-e63f6a527676"
+						infoHeader = "supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin"
+						info = ""
+						errorMessage = ""
+						message = "supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin"
+
+						// ChangeSenderId to this gatway's SenderId before sending the data forward
+						testInstructionMessageToBeForwardedTowardsPlugin.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						testInstructionMessageToBeForwardedTowardsPlugin.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+
+						// Information used when saving message to local database
+						messageId = supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.MessageId
+						bucket = BucketForResendOfGetTestdataDomainsToPlugin
+						NumberOfMessagesInChannel = len(gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannelTowardsPlugin)
 
 					default:
 						LogErrorAndSendInfoToFenix(
@@ -142,9 +179,9 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 				case transmitEngineTowardsFenix:
 					//  Deside the correct TransmitEngine to use
 					switch channelType {
-					case channelTypeInformationMessage:
-						informationMessageToBeForwarded = <-gatewayTowardsFenixObject.informationMessageChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*informationMessageToBeForwarded)
+					case channelTypeInformationMessageTowardsFenix:
+						informationMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.informationMessageChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*informationMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "6798902d-36b9-4598-a125-4be3abd4a23b"
 						infoHeader = "InformationMessageToBeForwared"
@@ -153,17 +190,17 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						message = "InformationMessageToBeForwared"
 
 						// ChangeSenderId to this gatway's SenderId before sending the data forward
-						informationMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-						informationMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+						informationMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						informationMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 						// Information used when saving message to local database
-						messageId = informationMessageToBeForwarded.MessageId
-						bucket = BucketForResendOfInfoMessagesToFenix
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						messageId = informationMessageToBeForwardedTowardsFenix.MessageId
+						bucket = BucketForResendOfInfoMessagesTowardsFenix
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
-					case channelTypeTestInstructionTimeOutMessage:
-						timeOutMessageToBeForwarded = <-gatewayTowardsFenixObject.testInstructionTimeOutMessageChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*timeOutMessageToBeForwarded)
+					case channelTypeTestInstructionTimeOutMessageTowardsFenix:
+						timeOutMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.testInstructionTimeOutMessageChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*timeOutMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "e80978f1-2f2c-43f7-bd4b-218e852f2f72"
 						infoHeader = "TestInstructionTimeOutMessageToBeForwared"
@@ -172,17 +209,17 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						message = "TestInstructionTimeOutMessageToBeForwared"
 
 						// ChangeSenderId to this gatway's SenderId before sending the data forward
-						timeOutMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-						timeOutMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+						timeOutMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						timeOutMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 						// Information used when saving message to local database
-						messageId = timeOutMessageToBeForwarded.MessageId
-						bucket = BucketForResendOTimeOutMesagesToFenix
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						messageId = timeOutMessageToBeForwardedTowardsFenix.MessageId
+						bucket = BucketForResendOTimeOutMesagesTowardsFenix
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
-					case channelTypeTestExecutionLogMessage:
-						testExecutionLogMessageToBeForwarded = <-gatewayTowardsFenixObject.testExecutionLogMessageChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*testExecutionLogMessageToBeForwarded)
+					case channelTypeTestExecutionLogMessageTowardsFenix:
+						testExecutionLogMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.testExecutionLogMessageChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*testExecutionLogMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "3f8b01b6-da9b-4cee-b787-6a0e9efe9fed"
 						infoHeader = "TestExecutionLogMessageToBeForwarded"
@@ -191,17 +228,17 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						message = "TestExecutionLogMessageToBeForwarded"
 
 						// ChangeSenderId to this gatway's SenderId before sending the data forward
-						testExecutionLogMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-						testExecutionLogMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+						testExecutionLogMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						testExecutionLogMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 						// Information used when saving message to local database
-						messageId = testExecutionLogMessageToBeForwarded.LogMessageId
-						bucket = BucketForResendOfLogMesagesToFenix
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						messageId = testExecutionLogMessageToBeForwardedTowardsFenix.LogMessageId
+						bucket = BucketForResendOfLogMesagesTowardsFenix
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
-					case channelTypeSupportedTestDataDomainsMessage:
-						spportedTestDataDomainsMessageToBeForwarded = <-gatewayTowardsFenixObject.supportedTestDataDomainsMessageTowardsFenixChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*spportedTestDataDomainsMessageToBeForwarded)
+					case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
+						spportedTestDataDomainsMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "d3a33be3-6cf8-459d-bda2-ff64c53d249a"
 						infoHeader = "TestDataDomainsMessageToBeForwarded"
@@ -210,17 +247,17 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						message = "TestDataDomainsMessageToBeForwarded"
 
 						// ChangeSenderId to this gatway's SenderId before sending the data forward
-						spportedTestDataDomainsMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-						spportedTestDataDomainsMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+						spportedTestDataDomainsMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						spportedTestDataDomainsMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 						// Information used when saving message to local database
-						messageId = spportedTestDataDomainsMessageToBeForwarded.MessageId
-						bucket = BucketForResendOfSupportedTestDataDomains
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						messageId = spportedTestDataDomainsMessageToBeForwardedTowardsFenix.MessageId
+						bucket = BucketForResendOfSupportedTestDataDomainsTowardsFenix
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
-					case channelTypeAvailbleTestInstructionsAtPluginMessage:
-						availbleTestInstructionAtPluginMessageToBeForwarded = <-gatewayTowardsFenixObject.availbleTestInstructionAtPluginMessageTowardsFenixChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*availbleTestInstructionAtPluginMessageToBeForwarded)
+					case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+						availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "6524a739-e628-4265-a6cb-d64597a20c3e"
 						infoHeader = "AvailbleTestInstructionsAtPluginMessageToBeForwarded"
@@ -229,17 +266,17 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						message = "AvailbleTestInstructionsAtPluginMessageToBeForwarded"
 
 						// ChangeSenderId to this gatway's SenderId before sending the data forward
-						availbleTestInstructionAtPluginMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-						availbleTestInstructionAtPluginMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+						availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 						// Information used when saving message to local database
-						messageId = availbleTestInstructionAtPluginMessageToBeForwarded.MessageId
-						bucket = BucketForResendOfAvailableTestInstructionsToFenix
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						messageId = availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.MessageId
+						bucket = BucketForResendOfAvailableTestInstructionsTowardsFenix
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
-					case channelTypeAvailbleTestContainersAtPluginMessage:
-						availbleTestContainersAtPluginMessageToBeForwarded = <-gatewayTowardsFenixObject.availbleTestContainersAtPluginMessageTowardsFenixChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*availbleTestContainersAtPluginMessageToBeForwarded)
+					case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+						availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "14b2aa63-7e69-4e80-9d6b-796c286997c9"
 						infoHeader = "AvailbleTestContainersAtPluginMessageToBeForwarded"
@@ -247,13 +284,13 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						errorMessage = ""
 						message = "AvailbleTestContainersAtPluginMessageToBeForwarded"
 
-						messageId = availbleTestContainersAtPluginMessageToBeForwarded.MessageId
-						bucket = BucketForResendOfAvailableTestContainers
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						messageId = availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix.MessageId
+						bucket = BucketForResendOfAvailableTestContainersTowardsFenix
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
-					case channelTypeTestInstructionExecutionResultMessage:
-						testInstructionExecutionResultMessageToBeForwarded = <-gatewayTowardsFenixObject.testInstructionExecutionResultMessageTowardsFenixChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*testInstructionExecutionResultMessageToBeForwarded)
+					case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
+						testInstructionExecutionResultMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "72d128f7-e84c-408a-87a9-e0c8b84c6841"
 						infoHeader = "TestInstructionExecutionResultMessageToBeForwarded"
@@ -262,17 +299,17 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						message = "TestInstructionExecutionResultMessageToBeForwarded"
 
 						// ChangeSenderId to this gatway's SenderId before sending the data forward
-						testInstructionExecutionResultMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-						testInstructionExecutionResultMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+						testInstructionExecutionResultMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						testInstructionExecutionResultMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 						// Information used when saving message to local database
-						messageId = testInstructionExecutionResultMessageToBeForwarded.MessageId
-						bucket = BucketForResendOfTestInstructionExecutionResult
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						messageId = testInstructionExecutionResultMessageToBeForwardedTowardsFenix.MessageId
+						bucket = BucketForResendOfTestInstructionExecutionResultTowardsFenix
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
-					case channelTypeSupportedTestDataDomainsWithHeadersMessage:
-						supportedTestDataDomainsWithHeadersMessageToBeForwarded = <-gatewayTowardsFenixObject.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannel
-						messageToBeForwardedByteArray, err = json.Marshal(*supportedTestDataDomainsWithHeadersMessageToBeForwarded)
+					case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+						supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix = <-gatewayTowardsFenixObject.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix
+						messageToBeForwardedByteArray, err = json.Marshal(*supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
 						// If error when marshaling then use the following information
 						id = "89df74d0-8ba7-47df-bddc-5864a9b376f1"
 						infoHeader = "SupportedTestDataDomainsWithHeadersMessageToBeForwarded"
@@ -281,13 +318,13 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						message = "SupportedTestDataDomainsWithHeadersMessageToBeForwarded"
 
 						// ChangeSenderId to this gatway's SenderId before sending the data forward
-						supportedTestDataDomainsWithHeadersMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-						supportedTestDataDomainsWithHeadersMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+						supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+						supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 						// Information used when saving message to local database
-						messageId = supportedTestDataDomainsWithHeadersMessageToBeForwarded.MessageId
+						messageId = supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.MessageId
 						bucket = BucketForResendOfGetTestdataDomainsToPlugin
-						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannel)
+						NumberOfMessagesInChannel = len(gatewayTowardsFenixObject.informationMessageChannelTowardsFenix)
 
 					default:
 						LogErrorAndSendInfoToFenix(
@@ -321,7 +358,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 						info,
 						errorMessage,
 						"Error when converting '"+message+"' into a byte array, stopping futher processing of this TestInstruction.",
-						//"Error when converting 'testInstructionExecutionResultMessageToBeForwarded' into a byte array, stopping futher processing of this TestInstruction",
+						//"Error when converting 'testInstructionExecutionResultMessageToBeForwardedTowardsFenix' into a byte array, stopping futher processing of this TestInstruction",
 					)
 
 				} else {
@@ -346,12 +383,12 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 					case dispatchEngineTowardsPlugin:
 						//  Decide the correct DispatchEngine to use
 						switch channelType {
-						case channelTypeTestInstructionMessageChannel:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix., informationMessageToBeForwarded)
+						case channelTypeTestInstructionMessageTowardsPlugin:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardPlugin.SendTestInstructionTowardsPlugin(gRpcContexType)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeSupportedTestDataDomainsRequestMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwarded)
+						case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
 						default:
@@ -369,36 +406,36 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 					case transmitEngineTowardsFenix:
 						//  Deside the correct TransmitEngine to use
 						switch channelType {
-						case channelTypeInformationMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwarded)
+						case channelTypeInformationMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeTestInstructionTimeOutMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestInstructionTimeOutTowardsFenix(gRpcContexType, timeOutMessageToBeForwarded)
+						case channelTypeTestInstructionTimeOutMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestInstructionTimeOutTowardsFenix(gRpcContexType, timeOutMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeTestExecutionLogMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestExecutionLogTowardsFenix(gRpcContexType, testExecutionLogMessageToBeForwarded)
+						case channelTypeTestExecutionLogMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestExecutionLogTowardsFenix(gRpcContexType, testExecutionLogMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeSupportedTestDataDomainsMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegistrateAvailableTestDataDomains(gRpcContexType, spportedTestDataDomainsMessageToBeForwarded)
+						case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegistrateAvailableTestDataDomains(gRpcContexType, spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeAvailbleTestInstructionsAtPluginMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegisterAvailbleTestInstructions(gRpcContexType, availbleTestInstructionAtPluginMessageToBeForwarded)
+						case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegisterAvailbleTestInstructions(gRpcContexType, availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeAvailbleTestContainersAtPluginMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegistrateAailableTestContainers(gRpcContexType, availbleTestContainersAtPluginMessageToBeForwarded)
+						case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegistrateAailableTestContainers(gRpcContexType, availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeTestInstructionExecutionResultMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestInstructionResultTowardsFenix(gRpcContexType, testInstructionExecutionResultMessageToBeForwarded)
+						case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestInstructionResultTowardsFenix(gRpcContexType, testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
-						case channelTypeSupportedTestDataDomainsWithHeadersMessage:
-							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsWithHeadersMessageToBeForwarded)
+						case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+							returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
 							returnMessageString = returnMessageAckNackResponse.String()
 
 						default:
@@ -464,8 +501,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsF
 // ********************************************************************************************
 // Try to dial parent gateway/Fenix or child gateway/plugin
 
-func
-dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientTowardsFenix gRPC.GatewayTowardsFenixClient, gRpcClientTOwardPlugin gRPC.GatewayTowayPluginClient, remoteServerConnection *grpc.ClientConn, transmitOrDispatchEngineType string, pluginId string) (string, bool, gRPC.GatewayTowardsFenixClient, gRPC.GatewayTowayPluginClient, *grpc.ClientConn, ) {
+func dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientTowardsFenix gRPC.GatewayTowardsFenixClient, gRpcClientTowardPlugin gRPC.GatewayTowayPluginClient, remoteServerConnection *grpc.ClientConn, transmitOrDispatchEngineType string, pluginId string) (string, bool, gRPC.GatewayTowardsFenixClient, gRPC.GatewayTowayPluginClient, *grpc.ClientConn) {
 
 	var err error
 
@@ -513,7 +549,7 @@ dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientToward
 		switch transmitOrDispatchEngineType {
 		case dispatchEngineTowardsPlugin:
 			// Creates a new gateway gRPC-Client towards Plugin
-			gRpcClientTOwardPlugin = gRPC.NewGatewayTowayPluginClient(remoteServerConnection)
+			gRpcClientTowardPlugin = gRPC.NewGatewayTowayPluginClient(remoteServerConnection)
 
 		case transmitEngineTowardsFenix:
 			// Creates a new gateway gRPC-Client towards Fenix
@@ -534,5 +570,5 @@ dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientToward
 	}
 
 	// Return values to be used by calling function
-	return addressToDial, dialSuccess, gRpcClientTowardsFenix, gRpcClientTOwardPlugin, remoteServerConnection
+	return addressToDial, dialSuccess, gRpcClientTowardsFenix, gRpcClientTowardPlugin, remoteServerConnection
 }

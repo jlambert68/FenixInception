@@ -64,7 +64,7 @@ func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) SendTestInstructio
 		}).Debug("TestInstructions was saved in local database")
 
 		// Put TestInstruction on queue for further processing
-		gatewayTowardsPluginObject.testInstructionMessageChannel <- testInstruction
+		gatewayTowardsPluginObject.testInstructionMessageChannelTowardsPlugin <- testInstruction
 
 		logger.WithFields(logrus.Fields{
 			"ID":              "73e44541-c793-4ccd-8bc8-c94320f49f29",

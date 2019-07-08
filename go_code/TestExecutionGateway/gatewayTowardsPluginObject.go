@@ -17,17 +17,17 @@ type gRPCClientAddressStruct struct {
 }
 
 // ChannelType
-const channelTypeTestInstructionMessageChannel = "channelTypeTestInstructionMessageChannel"
-const channelTypeSupportedTestDataDomainsRequestMessage = "channelTypeSupportedTestDataDomainsRequestMessage"
+const channelTypeTestInstructionMessageTowardsPlugin = "channelTypeTestInstructionMessageTowardsPlugin"
+const channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin = "channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin"
 
 type gatewayTowardsPluginObjectStruct struct {
 
 	// Internal queues used by the gateway
 	// TestInstruction Towards Plugin
-	testInstructionMessageChannel chan *gRPC.TestInstruction_RT
+	testInstructionMessageChannelTowardsPlugin chan *gRPC.TestInstruction_RT
 
 	// supportedTestDataDomainsRequest Towards Plugin
-	supportedTestDataDomainsRequestChannel chan *gRPC.SupportedTestDataDomainsRequest
+	supportedTestDataDomainsRequestChannelTowardsPlugin chan *gRPC.SupportedTestDataDomainsRequest
 }
 
 var (

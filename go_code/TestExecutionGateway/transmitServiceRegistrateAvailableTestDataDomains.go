@@ -40,7 +40,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			// Run service and process messages
 
 			// Wait for data comes from channel to transmit engine
-			supportedTestDataDomainsMessageToBeForwarded := <-gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel
+			supportedTestDataDomainsMessageToBeForwarded := <-gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix
 
 			logger.WithFields(logrus.Fields{
 				"ID": "0259aa0d-a161-45de-ae77-17d317605a0b",
@@ -48,8 +48,8 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			}).Debug("Received a new 'supportedTestDataDomainsMessageToBeForwarded' from channel that shoud be forwarded")
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
-				"supportedTestDataDomainsMessageTowardsFenixChannel",
+			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix),
+				"supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix",
 				"7f51813f-07f2-4e05-9143-ecc40e59bb17")
 
 			// ***** Send AvailableTestDataDomains to parent gateway Fenix using gRPC-call ****
@@ -88,7 +88,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 					_ = SaveMessageToLocalDB(
 						supportedTestDataDomainsMessageToBeForwarded.MessageId,
 						supportedTestDataDomainsMessageToBeForwardedByteArray,
-						BucketForResendOfLogMesagesToFenix,
+						BucketForResendOfLogMesagesTowardsFenix,
 						"0a71308b-a172-4342-b3da-b45cf923860b",
 					)
 				}
@@ -137,7 +137,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 						_ = SaveMessageToLocalDB(
 							supportedTestDataDomainsMessageToBeForwarded.MessageId,
 							supportedTestDataDomainsMessageToBeForwardedByteArray,
-							BucketForResendOfLogMesagesToFenix,
+							BucketForResendOfLogMesagesTowardsFenix,
 							"338075e7-b43f-4cbf-be84-b5096c4658c1",
 						)
 

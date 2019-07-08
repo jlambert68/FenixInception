@@ -40,7 +40,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			// Run service and process messages
 
 			// Wait for data comes from channel to transmit engine
-			supportedTestContainerMessageToBeForwarded := <-gatewayObject.availbleTestContainersAtPluginMessageTowardsFenixChannel
+			supportedTestContainerMessageToBeForwarded := <-gatewayObject.availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix
 
 			logger.WithFields(logrus.Fields{
 				"ID": "39908e44-789e-4a8c-ba70-66d6c350b090",
@@ -48,8 +48,8 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			}).Debug("Received a new 'supportedTestContainerMessageToBeForwarded' from channel that shoud be forwarded")
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.availbleTestContainersAtPluginMessageTowardsFenixChannel),
-				"availbleTestContainersAtPluginMessageTowardsFenixChannel",
+			channelSinaling(len(gatewayObject.availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix),
+				"availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix",
 				"ce1103cf-a98f-4228-97a2-ac9a76353464")
 
 			// ***** Send AvailableTestContainera to parent gateway Fenix using gRPC-call ****
@@ -88,7 +88,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 					_ = SaveMessageToLocalDB(
 						supportedTestContainerMessageToBeForwarded.MessageId,
 						supportedTestContainerMessageToBeForwardedByteArray,
-						BucketForResendOfAvailableTestContainers,
+						BucketForResendOfAvailableTestContainersTowardsFenix,
 						"922b5520-a374-4762-824e-f2b831b83bc9",
 					)
 				}
@@ -137,7 +137,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 						_ = SaveMessageToLocalDB(
 							supportedTestContainerMessageToBeForwarded.MessageId,
 							supportedTestContainerMessageToBeForwardedByteArray,
-							BucketForResendOfAvailableTestContainers,
+							BucketForResendOfAvailableTestContainersTowardsFenix,
 							"85d70e29-a698-4b5c-a9ef-ada7e5ac4695",
 						)
 

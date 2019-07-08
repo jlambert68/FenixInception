@@ -36,11 +36,11 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForTestInstr
 			// Run service and process messages
 
 			// ***** Wait for data comes from channel to transmit engine ****
-			testInstructionExecutionResultMessageToBeForwarded := <-gatewayObject.testInstructionExecutionResultMessageTowardsFenixChannel
+			testInstructionExecutionResultMessageToBeForwarded := <-gatewayObject.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.testInstructionExecutionResultMessageTowardsFenixChannel),
-				"supportedTestDataDomainsWithHeadersMessageTowardsFenixChannel",
+			channelSinaling(len(gatewayObject.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix),
+				"supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix",
 				"084a768d-412f-43cb-bfd6-80fcb777d36c")
 
 			logger.WithFields(logrus.Fields{
@@ -85,7 +85,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForTestInstr
 					_ = SaveMessageToLocalDB(
 						testInstructionExecutionResultMessageToBeForwarded.MessageId,
 						stestInstructionExecutionResultMessageToBeForwardedByteArray,
-						BucketForResendOfTestInstructionExecutionResult,
+						BucketForResendOfTestInstructionExecutionResultTowardsFenix,
 						"77024181-dd7d-4bd2-9fd3-22dce112d065",
 					)
 				}
@@ -113,7 +113,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForTestInstr
 					_ = SaveMessageToLocalDB(
 						testInstructionExecutionResultMessageToBeForwarded.MessageId,
 						testInstructionExecutionResultMessageToBeForwardedByteArray,
-						BucketForResendOfTestInstructionExecutionResult,
+						BucketForResendOfTestInstructionExecutionResultTowardsFenix,
 						"d86d45ee-cd99-4e82-9f45-2cee0db98ae4",
 					)
 
@@ -142,7 +142,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForTestInstr
 						_ = SaveMessageToLocalDB(
 							testInstructionExecutionResultMessageToBeForwarded.MessageId,
 							testInstructionExecutionResultMessageToBeForwardedByteArray,
-							BucketForResendOfTestInstructionExecutionResult,
+							BucketForResendOfTestInstructionExecutionResultTowardsFenix,
 							"56bd3634-973e-48fc-b142-53a5d49347b2",
 						)
 

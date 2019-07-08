@@ -36,11 +36,11 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendMessa
 			// Run service and process messages
 
 			// Wait for data comes from channel to transmit engine
-			informationMessageToBeForwarded := <-gatewayObject.informationMessageChannel
+			informationMessageToBeForwarded := <-gatewayObject.informationMessageChannelTowardsFenix
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
-				"informationMessageChannel",
+			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix),
+				"informationMessageChannelTowardsFenix",
 				"01411586-7dab-4f34-809c-cdc8af8742c5")
 
 			logger.WithFields(logrus.Fields{
@@ -85,7 +85,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendMessa
 					_ = SaveMessageToLocalDB(
 						informationMessageToBeForwarded.MessageId,
 						testExecutionLogMessageToBeForwardedByteArray,
-						BucketForResendOfInfoMessagesToFenix,
+						BucketForResendOfInfoMessagesTowardsFenix,
 						"42da4af3-a4eb-4498-95e8-e78b13d2365a",
 					)
 				}
@@ -112,7 +112,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendMessa
 					_ = SaveMessageToLocalDB(
 						informationMessageToBeForwarded.MessageId,
 						informationMessageToBeForwardedByteArray,
-						BucketForResendOfInfoMessagesToFenix,
+						BucketForResendOfInfoMessagesTowardsFenix,
 						"8672d03e-4d63-4126-b5ea-8f2c80c44a98",
 					)
 
@@ -141,7 +141,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendMessa
 						_ = SaveMessageToLocalDB(
 							informationMessageToBeForwarded.MessageId,
 							informationMessageToBeForwardedByteArray,
-							BucketForResendOfInfoMessagesToFenix,
+							BucketForResendOfInfoMessagesTowardsFenix,
 							"9782b4bc-afb9-424b-9dc4-43e6f47011b4",
 						)
 

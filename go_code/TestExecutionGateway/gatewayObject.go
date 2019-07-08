@@ -50,7 +50,7 @@ var (
 
 	// Channel for informationMessage initiated in this gateway
 	// removed becasue it resides in object for messages towards Fenix
-	//      gatewayTowardsFenixObject.informationMessageChannel chan *gRPC.InformationMessage
+	//      gatewayTowardsFenixObject.informationMessageChannelTowardsFenix chan *gRPC.InformationMessage
 )
 
 // TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
@@ -155,22 +155,29 @@ type IntegrationTestStruct struct {
 // *******************************************************************
 
 // Bucket name, and some keys used in DB
+
+// Administatetive Buckets
 const BucketForParentAddress = "Parent"
 const BucketKeyForParentAddress = "ParentId"
-const BucketForClients = "Clients"
-const BucketForResendOfInfoMessagesToFenix = "ReSendInfoMessages"
-const BucketForResendOfLogMesagesToFenix = "ReSendLogMessages"
-const BucketForResendOfGetTestdataDomainsToPlugin = "ReSendGetTestDataDomainsMessages"
-const BucketForTestInstructions = "TestInstructions"
+const BucketForTestInstructions = "TestInstructions" // TODO  <-- Is this used?
 const BucketForGatewayIdentificationInfo = "GateWayIdentifaction"
+const BucketForClients = "Clients"
 const BucketKeyForGatewayIdentificationInfo = "GateWayIdentifactionId"
-const BucketForResendOfAvailableTestInstructionsToFenix = "ReSendAvailableTestInstructions"
-const BucketForResendOfAvailableTestContainers = "ReSendAvailableTestContainers"
-const BucketForResendOfSupportedTestDataDomains = "ReSendSupportedTestDataDomains"
-const BucketForResendOfTestInstructionExecutionResult = "ReSendTestExecutionResult"
-const BucketForResendOTimeOutMesagesToFenix = "ReSendTimeOutMessages"
 
-// Used for initiate TransmitDispatchENgine
+// Buckets used towards Fenix
+const BucketForResendOfAvailableTestInstructionsTowardsFenix = "ReSendAvailableTestInstructionsTowardsFenix"
+const BucketForResendOfAvailableTestContainersTowardsFenix = "ReSendAvailableTestContainersTowardsFenix"
+const BucketForResendOfSupportedTestDataDomainsTowardsFenix = "ReSendSupportedTestDataDomainsTowardsFenix"
+const BucketForResendOfTestInstructionExecutionResultTowardsFenix = "ReSendTestExecutionResultTowardsFenix"
+const BucketForResendOfInfoMessagesTowardsFenix = "ReSendInfoMessagesTowardsFenix"
+const BucketForResendOfLogMesagesTowardsFenix = "ReSendLogMessagesTowardsFenix"
+const BucketForResendOTimeOutMesagesTowardsFenix = "ReSendTimeOutMessagesTowardsFenix"
+
+// Buckets used towards Plugin
+const BucketForResendTestInstructionTowardsPlugin = "ResendTestInstructionTowardsPlugin"
+const BucketForResendOfGetTestdataDomainsToPlugin = "ReSendGetTestDataDomainsMessagesTowardsPlugin"
+
+// Used for initiate TransmitDispatchEngine
 const dispatchEngineTowardsPlugin = "dispatchEngineTowardsPlugin"
 const transmitEngineTowardsFenix = "transmitEngineTowardsFenix"
 

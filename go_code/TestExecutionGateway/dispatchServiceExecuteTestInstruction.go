@@ -36,11 +36,11 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 			// Run service and process messages
 
 			// Wait for data comes from channel to dispatch engine
-			testInstructionToBeForwarded := <-gatewayTowardsPluginObject.testInstructionMessageChannel
+			testInstructionToBeForwarded := <-gatewayTowardsPluginObject.testInstructionMessageChannelTowardsPlugin
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayTowardsPluginObject.testInstructionMessageChannel),
-				"testInstructionTimeOutMessageChannel",
+			channelSinaling(len(gatewayTowardsPluginObject.testInstructionMessageChannelTowardsPlugin),
+				"testInstructionTimeOutMessageChannelTowardsFenix",
 				"9c89b05d-7f4d-4971-b21b-7c7fa9d42e9c")
 
 			logger.WithFields(logrus.Fields{
@@ -61,7 +61,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 				}).Error("Did not connect to Child (Gateway or Plugin) Server!")
 
 				//Send Error information to Fenix
-				gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+				gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -97,7 +97,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 					}).Error("Problem to send TestInstruction to child-Gateway or Plugin")
 
 					//Send Error information to Fenix
-					gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+					gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 						OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 						OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 						SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -129,7 +129,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 						}).Error("Error when converting TestInstruction into a byte array, stopping futher processing of this TestInstruction")
 
 						//TSend Error information to Fenix
-						gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+						gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 							OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 							OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 							SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -168,7 +168,7 @@ func (gatewayTowardsPluginObject *gatewayTowardsPluginObjectStruct) dispatchEngi
 							}).Error("Got an error when Saveing to local DB")
 
 							//Send Error information to Fenix
-							gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+							gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 								OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 								OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 								SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,

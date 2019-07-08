@@ -19,7 +19,7 @@ func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendTestInstructionT
 	}).Debug("Incoming gRPC: 'SendTestInstructionTimeOutTowardsFenix'")
 
 	// Put testInstructionTimeOutMessage on queue for further processing
-	gatewayTowardsFenixObject.testInstructionTimeOutMessageChannel <- testInstructionTimeOutMessage
+	gatewayTowardsFenixObject.testInstructionTimeOutMessageChannelTowardsFenix <- testInstructionTimeOutMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "c1845b2f-08fb-4eed-8c07-543c9fe24d45",
 	}).Debug("'testInstructionTimeOutMessage' was put on the channel")

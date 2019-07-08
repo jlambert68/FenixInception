@@ -36,11 +36,11 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendTestI
 			// Run service and process messages
 
 			// Wait for data comes from channel to transmit engine
-			testInstructionTimeOutMessageToBeForwarded := <-gatewayObject.testInstructionTimeOutMessageChannel
+			testInstructionTimeOutMessageToBeForwarded := <-gatewayObject.testInstructionTimeOutMessageChannelTowardsFenix
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
-				"testInstructionTimeOutMessageChannel",
+			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix),
+				"testInstructionTimeOutMessageChannelTowardsFenix",
 				"ab32c63b-ca3b-4fd3-85cd-4e97ca1ae0b8")
 
 			logger.WithFields(logrus.Fields{
@@ -84,7 +84,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendTestI
 					_ = SaveMessageToLocalDB(
 						testInstructionTimeOutMessageToBeForwarded.MessageId,
 						testInstructionTimeOutMessageToBeForwardedByteArray,
-						BucketForResendOfLogMesagesToFenix,
+						BucketForResendOfLogMesagesTowardsFenix,
 						"4f9d9fc7-3a0f-4650-8fa3-795044edb1db",
 					)
 				}
@@ -132,7 +132,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSendTestI
 						_ = SaveMessageToLocalDB(
 							testInstructionTimeOutMessageToBeForwarded.MessageId,
 							testInstructionTimeOutMessageToBeForwardedByteArray,
-							BucketForResendOfLogMesagesToFenix,
+							BucketForResendOfLogMesagesTowardsFenix,
 							"ae47bac5-fd22-41dd-80b0-16063d880988",
 						)
 

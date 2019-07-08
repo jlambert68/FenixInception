@@ -19,7 +19,7 @@ func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendTestExecutionLog
 	}).Debug("Incoming gRPC: 'TestExecutionLogMessage'")
 
 	// Put testExecutionLogMessage on queue for further processing
-	gatewayTowardsFenixObject.testExecutionLogMessageChannel <- testExecutionLogMessage
+	gatewayTowardsFenixObject.testExecutionLogMessageChannelTowardsFenix <- testExecutionLogMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "bbd8fdc7-16cb-4dae-b4a1-821fb30ccb70",
 	}).Debug("'testExecutionLogMessage' was put on the channel")

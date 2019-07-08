@@ -39,6 +39,7 @@ message TestInstruction_RT {
     string ChoosenLandingZone = 14; // Chosen LandingZone for TestInstruction
     TestInstructionRTMetadata Metadata = 15; // Metadata around The TestInstruction, used for Send-DateTimes and DB-handling
     string OrginalCreateDateTime = 16; // The timestamp when the orignal message was created
+    string MessageId = 17; // A unique id for the message gererated by Fenix
 }
 
 //  An attribute with it's type and value

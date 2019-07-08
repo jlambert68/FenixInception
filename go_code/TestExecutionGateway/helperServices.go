@@ -126,7 +126,7 @@ func updateMemoryAddressForParentAddressInfo() {
 			}).Error("Can't unmarshal gRPCParent-address object from database")
 
 			// Send FATAL information to Fenix
-			gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+			gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 				OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 				OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 				SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -150,7 +150,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+				gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -176,7 +176,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+				gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -260,7 +260,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Info(messageToFenix)
 
 		// Send information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -282,7 +282,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Warning(messageToFenix)
 
 		// Send Warning information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -304,7 +304,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Error(messageToFenix)
 
 		// Send Error information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -540,26 +540,26 @@ func initiateGatewayChannels() {
 
 	// *** Towards Fenix ***
 	// informationMessage-channel towards Fenix
-	gatewayTowardsFenixObject.informationMessageChannel = make(chan *gRPC.InformationMessage, SuppertedNumberOfMessagesInChannels)
+	gatewayTowardsFenixObject.informationMessageChannelTowardsFenix = make(chan *gRPC.InformationMessage, SuppertedNumberOfMessagesInChannels)
 
 	// testInstructionTimeOutMessage-channel towards Fenix
-	gatewayTowardsFenixObject.testInstructionTimeOutMessageChannel = make(chan *gRPC.TestInstructionTimeOutMessage, SuppertedNumberOfMessagesInChannels)
+	gatewayTowardsFenixObject.testInstructionTimeOutMessageChannelTowardsFenix = make(chan *gRPC.TestInstructionTimeOutMessage, SuppertedNumberOfMessagesInChannels)
 
 	// testExecutionLogMessage-channel towards Fenix
-	gatewayTowardsFenixObject.testExecutionLogMessageChannel = make(chan *gRPC.TestExecutionLogMessage, SuppertedNumberOfMessagesInChannels)
+	gatewayTowardsFenixObject.testExecutionLogMessageChannelTowardsFenix = make(chan *gRPC.TestExecutionLogMessage, SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsMessage-channel towards Fenix
-	gatewayTowardsFenixObject.supportedTestDataDomainsMessageTowardsFenixChannel = make(chan *gRPC.SupportedTestDataDomainsMessage, SuppertedNumberOfMessagesInChannels)
+	gatewayTowardsFenixObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsMessage, SuppertedNumberOfMessagesInChannels)
 
 	// availbleTestInstruction<AtPluginMessage-channel towards Fenix
-	gatewayTowardsFenixObject.availbleTestInstructionAtPluginMessageTowardsFenixChannel = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, SuppertedNumberOfMessagesInChannels)
+	gatewayTowardsFenixObject.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, SuppertedNumberOfMessagesInChannels)
 
 	// *** Towards Plugina ***
 	// TestInstruction Towards Plugin
-	gatewayTowardsPluginObject.testInstructionMessageChannel = make(chan *gRPC.TestInstruction_RT, SuppertedNumberOfMessagesInChannels)
+	gatewayTowardsPluginObject.testInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsRequest Towards Plugin
-	gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannel = make(chan *gRPC.SupportedTestDataDomainsRequest, SuppertedNumberOfMessagesInChannels)
+	gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, SuppertedNumberOfMessagesInChannels)
 
 }
 

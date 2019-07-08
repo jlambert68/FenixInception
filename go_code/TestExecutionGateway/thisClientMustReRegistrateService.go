@@ -37,7 +37,7 @@ func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) PleaseReRegisterCl
 		}).Error("Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration.")
 
 		// Send Error information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -81,7 +81,7 @@ func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) PleaseReRegisterCl
 		}).Error("Got an error when Saveing to local DB")
 
 		// Send Error information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannel <- &gRPC.InformationMessage{
+		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,

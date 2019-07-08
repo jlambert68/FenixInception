@@ -19,7 +19,7 @@ func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendTestInstructionR
 	}).Debug("Incoming gRPC: 'SendTestInstructionResultTowardsFenix'")
 
 	// Put testInstructionExecutionResultMessage on queue for further processing
-	gatewayTowardsFenixObject.testInstructionExecutionResultMessageTowardsFenixChannel <- testInstructionExecutionResultMessage
+	gatewayTowardsFenixObject.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix <- testInstructionExecutionResultMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "0a7d5580-609f-4a74-8b9c-1c06ee8bd771",
 	}).Debug("'SupportedTestDataDomainsMessage' was put on the channel")

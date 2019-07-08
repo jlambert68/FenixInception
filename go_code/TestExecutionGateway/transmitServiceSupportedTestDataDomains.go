@@ -36,11 +36,11 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSupported
 			// Run service and process messages
 
 			// ***** Wait for data comes from channel to transmit engine ****
-			supportedTestDataDomainsWithHeadersMessageToBeForwarded := <-gatewayObject.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannel
+			supportedTestDataDomainsWithHeadersMessageToBeForwarded := <-gatewayObject.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannel),
-				"supportedTestDataDomainsWithHeadersMessageTowardsFenixChannel",
+			channelSinaling(len(gatewayObject.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix),
+				"supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix",
 				"415c0a6b-c742-4a72-8ecd-47d16031f09a")
 
 			logger.WithFields(logrus.Fields{
@@ -85,7 +85,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSupported
 					_ = SaveMessageToLocalDB(
 						supportedTestDataDomainsWithHeadersMessageToBeForwarded.MessageId,
 						supportedTestDataDomainsWithHeadersMessageToBeForwardedByteArray,
-						BucketForResendOfSupportedTestDataDomains,
+						BucketForResendOfSupportedTestDataDomainsTowardsFenix,
 						"a3ac2811-ce67-4bc5-92d6-f4111034a78e",
 					)
 				}
@@ -113,7 +113,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSupported
 					_ = SaveMessageToLocalDB(
 						supportedTestDataDomainsWithHeadersMessageToBeForwarded.MessageId,
 						supportedTestDataDomainsWithHeadersMessageToBeForwardedByteArray,
-						BucketForResendOfSupportedTestDataDomains,
+						BucketForResendOfSupportedTestDataDomainsTowardsFenix,
 						"f62bdc28-4bb1-4fcc-bc13-377b7f40de12",
 					)
 
@@ -142,7 +142,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForSupported
 						_ = SaveMessageToLocalDB(
 							supportedTestDataDomainsWithHeadersMessageToBeForwarded.MessageId,
 							supportedTestDataDomainsWithHeadersMessageToBeForwardedByteArray,
-							BucketForResendOfSupportedTestDataDomains,
+							BucketForResendOfSupportedTestDataDomainsTowardsFenix,
 							"1ea4aabb-5277-4910-a0e6-de050b147528",
 						)
 

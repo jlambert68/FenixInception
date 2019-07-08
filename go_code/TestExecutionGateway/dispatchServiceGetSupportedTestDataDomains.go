@@ -36,11 +36,11 @@ func (gatewayObject *gatewayTowardsPluginObjectStruct) dispatchEngineForSupporte
 			// Run service and process messages
 
 			// ***** Wait for data comes from channel to dispatch engine *****
-			getSupportedTestDomainsToBeForwarded := <-gatewayObject.supportedTestDataDomainsRequestChannel
+			getSupportedTestDomainsToBeForwarded := <-gatewayObject.supportedTestDataDomainsRequestChannelTowardsPlugin
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.testInstructionMessageChannel),
-				"supportedTestDataDomainsRequestChannel",
+			channelSinaling(len(gatewayObject.testInstructionMessageChannelTowardsPlugin),
+				"supportedTestDataDomainsRequestChannelTowardsPlugin",
 				"3c85d4c4-260d-4612-a153-2eeeff864621")
 
 			logger.WithFields(logrus.Fields{

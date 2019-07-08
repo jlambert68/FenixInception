@@ -19,7 +19,7 @@ func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendMessageToFenix(c
 	}).Debug("Incoming gRPC: 'SendMessageToFenix'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	gatewayTowardsFenixObject.informationMessageChannel <- informationMessage
+	gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- informationMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("InformationMessage was put on the channel")
@@ -56,7 +56,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) sendLocalMessageToFenixEng
 
 	for {
 		// Wait for data comes from 'local' channel for messages initiated in this gateway
-		localInformationMessage := <-gatewayTowardsFenixObject.informationMessageChannel
+		localInformationMessage := <-gatewayTowardsFenixObject.informationMessageChannelTowardsFenix
 
 		logger.WithFields(logrus.Fields{
 			"ID":                      "f74b3a27-77ad-47a4-8e77-ed680f4c419f",
@@ -64,7 +64,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) sendLocalMessageToFenixEng
 		}).Debug("Received a new 'localInformationMessage' from local channel that shoud be forwarded")
 
 		// Put localInformationMessage on queue for further processing
-		gatewayObject.informationMessageChannel <- localInformationMessage
+		gatewayObject.informationMessageChannelTowardsFenix <- localInformationMessage
 		logger.WithFields(logrus.Fields{
 			"ID": "fbc22674-d6ec-4885-8c38-89a049abafee",
 		}).Debug("self created 'MessageToFenix' was put on the channel")

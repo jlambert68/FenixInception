@@ -40,7 +40,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			// Run service and process messages
 
 			// Wait for data comes from channel to transmit engine
-			availbleTestInstructionAtPluginMessageTowardsFenix := <-gatewayObject.availbleTestInstructionAtPluginMessageTowardsFenixChannel
+			availbleTestInstructionAtPluginMessageTowardsFenix := <-gatewayObject.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix
 
 			logger.WithFields(logrus.Fields{
 				"ID": "0c50a6da-f82b-4fde-b1ca-5219f5c3d2ab",
@@ -48,8 +48,8 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 			}).Debug("Received a new 'availbleTestInstructionMessageToBeForwarded' from channel that shoud be forwarded")
 
 			// Check number of messages in channel
-			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannel),
-				"availbleTestInstructionAtPluginMessageTowardsFenixChannel",
+			channelSinaling(len(gatewayObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix),
+				"availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix",
 				"3b482f8f-4809-4784-b821-07b384d80a9c")
 
 			// ***** Send AvailableTestDataDomains to parent gateway Fenix using gRPC-call ****
@@ -88,7 +88,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 					_ = SaveMessageToLocalDB(
 						availbleTestInstructionAtPluginMessageTowardsFenix.MessageId,
 						supportedTestDataDomainsMessageToBeForwardedByteArray,
-						BucketForResendOfAvailableTestInstructionsToFenix,
+						BucketForResendOfAvailableTestInstructionsTowardsFenix,
 						"1ecdf91a-b22e-4773-b58a-db5391c1a2e0",
 					)
 				}
@@ -137,7 +137,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForRegistrat
 						_ = SaveMessageToLocalDB(
 							availbleTestInstructionAtPluginMessageTowardsFenix.MessageId,
 							supportedTestDataDomainsMessageToBeForwardedByteArray,
-							BucketForResendOfAvailableTestInstructionsToFenix,
+							BucketForResendOfAvailableTestInstructionsTowardsFenix,
 							"75518180-5c81-47bd-8819-f2988e1ba00e",
 						)
 
