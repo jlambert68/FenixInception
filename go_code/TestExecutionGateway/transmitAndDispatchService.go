@@ -15,29 +15,37 @@ import (
 
 func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTransmitEnginesTowardsFenix() {
 
+	// *** Towards Plugin ***
+	// Start a Dispatch Engine, for 'TestInstructionMessageTowardsPlugin' as a go-routine
+	go gatewayObject.transmitAndDispatchEngine(channelTypeTestInstructionMessageTowardsPlugin, dispatchEngineTowardsPlugin)
+
+	// Start a Dispatch Engine, for 'SupportedTestDataDomainsRequestMessageTowardsPlugin,' as a go-routine
+	go gatewayObject.transmitAndDispatchEngine(channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin, dispatchEngineTowardsPlugin)
+
+	// *** Towards Fenix ***
 	// Start a Transmit Engine, for 'informationMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeInformationMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeInformationMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'timeOutMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionTimeOutMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeTestInstructionTimeOutMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'spportedTestDataDomainsMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestExecutionLogMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeTestExecutionLogMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'availbleTestInstructionAtPluginMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeSupportedTestDataDomainsMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'testInstructionExecutionResultMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeTestInstructionExecutionResultMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeTestInstructionExecutionResultMessageTowardsFenix, transmitEngineTowardsFenix)
 
 	// Start a Transmit Engine, for 'supportedTestDataDomainsWithHeadersMessageToBeForwarded' as a go-routine
-	go gatewayObject.transmitEngineForXTowardsFenix(channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, transmitEngineTowardsFenix)
+	go gatewayObject.transmitAndDispatchEngine(channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, transmitEngineTowardsFenix)
 
 }
 
@@ -45,7 +53,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateTransmitEnginesTow
 // Forward X-message from channel towards Fenix
 //
 
-func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitEngineForXTowardsFenix(channelType string, transmitOrDispatchEngineType string) {
+func (gatewayObject *gatewayTowardsFenixObjectStruct) transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType string) {
 
 	// Messages towards Plugin
 	var (

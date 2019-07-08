@@ -32,7 +32,7 @@ const channelTypeTestInstructionExecutionResultMessageTowardsFenix = "channelTyp
 const channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix = "channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix"
 
 type gatewayTowardsFenixObjectStruct struct {
-	// *** Internal queues used by the gateway ***
+	// *** Internal queues used by the gateway towards Fenix ***
 
 	//  informationMessage towards Fenix
 

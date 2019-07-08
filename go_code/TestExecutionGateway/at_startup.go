@@ -242,23 +242,8 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	// Initiate Database
 	initiateDB(databaseFile) // If "" then Use default database file name
 
-	// Start 'dispatchEngineForTestInstructions'
-	gatewayTowardsPluginObject.initiateDispatchEngineForTestInstructiona()
-
-	// Start 'dispatchEngineForSupportedTestDomains'
-	gatewayTowardsPluginObject.initiateDispatchEngineForSupportedTestDomains()
-
-	// Start 'transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix'
-	gatewayTowardsFenixObject.initiateRegistrateAvailableTestDataDomainsTowardsFenix()
-
-	// Start 'transmitEngineForSendMessageToFenix'
-	gatewayTowardsFenixObject.initiateSendMessageToFenix()
-
-	// Start 'transmitEngineForSendTestExecutionLogTowardsFenix'
-	gatewayTowardsFenixObject.initiateSendTestExecutionLogTowardsFenix()
-
-	// Start 'transmitEngineForSendTestInstructionTimeOutTowardsFenix'
-	gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix()
+	// Start all Dispatch- and Transmit-Engines
+	initiateTransmitEnginesTowardsFenix()
 
 	// Try to Register this Gateway At Parent
 	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
