@@ -119,18 +119,18 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 
 		} else {
 
-			// Check for messages, in DB, to Resend (If so then put them on channel)
-			objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(channelType, transmitOrDispatchEngineType)
+			// Check for ONE message, in DB, to Resend (If so then put IT on channel)
+			objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(true, channelType, transmitOrDispatchEngineType)
 			if objectsWherPutOnChannel == true {
 				logger.WithFields(logrus.Fields{
 					"ID":                      "84821702-66f1-48bc-a8cd-eee8951fb880",
 					"objectsWherPutOnChannel": objectsWherPutOnChannel,
-				}).Debug("DB checked for saved objects and there were at least one object saved in DB that were put on channel again")
+				}).Debug("DB checked for one saved objects and there was one object saved in DB that were put on channel again")
 			} else {
 				logger.WithFields(logrus.Fields{
-					"ID":                      "84821702-66f1-48bc-a8cd-eee8951fb880",
+					"ID":                      "74168c9d-42b2-4050-a9da-c5ff58910302",
 					"objectsWherPutOnChannel": objectsWherPutOnChannel,
-				}).Debug("DB checked for saved objects and there were NO objects saved in DB")
+				}).Debug("DB checked for saved one object and there were NO objects saved in DB")
 			}
 
 			// Run service and process messages
@@ -508,6 +508,20 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						"ID":            "9c3204ea-7f1b-4a34-ae5e-e11d45b1c17f",
 						"addressToDial": addressToDial,
 					}).Debug("gRPC-send OK for '" + infoHeader + "' to Parent-Gateway or Fenix")
+
+					// Check for All messages, in DB, to Resend (If so then put THEM ALL on channel)
+					objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(false, channelType, transmitOrDispatchEngineType)
+					if objectsWherPutOnChannel == true {
+						logger.WithFields(logrus.Fields{
+							"ID":                      "b9dbbd63-b6ac-45de-b92e-09d3b049822c",
+							"objectsWherPutOnChannel": objectsWherPutOnChannel,
+						}).Debug("DB checked for all saved objects and there were objects saved in DB that were put on channel again")
+					} else {
+						logger.WithFields(logrus.Fields{
+							"ID":                      "dd93ce5f-e5f2-4b91-b54d-f720a7b6a437",
+							"objectsWherPutOnChannel": objectsWherPutOnChannel,
+						}).Debug("DB checked for saved ALL objects and there were NO objects saved in DB")
+					}
 				}
 			}
 		}
@@ -592,6 +606,6 @@ func dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientT
 // ********************************************************************************************
 // Try to dial parent gateway/Fenix or child gateway/plugin
 //TODO Add internal structure for checking DB and delete message from DB when put on channel
-func checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(channelType string, transmitOrDispatchEngineType string) (foundObjectsThatWherePutOnChannel bool) {
+func checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(onlyOneObjec bool, channelType string, transmitOrDispatchEngineType string) (foundObjectsThatWherePutOnChannel bool) {
 	return true
 }
