@@ -19,7 +19,7 @@ func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendMessageToFenix(c
 	}).Debug("Incoming gRPC: 'SendMessageToFenix'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- informationMessage
+	informationMessageChannelTowardsFenix <- informationMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("InformationMessage was put on the channel")

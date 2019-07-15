@@ -604,8 +604,513 @@ func dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientT
 }
 
 // ********************************************************************************************
-// Try to dial parent gateway/Fenix or child gateway/plugin
+// Try to get ONE object from db and put on channel or get ALL objects and put on channel
 //TODO Add internal structure for checking DB and delete message from DB when put on channel
-func checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(onlyOneObjec bool, channelType string, transmitOrDispatchEngineType string) (foundObjectsThatWherePutOnChannel bool) {
+func checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(onlyOneObject bool, channelType string, transmitOrDispatchEngineType string) (foundObjectsThatWherePutOnChannel bool) {
+
+	// Decide if one or all objects thould be put back on channel
+	if onlyOneObject == true {
+		// Only one object
+		foundObjectsThatWherePutOnChannel = checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType, transmitOrDispatchEngineType)
+	} else {
+		// All Objects
+		var foundAtleastOneSavedObjectInDb = false
+		for {
+			foundObjectsThatWherePutOnChannel = checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType, transmitOrDispatchEngineType)
+			if foundObjectsThatWherePutOnChannel == false {
+				return foundAtleastOneSavedObjectInDb
+			} else {
+				foundAtleastOneSavedObjectInDb = true
+			}
+		}
+	}
+
+	// Code will never come here
+	return true
+
+}
+
+// ********************************************************************************************
+// Try to get one object from specific bucket and put on correct channel
+//TODO Add internal structure for checking DB and DELETE message from DB when put on channel
+func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, transmitOrDispatchEngineType string) (foundObjectsThatWherePutOnChannel bool) {
+
+	var (
+		err    error
+		bucket string
+		id     string
+	)
+
+	// Messages towards Plugin
+	var (
+		testInstructionMessageToBeForwardedTowardsPlugin                 *gRPC.TestInstruction_RT
+		supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin *gRPC.SupportedTestDataDomainsRequest
+	)
+
+	// Messages towards Fenix
+	var (
+		informationMessageToBeForwardedTowardsFenix                         *gRPC.InformationMessage
+		timeOutMessageToBeForwardedTowardsFenix                             *gRPC.TestInstructionTimeOutMessage
+		testExecutionLogMessageToBeForwardedTowardsFenix                    *gRPC.TestExecutionLogMessage
+		spportedTestDataDomainsMessageToBeForwardedTowardsFenix             *gRPC.SupportedTestDataDomainsMessage
+		availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix     *gRPC.AvailbleTestInstructionAtPluginMessage
+		availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix      *gRPC.AvailbleTestContainersAtPluginMessage
+		testInstructionExecutionResultMessageToBeForwardedTowardsFenix      *gRPC.TestInstructionExecutionResultMessage
+		supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix *gRPC.SupportedTestDataDomainsWithHeadersMessage
+	)
+
+	// Decide if it's TransmitEngine or a DispatchEngine
+	switch transmitOrDispatchEngineType {
+
+	// Choose DispatchEngine
+	case dispatchEngineTowardsPlugin:
+		//  Decide the correct DispatchEngine to use
+		switch channelType {
+		case channelTypeTestInstructionMessageTowardsPlugin:
+			id = "d7151e7e-362e-44e8-a27e-fd8dc969e6f9"
+			bucket = BucketForResendTestInstructionTowardsPlugin
+
+		case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+			id = "1fb35cdf-4689-4372-92d3-937f0420a0ae"
+			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+
+		default:
+			LogErrorAndSendInfoToFenix(
+				"ce3f4832-e7cf-40da-bcb1-4e10110c7eae",
+				gRPC.InformationMessage_FATAL,
+				"No know 'channelType'",
+				channelType,
+				"No know 'channelType' in DispatchEngine",
+				"No know 'channelType' in DispatchEngine",
+			)
+		}
+
+		// Choose TransmitEngine
+	case transmitEngineTowardsFenix:
+		//  Deside the correct TransmitEngine to use
+		switch channelType {
+		case channelTypeInformationMessageTowardsFenix:
+			id = "63f924bf-b73f-4065-987d-821acb08bae4"
+			bucket = BucketForResendOfInfoMessagesTowardsFenix
+
+		case channelTypeTestInstructionTimeOutMessageTowardsFenix:
+			id = "f9337ae2-ec8b-494c-ad2d-ded4f1e67c15"
+			bucket = BucketForResendOTimeOutMesagesTowardsFenix
+
+		case channelTypeTestExecutionLogMessageTowardsFenix:
+			id = "f4bc8914-e31b-4a52-91fe-bb1ab20a89e5"
+			bucket = BucketForResendOfLogMesagesTowardsFenix
+
+		case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
+			id = "dfde3eec-639a-4962-80d9-e660b40bd2d2"
+			bucket = BucketForResendOfSupportedTestDataDomainsTowardsFenix
+
+		case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+			id = "70fba10a-aefd-4c7f-bb2d-e1fd4452f976"
+			bucket = BucketForResendOfAvailableTestInstructionsTowardsFenix
+
+		case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+			id = "8e2ce6e9-13bc-4ea4-b51b-58d29cf54735"
+			bucket = BucketForResendOfAvailableTestContainersTowardsFenix
+
+		case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
+			id = "89badf8e-8c5e-47a3-9aa0-9dc4cdaf257a"
+			bucket = BucketForResendOfTestInstructionExecutionResultTowardsFenix
+
+		case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+			id = "4ae89ab0-edad-4d7b-a97e-1dd20a3743ff"
+			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+
+		default:
+			LogErrorAndSendInfoToFenix(
+				"fb66b765-442a-4bf8-b40c-f53b0514fd99",
+				gRPC.InformationMessage_FATAL,
+				"No know 'channelType'",
+				channelType,
+				"No know 'channelType' in TransmitEngine",
+				"No know 'channelType' in TransmitEngine",
+			)
+		}
+
+	default:
+		// No known 'transmitOrDispatchEngineType'
+		LogErrorAndSendInfoToFenix(
+			"e63bc548-6238-4bfe-b466-d76af7d574c4",
+			gRPC.InformationMessage_FATAL,
+			"No know 'transmitOrDispatchEngineType'",
+			transmitOrDispatchEngineType,
+			"No known 'transmitOrDispatchEngineType when getting first object in bucket",
+			"No known 'transmitOrDispatchEngineType when getting first object in bucket",
+		)
+	}
+
+	// Create the channel that the database object should be sent back on
+	returnChannel := make(chan dbResultMessageStruct)
+
+	// Get first found object in bucket
+	dbMessage := dbMessageStruct{
+		DBGetFirstObjectFromBucket,
+		bucket,
+		nil,
+		nil,
+		returnChannel}
+
+	// Send Read message to database to receive object
+	dbMessageQueue <- dbMessage
+	// Wait for object from channel, then close the channel
+	databaseReturnMessage := <-returnChannel
+	close(returnChannel)
+
+	// Check if an error occured
+	if databaseReturnMessage.err != nil {
+		// No object found
+		logger.WithFields(logrus.Fields{
+			"ID":     "b6cda913-364c-4296-b3c4-07b89de1a134",
+			"Bucket": bucket,
+		}).Debug("No object found when reading bucket")
+
+		// Returns info that no object was found
+		return false
+	}
+
+	// Unmarshal database object into correct data structure
+	// Decide if it's TransmitEngine or a DispatchEngine
+	switch transmitOrDispatchEngineType {
+
+	// Choose DispatchEngine
+	case dispatchEngineTowardsPlugin:
+		//  Decide the correct DispatchEngine to use
+		switch channelType {
+		case channelTypeTestInstructionMessageTowardsPlugin:
+			id = "abb58bad-ee31-4137-b686-1b0654428f5b"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &testInstructionMessageToBeForwardedTowardsPlugin)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			testInstructionMessageChannelTowardsPlugin <- testInstructionMessageToBeForwardedTowardsPlugin
+
+			// Delete saved message from DB
+			id = "3937cf9b-b2ed-4fd8-bfe8-e67d67ea8a6e"
+			bucket = BucketForResendTestInstructionTowardsPlugin
+
+		case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+			id = "63829f26-75aa-40a1-942f-550e97bf1731"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			supportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin
+
+			// Delete saved message from DB
+			id = "7577bdbb-e8ca-431f-be51-b2a8563a2ddf"
+			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+
+		default:
+			LogErrorAndSendInfoToFenix(
+				"fb276548-d087-4137-9a9f-9795c76008d7",
+				gRPC.InformationMessage_FATAL,
+				"No know 'channelType'",
+				channelType,
+				"No know 'channelType' in DispatchEngine",
+				"No know 'channelType' in DispatchEngine",
+			)
+		}
+
+		// Choose TransmitEngine
+	case transmitEngineTowardsFenix:
+		//  Deside the correct TransmitEngine to use
+		switch channelType {
+		case channelTypeInformationMessageTowardsFenix:
+			id = "bc704210-b491-4f71-8bc4-2f231ad6d27d"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &informationMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			informationMessageChannelTowardsFenix <- informationMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "f9f427f4-172f-4211-af4f-94f6168da900"
+			bucket = BucketForResendOfInfoMessagesTowardsFenix
+
+		case channelTypeTestInstructionTimeOutMessageTowardsFenix:
+			id = "09af5d8a-211e-491e-80e2-31ecd5d21040"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &timeOutMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			testInstructionTimeOutMessageChannelTowardsFenix <- timeOutMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "40275a25-d96c-42ae-9b62-aa5e129fa134"
+			bucket = BucketForResendOTimeOutMesagesTowardsFenix
+
+		case channelTypeTestExecutionLogMessageTowardsFenix:
+			id = "ddef7843-5671-49e6-83a5-66d7501dea0c"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &testExecutionLogMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			testExecutionLogMessageChannelTowardsFenix <- testExecutionLogMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "79f3650c-1c2c-4b94-b972-7076b90f2a16"
+			bucket = BucketForResendOfLogMesagesTowardsFenix
+
+		case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
+			id = "e7555770-551e-4bf3-9336-2b93bcd9ef46"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix <- spportedTestDataDomainsMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "3c5fa6a6-8748-4549-826c-ee8cb65ed811"
+			bucket = BucketForResendOfSupportedTestDataDomainsTowardsFenix
+
+		case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+			id = "c1c0b462-2d3a-4b79-8bd2-0be3a7d22818"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "2f9683b1-ff0a-49a3-9d8d-fc592ac7895c"
+			bucket = BucketForResendOfAvailableTestInstructionsTowardsFenix
+
+		case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+			id = "fe55e3b5-3888-4be4-aec8-da4fb5344f30"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "29925a0d-8c35-4f5c-b413-045ecff1a758"
+			bucket = BucketForResendOfAvailableTestContainersTowardsFenix
+
+		case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
+			id = "8097651f-aeb7-4e4d-b54c-e3c3fdd0357a"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix <- testInstructionExecutionResultMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "c20a05e6-e985-446e-95f4-65081eb07829"
+			bucket = BucketForResendOfTestInstructionExecutionResultTowardsFenix
+
+		case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+			id = "797e8dd6-931f-4cad-a956-7aa4871ad5f4"
+
+			// Convert saved json object into Go-struct
+			err = json.Unmarshal(databaseReturnMessage.value, &supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
+
+			if err != nil {
+				// Problem with unmarshal the json object
+				// Send FATAL information to Fenix
+				LogErrorAndSendInfoToFenix(
+					id,
+					gRPC.InformationMessage_FATAL,
+					"Problem when unmarshaling object from DB",
+					channelType,
+					"Problem when unmarshaling object from DB",
+					"Problem when unmarshaling object from DB",
+				)
+			}
+
+			// Put message on channel
+			supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix <- supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix
+
+			// Delete saved message from DB
+			id = "77063b14-ade2-4e10-b8c3-a38918db5ef6"
+			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+
+		default:
+			LogErrorAndSendInfoToFenix(
+				"cb1c4008-cb18-46cb-93a5-c2ae1aadcf7a",
+				gRPC.InformationMessage_FATAL,
+				"No know 'channelType'",
+				channelType,
+				"No know 'channelType' in TransmitEngine",
+				"No know 'channelType' in TransmitEngine",
+			)
+		}
+
+	default:
+		// No known 'transmitOrDispatchEngineType'
+		LogErrorAndSendInfoToFenix(
+			"31e65376-91b4-47f7-8dfd-8330bc733e7d",
+			gRPC.InformationMessage_FATAL,
+			"No know 'transmitOrDispatchEngineType'",
+			transmitOrDispatchEngineType,
+			"No known 'transmitOrDispatchEngineType when getting first object in bucket",
+			"No known 'transmitOrDispatchEngineType when getting first object in bucket",
+		)
+	}
+
+	//TODO Färdigställ Delete
+
+	// Delete message from Database
+	// Create the channel that the database object should be sent back on
+	returnChannel := make(chan dbResultMessageStruct)
+
+	// Get first found object in bucket
+	dbMessage := dbMessageStruct{
+		DBGetFirstObjectFromBucket,
+		bucket,
+		nil,
+		nil,
+		returnChannel}
+
+	// Send Read message to database to receive object
+	dbMessageQueue <- dbMessage
+	// Wait for object from channel, then close the channel
+	databaseReturnMessage := <-returnChannel
+	close(returnChannel)
+
+	// Check if an error occured
+	if databaseReturnMessage.err != nil {
+		// No object found
+		logger.WithFields(logrus.Fields{
+			"ID":     "b6cda913-364c-4296-b3c4-07b89de1a134",
+			"Bucket": bucket,
+		}).Debug("No object found when reading bucket")
+
+		// Returns info that no object was found
+		return false
+	}
+
+	//  Return info that one object was found
 	return true
 }

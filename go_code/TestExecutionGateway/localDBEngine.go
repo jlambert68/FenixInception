@@ -2,8 +2,10 @@ package TestExecutionGateway
 
 import (
 	"errors"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
+	"log"
 )
 
 // ********************************************************************************************
@@ -207,7 +209,26 @@ func databaseEngine() {
 				return nil
 			})
 
-			// No need to take care of error from return due to it is always nil
+		// No need to take care of error from return due to it is always nil
+
+		case DBGetFirstObjectFromBucket:
+
+			// Infor entering this part in Debug-mode
+			logger.WithFields(logrus.Fields{
+				"ID": "aa74e19e-bbfc-46c1-aab6-3f61387880a0",
+			}).Debug("Entering Get-First-Object-InBucket-Database")
+
+			err = db.View(func(tx *bolt.Tx) error {
+				b := tx.Bucket([]byte("DB")).Bucket([]byte(messageToDbEngine.bucket))
+				b.ForEach(func(k, v []byte) error {
+					fmt.Println(string(k), string(v))
+					return nil
+				})
+				return nil
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
 
 		default:
 			logger.WithFields(logrus.Fields{

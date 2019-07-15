@@ -68,6 +68,7 @@ type dbMessageStruct struct {
 const (
 	DbRead = iota
 	DbWrite
+	DBGetFirstObjectFromBucket
 )
 
 // Message used for sending back Read-instructions from Database
