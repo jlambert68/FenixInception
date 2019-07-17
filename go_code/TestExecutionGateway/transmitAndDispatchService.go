@@ -639,6 +639,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 		err    error
 		bucket string
 		id     string
+		key    string
 	)
 
 	// Messages towards Plugin
@@ -806,6 +807,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "3937cf9b-b2ed-4fd8-bfe8-e67d67ea8a6e"
 			bucket = BucketForResendTestInstructionTowardsPlugin
+			key = testInstructionMessageToBeForwardedTowardsPlugin.MessageId
 
 		case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
 			id = "63829f26-75aa-40a1-942f-550e97bf1731"
@@ -832,6 +834,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "7577bdbb-e8ca-431f-be51-b2a8563a2ddf"
 			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+			key = supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.MessageId
 
 		default:
 			LogErrorAndSendInfoToFenix(
@@ -873,6 +876,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "f9f427f4-172f-4211-af4f-94f6168da900"
 			bucket = BucketForResendOfInfoMessagesTowardsFenix
+			key = informationMessageToBeForwardedTowardsFenix.MessageId
 
 		case channelTypeTestInstructionTimeOutMessageTowardsFenix:
 			id = "09af5d8a-211e-491e-80e2-31ecd5d21040"
@@ -899,6 +903,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "40275a25-d96c-42ae-9b62-aa5e129fa134"
 			bucket = BucketForResendOTimeOutMesagesTowardsFenix
+			key = timeOutMessageToBeForwardedTowardsFenix.MessageId
 
 		case channelTypeTestExecutionLogMessageTowardsFenix:
 			id = "ddef7843-5671-49e6-83a5-66d7501dea0c"
@@ -925,6 +930,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "79f3650c-1c2c-4b94-b972-7076b90f2a16"
 			bucket = BucketForResendOfLogMesagesTowardsFenix
+			key = testExecutionLogMessageToBeForwardedTowardsFenix.LogMessageId
 
 		case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
 			id = "e7555770-551e-4bf3-9336-2b93bcd9ef46"
@@ -951,6 +957,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "3c5fa6a6-8748-4549-826c-ee8cb65ed811"
 			bucket = BucketForResendOfSupportedTestDataDomainsTowardsFenix
+			key = spportedTestDataDomainsMessageToBeForwardedTowardsFenix.MessageId
 
 		case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
 			id = "c1c0b462-2d3a-4b79-8bd2-0be3a7d22818"
@@ -977,6 +984,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "2f9683b1-ff0a-49a3-9d8d-fc592ac7895c"
 			bucket = BucketForResendOfAvailableTestInstructionsTowardsFenix
+			key = availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.MessageId
 
 		case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
 			id = "fe55e3b5-3888-4be4-aec8-da4fb5344f30"
@@ -1003,6 +1011,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "29925a0d-8c35-4f5c-b413-045ecff1a758"
 			bucket = BucketForResendOfAvailableTestContainersTowardsFenix
+			key = availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix.MessageId
 
 		case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
 			id = "8097651f-aeb7-4e4d-b54c-e3c3fdd0357a"
@@ -1029,6 +1038,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "c20a05e6-e985-446e-95f4-65081eb07829"
 			bucket = BucketForResendOfTestInstructionExecutionResultTowardsFenix
+			key = testInstructionExecutionResultMessageToBeForwardedTowardsFenix.MessageId
 
 		case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
 			id = "797e8dd6-931f-4cad-a956-7aa4871ad5f4"
@@ -1055,6 +1065,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			// Delete saved message from DB
 			id = "77063b14-ade2-4e10-b8c3-a38918db5ef6"
 			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+			key = supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.MessageId
 
 		default:
 			LogErrorAndSendInfoToFenix(
@@ -1083,20 +1094,20 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 
 	// Delete message from Database
 	// Create the channel that the database object should be sent back on
-	returnChannel := make(chan dbResultMessageStruct)
+	returnChannel = make(chan dbResultMessageStruct)
 
 	// Get first found object in bucket
-	dbMessage := dbMessageStruct{
-		DBGetFirstObjectFromBucket,
+	dbMessage = dbMessageStruct{
+		DBDelete,
 		bucket,
-		nil,
+		key,
 		nil,
 		returnChannel}
 
 	// Send Read message to database to receive object
 	dbMessageQueue <- dbMessage
 	// Wait for object from channel, then close the channel
-	databaseReturnMessage := <-returnChannel
+	databaseReturnMessage = <-returnChannel
 	close(returnChannel)
 
 	// Check if an error occured
@@ -1106,6 +1117,15 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			"ID":     "b6cda913-364c-4296-b3c4-07b89de1a134",
 			"Bucket": bucket,
 		}).Debug("No object found when reading bucket")
+
+		LogErrorAndSendInfoToFenix(
+			"b2c195fd-bc18-44b6-a107-1d875e1d536a",
+			gRPC.InformationMessage_FATAL,
+			"Didn't found key in bucket",
+			"Didn't found key in bucket",
+			"Didn't found key: '"+key+"' in bucket: '"+bucket+"' when trying to delete key after putting message on channel again",
+			"Didn't found key: '"+key+"' in bucket: '"+bucket+"' when trying to delete key after putting message on channel again",
+		)
 
 		// Returns info that no object was found
 		return false

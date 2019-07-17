@@ -69,6 +69,7 @@ const (
 	DbRead = iota
 	DbWrite
 	DBGetFirstObjectFromBucket
+	DBDelete
 )
 
 // Message used for sending back Read-instructions from Database

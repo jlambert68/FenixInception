@@ -2,10 +2,9 @@ package TestExecutionGateway
 
 import (
 	"errors"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
-	"log"
+	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
 )
 
 // ********************************************************************************************
@@ -105,7 +104,7 @@ func databaseEngine() {
 						"Bucket": messageToDbEngine.bucket,
 					}).Warning("Bucket not found")
 
-					err = errors.New("Bucket not found")
+					err = errors.New("bucket not found")
 					// Send back err and empty value using attached channel
 					readResultMessage := dbResultMessageStruct{
 						err,
@@ -166,9 +165,10 @@ func databaseEngine() {
 						messageToDbEngine.bucket,
 						[]byte("")}
 
+					messageToDbEngine.resultsQueue <- readResultMessage
+
 					return nil
 
-					messageToDbEngine.resultsQueue <- readResultMessage
 				} else {
 					logger.WithFields(logrus.Fields{
 						"ID":     "e0359bee-de08-420f-b417-9635fc7b1e9b",
@@ -212,23 +212,86 @@ func databaseEngine() {
 		// No need to take care of error from return due to it is always nil
 
 		case DBGetFirstObjectFromBucket:
-
-			// Infor entering this part in Debug-mode
+			// Info entering this part in Debug-mode
 			logger.WithFields(logrus.Fields{
-				"ID": "aa74e19e-bbfc-46c1-aab6-3f61387880a0",
-			}).Debug("Entering Get-First-Object-InBucket-Database")
+				"ID": "becfe123-4ff4-41f5-bcf0-26e6d70fe176",
+			}).Debug("Entering Get-First-Object-In-Bucket-Database")
 
+			// Read data from Database and send back using incoming return-channel
 			err = db.View(func(tx *bolt.Tx) error {
-				b := tx.Bucket([]byte("DB")).Bucket([]byte(messageToDbEngine.bucket))
-				b.ForEach(func(k, v []byte) error {
-					fmt.Println(string(k), string(v))
+				bucket := tx.Bucket([]byte(messageToDbEngine.bucket))
+				if bucket == nil {
+					logger.WithFields(logrus.Fields{
+						"ID":     "7871629e-d622-463f-a526-1ee82a80ed97",
+						"err":    err,
+						"Bucket": messageToDbEngine.bucket,
+					}).Warning("Bucket not found")
+
+					err = errors.New("bucket not found")
+
+					// Send back err and empty value using attached channel
+					readResultMessage := dbResultMessageStruct{
+						err,
+						messageToDbEngine.bucket,
+						[]byte("")}
+
+					messageToDbEngine.resultsQueue <- readResultMessage
+
 					return nil
-				})
-				return nil
+
+				} else {
+					logger.WithFields(logrus.Fields{
+						"ID":     "6d53f3f1-1d01-4d92-a012-e8667eae8aae",
+						"Bucket": bucket,
+					}).Debug("Success in finding Bucket")
+
+					// Retrieve key of first object
+					// Create a cursor for iteration.
+					cursor := bucket.Cursor()
+
+					// Get key for first object in Bucket
+					key, _ := cursor.First()
+
+					// Send back value using attached channel
+					dbGetFirstObjectResultMessage := dbResultMessageStruct{
+						err,
+						string(key),
+						nil}
+
+					messageToDbEngine.resultsQueue <- dbGetFirstObjectResultMessage
+
+					return nil
+				}
 			})
+
+		case DBDelete:
+			// Info entering this part in Debug-mode
+			logger.WithFields(logrus.Fields{
+				"ID": "45b6fbe7-0c73-48ba-9267-7a17ed677867",
+			}).Debug("Entering Delete Object in Bucket-Database")
+
+			// Delete the key in a write transaction.
+			err := db.Update(func(tx *bolt.Tx) error {
+				return tx.Bucket([]byte(messageToDbEngine.bucket)).Delete([]byte(messageToDbEngine.key))
+			})
+
 			if err != nil {
-				log.Fatal(err)
+				LogErrorAndSendInfoToFenix(
+					"ab67dec4-9040-4f39-88ed-8c7dbb56698a",
+					gRPC.InformationMessage_FATAL,
+					"FATAL error when deleting object from bucket",
+					"FATAL error when deleting object from bucket",
+					"FATAL error when deleting key: '"+messageToDbEngine.key+"' in bucket: '"+messageToDbEngine.bucket+"'",
+					"FATAL error when deleting key: '"+messageToDbEngine.key+"' in bucket: '"+messageToDbEngine.bucket+"'",
+				)
 			}
+
+			// Send back value using attached channel
+			dbDeleteResultMessage := dbResultMessageStruct{
+				err,
+				messageToDbEngine.key,
+				nil}
+			messageToDbEngine.resultsQueue <- dbDeleteResultMessage
 
 		default:
 			logger.WithFields(logrus.Fields{
