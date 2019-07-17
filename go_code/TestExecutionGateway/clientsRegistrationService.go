@@ -24,7 +24,7 @@ func (gRPCServerTowardsFenixStruct *GRPCServerTowardsFenixStruct) RegisterClient
 	// TODO Denna jämförelse är troligen som Äpplen och Päron
 	if registerClientAddressRequest.GRPCVersion.String() != getHighestGRPCVersion() {
 		// Send Error information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         registerClientAddressRequest.CallingSystemId,
 			OriginalSenderName:       registerClientAddressRequest.CallingSystemName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -65,7 +65,7 @@ func (gRPCServerTowardsFenixStruct *GRPCServerTowardsFenixStruct) RegisterClient
 		}).Error("Error when converting 'childgRPCAddressByteArray' into a byte array, stopping futher processing of RegisterClientAddress.")
 
 		// Send Error information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -113,7 +113,7 @@ func (gRPCServerTowardsFenixStruct *GRPCServerTowardsFenixStruct) RegisterClient
 		}).Error("Got an error when Saveing to local DB")
 
 		// Send Error information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,

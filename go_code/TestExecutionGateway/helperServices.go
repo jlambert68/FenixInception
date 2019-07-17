@@ -126,7 +126,7 @@ func updateMemoryAddressForParentAddressInfo() {
 			}).Error("Can't unmarshal gRPCParent-address object from database")
 
 			// Send FATAL information to Fenix
-			gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+			informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 				OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 				OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 				SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -150,7 +150,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+				informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -176,7 +176,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+				informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -196,40 +196,6 @@ func updateMemoryAddressForParentAddressInfo() {
 		}
 	}
 }
-
-// *******************************************************************
-// Replace Parent gateway/Fenix IP-address & port info in databse, from Memory if previous connection differs from memory object
-//
-//NOT USED (190612)
-/*
-func updateDatabaseFromMemoryForParentAddressInfo_ShouldNotBeUsed(GatewayIdentification GatewayIdentificationStruct) {
-
-	// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-	reRegisterToGatewayMessageToSavedAsByteArray, err := json.Marshal(GatewayIdentification)
-
-	if err != nil {
-		// Error when Unmarshaling to []byte
-		LogErrorAndSendInfoToFenix(
-			"6366259e-a206-42b1-b99a-d4a18a56da96",
-			gRPC.InformationMessage_FATAL,
-			"GatewayIdentification",
-			"no data available...",
-			err.Error(),
-			"Error when converting 'GatewayIdentification' into a byte array, stopping processing and stopping Gateway",
-		)
-
-	} else {
-		// Marshaling to []byte OK
-
-		// Save message to local DB for later processing
-		_ = SaveMessageToLocalDB(
-			BucketKeyForParentAddress,
-			reRegisterToGatewayMessageToSavedAsByteArray,
-			BucketForParentAddress,
-			"f1ae7544-a190-4e36-b527-5abdd86c0c61",
-		)
-	}
-}*/
 
 // *********************************************************************************
 // Log message to local log and then Send message to Fenix
@@ -260,7 +226,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Info(messageToFenix)
 
 		// Send information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -282,7 +248,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Warning(messageToFenix)
 
 		// Send Warning information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -304,7 +270,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Error(messageToFenix)
 
 		// Send Error information to Fenix
-		gatewayTowardsFenixObject.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -540,52 +506,25 @@ func initiateGatewayChannels() {
 
 	// *** Towards Fenix ***
 	// informationMessage-channel towards Fenix
-	gatewayTowardsFenixObject.informationMessageChannelTowardsFenix = make(chan *gRPC.InformationMessage, SuppertedNumberOfMessagesInChannels)
+	informationMessageChannelTowardsFenix = make(chan *gRPC.InformationMessage, SuppertedNumberOfMessagesInChannels)
 
 	// testInstructionTimeOutMessage-channel towards Fenix
-	gatewayTowardsFenixObject.testInstructionTimeOutMessageChannelTowardsFenix = make(chan *gRPC.TestInstructionTimeOutMessage, SuppertedNumberOfMessagesInChannels)
+	testInstructionTimeOutMessageChannelTowardsFenix = make(chan *gRPC.TestInstructionTimeOutMessage, SuppertedNumberOfMessagesInChannels)
 
 	// testExecutionLogMessage-channel towards Fenix
-	gatewayTowardsFenixObject.testExecutionLogMessageChannelTowardsFenix = make(chan *gRPC.TestExecutionLogMessage, SuppertedNumberOfMessagesInChannels)
+	testExecutionLogMessageChannelTowardsFenix = make(chan *gRPC.TestExecutionLogMessage, SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsMessage-channel towards Fenix
-	gatewayTowardsFenixObject.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsMessage, SuppertedNumberOfMessagesInChannels)
+	supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsMessage, SuppertedNumberOfMessagesInChannels)
 
 	// availbleTestInstruction<AtPluginMessage-channel towards Fenix
-	gatewayTowardsFenixObject.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, SuppertedNumberOfMessagesInChannels)
+	availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, SuppertedNumberOfMessagesInChannels)
 
 	// *** Towards Plugina ***
 	// TestInstruction Towards Plugin
-	gatewayTowardsPluginObject.testInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, SuppertedNumberOfMessagesInChannels)
+	testInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsRequest Towards Plugin
-	gatewayTowardsPluginObject.supportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, SuppertedNumberOfMessagesInChannels)
+	supportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, SuppertedNumberOfMessagesInChannels)
 
 }
-
-/*
-NOT USED
-
-// *********************************************************************************
-//  Update Memory object with parameters that was recceived at start up using flags
-//
-func updateMemoryObjectWithFlagOverrideParameters() {
-
-	// **** As slave gateway for tests ****
-	// THis gateway should listen on this port from calls from clients
-	if GatewayInIntegrationTestMode.ListeningOnThisPortAsParent != 0 {
-		gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort = int32(GatewayInIntegrationTestMode.ListeningOnThisPortAsParent)
-	}
-
-	// THis gateway should call parent gateway/Fenix on this adress
-	if GatewayInIntegrationTestMode.parentIsListeningOnThisPort != 0 {
-		gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress = GatewayInIntegrationTestMode.parentIsListeningOnThisAddress
-	}
-
-	// **** As the tested gateway ****
-	// THis gateway should call parent gateway/Fenix on this port
-	if GatewayInIntegrationTestMode.parentIsListeningOnThisPort != 0 {
-		gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort = int32(GatewayInIntegrationTestMode.parentIsListeningOnThisPort)
-	}
-}
-*/

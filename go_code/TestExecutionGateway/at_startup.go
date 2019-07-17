@@ -12,7 +12,7 @@ import (
 // *******************************************************************
 // Start up this gateway by register it to parent gateway/Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObjectStruct) tryToRegisterGatewayAtParent() {
+func tryToRegisterGatewayAtParent() {
 
 	// Check if this gateway i used in integration test mode and only should start without any connection to parent gateway
 	if gatewayConfig.IntegrationTest.StartWithOutAnyParent == false {
@@ -246,7 +246,7 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	initiateTransmitEnginesTowardsFenix()
 
 	// Try to Register this Gateway At Parent
-	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
+	tryToRegisterGatewayAtParent()
 
 	// Listen to gRPC-calls from parent gateway/Fenix
 	//startGatewayGRPCServerForMessagesTowardsFenix()

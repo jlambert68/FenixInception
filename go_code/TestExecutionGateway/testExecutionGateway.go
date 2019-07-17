@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestExecution_main(configFileAndPath string, logfileForTest string, databaseFile string) {
+func TestExecutionMain(configFileAndPath string, logfileForTest string, databaseFile string) {
 
 	// Cleanup all gRPC connections
 	defer cleanup()

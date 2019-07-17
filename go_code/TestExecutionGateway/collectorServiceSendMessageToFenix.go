@@ -39,24 +39,24 @@ func (gRPCServerTowardsFenix *GRPCServerTowardsFenixStruct) SendMessageToFenix(c
 // Initiate xxxx Engine for SupportedTestDataDomainsMessage-messages
 //
 
-func (gatewayObject *gatewayTowardsFenixObjectStruct) initiateSendLocalMessageToFenixEngine() {
+func initiateSendLocalMessageToFenixEngine() {
 
 	// Start Transmit Engine, for SupportedTestDataDomainsMessage-messages as a go-routine
 	logger.WithFields(logrus.Fields{
 		"ID": "85e5448f-0d6d-4f72-be4b-70e51fc3d362",
 	}).Info("Initiate: 'transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix'")
 
-	go gatewayObject.sendLocalMessageToFenixEngine()
+	go sendLocalMessageToFenixEngine()
 }
 
 // ********************************************************************************************
 // Local call from this Gateway, when local errors/warnings/problems for sending a InfoMessage towards Fenix
 //
-func (gatewayObject *gatewayTowardsFenixObjectStruct) sendLocalMessageToFenixEngine() {
+func sendLocalMessageToFenixEngine() {
 
 	for {
 		// Wait for data comes from 'local' channel for messages initiated in this gateway
-		localInformationMessage := <-gatewayTowardsFenixObject.informationMessageChannelTowardsFenix
+		localInformationMessage := <-informationMessageChannelTowardsFenix
 
 		logger.WithFields(logrus.Fields{
 			"ID":                      "f74b3a27-77ad-47a4-8e77-ed680f4c419f",
@@ -64,7 +64,7 @@ func (gatewayObject *gatewayTowardsFenixObjectStruct) sendLocalMessageToFenixEng
 		}).Debug("Received a new 'localInformationMessage' from local channel that shoud be forwarded")
 
 		// Put localInformationMessage on queue for further processing
-		gatewayObject.informationMessageChannelTowardsFenix <- localInformationMessage
+		informationMessageChannelTowardsFenix <- localInformationMessage
 		logger.WithFields(logrus.Fields{
 			"ID": "fbc22674-d6ec-4885-8c38-89a049abafee",
 		}).Debug("self created 'MessageToFenix' was put on the channel")

@@ -72,5 +72,5 @@ func main() {
 		TestExecutionGateway.GatewayInIntegrationTestMode.StartWithOutAnyParent = *testActAsParent
 	*/
 	// Call Main function for Gateway
-	TestExecutionGateway.TestExecution_main(*configPath, *logPath, *databasePath)
+	TestExecutionGateway.TestExecutionMain(*configPath, *logPath, *databasePath)
 }
