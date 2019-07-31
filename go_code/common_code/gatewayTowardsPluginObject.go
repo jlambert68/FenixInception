@@ -1,7 +1,6 @@
 package common_code
 
 import (
-	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -20,15 +19,6 @@ import (
 // ChannelType
 const ChannelTypeTestInstructionMessageTowardsPlugin = "ChannelTypeTestInstructionMessageTowardsPlugin"
 const ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin = "ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin"
-
-var (
-	// Internal queues used by the gateway
-	// TestInstruction Towards Plugin
-	TestInstructionMessageChannelTowardsPlugin chan *gRPC.TestInstruction_RT
-
-	// supportedTestDataDomainsRequest Towards Plugin
-	SupportedTestDataDomainsRequestChannelTowardsPlugin chan *gRPC.SupportedTestDataDomainsRequest
-)
 
 var (
 	RegisterGatewayTowardsPluginerver *grpc.Server

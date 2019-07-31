@@ -1,6 +1,7 @@
 package common_code
 
 import (
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
 	"time"
@@ -211,3 +212,38 @@ var GatewayMustStopProcessing = true
 
 // Number of seconds that Services are asleep when 'gatewayMustStopProcessing  == true'
 const ServieSleepTime time.Duration = 10
+
+// *** Internal channels used by the gateway towards Fenix ***
+type gatewayChannelPakageStruct struct {
+
+	//  informationMessage towards Fenix
+	InformationMessageChannelTowardsFenix chan *gRPC.InformationMessage
+
+	// testInstructionTimeOutMessage towards Fenix
+	TestInstructionTimeOutMessageChannelTowardsFenix chan *gRPC.TestInstructionTimeOutMessage
+
+	// testExecutionLogMessage towards Fenix
+	TestExecutionLogMessageChannelTowardsFenix chan *gRPC.TestExecutionLogMessage
+
+	// supportedTestDataDomainsMessage towards Fenix
+	SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix chan *gRPC.SupportedTestDataDomainsMessage
+
+	// availbleTestInstruction<AtPluginMessage towards Fenix
+	AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix chan *gRPC.AvailbleTestInstructionAtPluginMessage
+
+	//availbleTestContainersAtPluginMessage towars Fenix
+	AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix chan *gRPC.AvailbleTestContainersAtPluginMessage
+
+	//availbleTestContainersAtPluginMessage towars Fenix
+	TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix chan *gRPC.TestInstructionExecutionResultMessage
+
+	//supportedTestDataDomainsWithHeadersMessage towars Fenix
+	SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix chan *gRPC.SupportedTestDataDomainsWithHeadersMessage
+
+	// Internal queues used by the gateway
+	// TestInstruction Towards Plugin
+	TestInstructionMessageChannelTowardsPlugin chan *gRPC.TestInstruction_RT
+
+	// supportedTestDataDomainsRequest Towards Plugin
+	SupportedTestDataDomainsRequestChannelTowardsPlugin chan *gRPC.SupportedTestDataDomainsRequest
+}
