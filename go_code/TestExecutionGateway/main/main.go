@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 	//	"fmt"
-	"jlambert/FenixInception2/go_code/TestExecutionGateway"
+	"github.com/jlambert68/FenixInception/go_code/TestExecutionGateway"
 	//	"time"
 )
 
