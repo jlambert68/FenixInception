@@ -76,7 +76,8 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 
 
 	// *** Internal channels used by the gateway ***
-var common_code.gatewayChannelPakageStruct
+	var gatewayChannelPakage common_code.gatewayChannelPakageStruct
+
 	//  informationMessage towards Fenix
 	var (
 		InformationMessageChannelTowardsFenix chan *gRPC.InformationMessage
