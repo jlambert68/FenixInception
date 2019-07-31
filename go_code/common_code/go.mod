@@ -1,4 +1,4 @@
-module jlambert/FenixInception2/go_code/common_code
+module github.com/jlambert68/FenixInception/go_code/common_code
 
 require (
 	github.com/sirupsen/logrus v1.4.2

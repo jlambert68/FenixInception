@@ -5,7 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
-	"jlambert/FenixInception2/go_code/common_code"
+	"github.com/jlambert68/FenixInception/go_code/common_code"
 )
 
 // ********************************************************************************************

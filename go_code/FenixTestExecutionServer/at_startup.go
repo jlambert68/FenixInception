@@ -2,7 +2,7 @@ package FenixTestExecutionServer
 
 import (
 	"jlambert/FenixInception2/go_code/TestExecutionGateway"
-	"jlambert/FenixInception2/go_code/common_code"
+	"github.com/jlambert68/FenixInception/go_code/common_code"
 )
 
 // *******************************************************************

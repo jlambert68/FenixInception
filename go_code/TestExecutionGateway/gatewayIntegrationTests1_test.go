@@ -6,7 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"jlambert/FenixInception2/go_code/common_code"
+	"github.com/jlambert68/FenixInception/go_code/common_code"
 	"log"
 	"os"
 	"regexp"
