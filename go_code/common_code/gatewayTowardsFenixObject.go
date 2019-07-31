@@ -1,15 +1,15 @@
 package common_code
 
 import (
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"google.golang.org/grpc"
-	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
 	"net"
 )
 
 var (
 	// Connection parameters for connecting to parent Gateway/Fenix
-	remoteGatewayServerConnection *grpc.ClientConn
-	grpcClient                    gRPC.GatewayTowardsFenixClient
+	RemoteGatewayServerConnection *grpc.ClientConn
+	GrpcClient                    gRPC.GatewayTowardsFenixClient
 
 	// Port where Parent Gateway/Fenix will call this gateway/client
 	//incomingPortForCallsFromParentGateway string
@@ -35,33 +35,33 @@ const ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix = "Chann
 
 //  informationMessage towards Fenix
 var (
-	informationMessageChannelTowardsFenix chan *gRPC.InformationMessage
+	InformationMessageChannelTowardsFenix chan *gRPC.InformationMessage
 
 	// testInstructionTimeOutMessage towards Fenix
-	testInstructionTimeOutMessageChannelTowardsFenix chan *gRPC.TestInstructionTimeOutMessage
+	TestInstructionTimeOutMessageChannelTowardsFenix chan *gRPC.TestInstructionTimeOutMessage
 
 	// testExecutionLogMessage towards Fenix
-	testExecutionLogMessageChannelTowardsFenix chan *gRPC.TestExecutionLogMessage
+	TestExecutionLogMessageChannelTowardsFenix chan *gRPC.TestExecutionLogMessage
 
 	// supportedTestDataDomainsMessage towards Fenix
-	supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix chan *gRPC.SupportedTestDataDomainsMessage
+	SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix chan *gRPC.SupportedTestDataDomainsMessage
 
 	// availbleTestInstruction<AtPluginMessage towards Fenix
-	availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix chan *gRPC.AvailbleTestInstructionAtPluginMessage
+	AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix chan *gRPC.AvailbleTestInstructionAtPluginMessage
 
 	//availbleTestContainersAtPluginMessage towars Fenix
-	availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix chan *gRPC.AvailbleTestContainersAtPluginMessage
+	AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix chan *gRPC.AvailbleTestContainersAtPluginMessage
 
 	//availbleTestContainersAtPluginMessage towars Fenix
-	testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix chan *gRPC.TestInstructionExecutionResultMessage
+	TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix chan *gRPC.TestInstructionExecutionResultMessage
 
 	//supportedTestDataDomainsWithHeadersMessage towars Fenix
-	supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix chan *gRPC.SupportedTestDataDomainsWithHeadersMessage
+	SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix chan *gRPC.SupportedTestDataDomainsWithHeadersMessage
 )
 
 var (
-	registerGatewayTowardsFenixServer *grpc.Server
-	gatewayTowardsFenixListener       net.Listener
+	RegisterGatewayTowardsFenixServer *grpc.Server
+	GatewayTowardsFenixListener       net.Listener
 
 	// gRPC server used to handle all traffic Towards the Plugins
 

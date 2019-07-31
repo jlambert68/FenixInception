@@ -20,7 +20,7 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) GetSup
 	}).Debug("Incoming gRPC: 'GetSupportedTestDataDomains'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	common_code.supportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsRequest
+	common_code.SupportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsRequest
 	common_code.Logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("SupportedTestDataDomainsRequest was put on the channel")

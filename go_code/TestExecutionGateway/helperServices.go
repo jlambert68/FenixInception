@@ -529,9 +529,9 @@ func InitiateGatewayChannels() {
 
 	// *** Towards Plugina ***
 	// TestInstruction Towards Plugin
-	common_code.testInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, common_code.SuppertedNumberOfMessagesInChannels)
+	common_code.TestInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsRequest Towards Plugin
-	common_code.supportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, common_code.SuppertedNumberOfMessagesInChannels)
+	common_code.SupportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, common_code.SuppertedNumberOfMessagesInChannels)
 
 }

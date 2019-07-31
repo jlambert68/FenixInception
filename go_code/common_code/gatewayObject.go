@@ -57,11 +57,11 @@ var (
 
 // Defines the message sent to Database Engine
 type DbMessageStruct struct {
-	messageType  int                          // Will be (DbRead, DbWrite)
-	bucket       string                       // The Bucket for the message
-	key          string                       // Key to be Read or Written
-	value        []byte                       // Only used for writing messages to DB
-	resultsQueue chan<- DbResultMessageStruct // Sending function sends in which channel tp pass back the results on
+	MessageType  int                          // Will be (DbRead, DbWrite)
+	Bucket       string                       // The Bucket for the message
+	Key          string                       // Key to be Read or Written
+	Value        []byte                       // Only used for writing messages to DB
+	ResultsQueue chan<- DbResultMessageStruct // Sending function sends in which channel tp pass back the results on
 }
 
 // Used for defining Write/Read message to Database Engine
@@ -74,9 +74,9 @@ const (
 
 // Message used for sending back Read-instructions from Database
 type DbResultMessageStruct struct {
-	err   error  // Error message
-	key   string // Key that was Read or Written
-	value []byte // The result found in Database
+	Err   error  // Error message
+	Key   string // Key that was Read or Written
+	Value []byte // The result found in Database
 }
 
 // *******************************************************************
@@ -191,10 +191,10 @@ var ClientsAddressAndPort map[string]ClientsAddressAndPortStruct
 
 // Definition for memory Object for all clients
 type ClientsAddressAndPortStruct struct {
-	clientId      string
-	clientName    string
-	clientAddress string
-	clientPort    int32
+	ClientId      string
+	ClientName    string
+	ClientAddress string
+	ClientPort    int32
 }
 
 // The number of messages that all internal gateway channels supports
