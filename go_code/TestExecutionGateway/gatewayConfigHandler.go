@@ -14,7 +14,7 @@ func processConfigFile(filename string) {
 
 	//	var gatewayConfig TomlConfigStruct
 	// Decode toml-file
-	if _, err := toml.DecodeFile(filename, &common_code.gatewayConfig); err != nil {
+	if _, err := toml.DecodeFile(filename, &common_code.GatewayConfig); err != nil {
 		// Error when decoding toml-file
 		log.Println("045bcaee-eefe-419d-8c3d-51ca5adac22e")
 		log.Println("err: ", err)
@@ -25,7 +25,7 @@ func processConfigFile(filename string) {
 		log.Println("'toml-file' was decoded: ", filename)
 
 		// Convert logging-level-text into logrus.logginglever
-		log.Println(common_code.gatewayConfig)
+		log.Println(common_code.GatewayConfig)
 		//log.Println(gatewayConfig.LoggingLevel.LoggingLevel.String())
 
 	}

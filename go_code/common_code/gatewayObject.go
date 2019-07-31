@@ -40,13 +40,13 @@ var GatewayInIntegrationTestMode = &gatewayIsInIntegrationTestModeStruct{
 
 var (
 	// Common logger for the gateway
-	logger *logrus.Logger
+	Logger *logrus.Logger
 
 	// Database object used for storing any persistent data within Gateway
 	db *bolt.DB
 
 	// Database queue used for sending questions to database
-	dbMessageQueue chan dbMessageStruct
+	DbMessageQueue chan DbMessageStruct
 
 	// Channel for informationMessage initiated in this gateway
 	// removed becasue it resides in object for messages towards Fenix
@@ -56,12 +56,12 @@ var (
 // TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
 
 // Defines the message sent to Database Engine
-type dbMessageStruct struct {
+type DbMessageStruct struct {
 	messageType  int                          // Will be (DbRead, DbWrite)
 	bucket       string                       // The Bucket for the message
 	key          string                       // Key to be Read or Written
 	value        []byte                       // Only used for writing messages to DB
-	resultsQueue chan<- dbResultMessageStruct // Sending function sends in which channel tp pass back the results on
+	resultsQueue chan<- DbResultMessageStruct // Sending function sends in which channel tp pass back the results on
 }
 
 // Used for defining Write/Read message to Database Engine
@@ -73,7 +73,7 @@ const (
 )
 
 // Message used for sending back Read-instructions from Database
-type dbResultMessageStruct struct {
+type DbResultMessageStruct struct {
 	err   error  // Error message
 	key   string // Key that was Read or Written
 	value []byte // The result found in Database
@@ -84,7 +84,7 @@ type dbResultMessageStruct struct {
 //
 
 // All config parameter will be stored in the following parameter
-var gatewayConfig TomlConfigStruct
+var GatewayConfig TomlConfigStruct
 
 // Main struct for toml-file
 /*
@@ -187,10 +187,10 @@ const FenixEngine = "FenixEngine"
 const GatewayEngine = "GatewayEngine"
 
 // Memory Object for all clients
-var clientsAddressAndPort map[string]clientsAddressAndPortStruct
+var ClientsAddressAndPort map[string]ClientsAddressAndPortStruct
 
 // Definition for memory Object for all clients
-type clientsAddressAndPortStruct struct {
+type ClientsAddressAndPortStruct struct {
 	clientId      string
 	clientName    string
 	clientAddress string
@@ -207,7 +207,7 @@ const LowerBounderyForSignalingMessagesInChannel = 10
 const UpperBounderyForSignalingMessagesInChannel = 90
 
 // Variable used for sync all services to be able to start and stop them at the same time
-var gatewayMustStopProcessing = true
+var GatewayMustStopProcessing = true
 
 // Number of seconds that Services are asleep when 'gatewayMustStopProcessing  == true'
 const ServieSleepTime time.Duration = 10

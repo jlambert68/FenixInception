@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/jlambert68/FenixInception/go_code/common_code"
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"io/ioutil"
-	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
-	"github.com/jlambert68/FenixInception/go_code/common_code"
 	"log"
 	"os"
 	"regexp"
@@ -127,7 +127,7 @@ func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseF
 
 	// Ensure that all services don't start before everything has been started
 	log.Println("Process 'gatewayMustStopProcessing'")
-	common_code.gatewayMustStopProcessing = true
+	common_code.GatewayMustStopProcessing = true
 
 	// Initiate Database
 	log.Println("Process 'initiateDB'")
@@ -161,7 +161,7 @@ func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseF
 
 	// Start all services at the same time
 	log.Println("Process 'gatewayMustStopProcessing = false'")
-	common_code.gatewayMustStopProcessing = false
+	common_code.GatewayMustStopProcessing = false
 
 }
 
@@ -204,7 +204,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 	var err error = nil
 
 	// ***** Send InfoMessage to THIS gateway using gRPC-call ****
-	ThisAddressAndPortInfo := common_code.gatewayConfig.GatewayIdentification
+	ThisAddressAndPortInfo := common_code.GatewayConfig.GatewayIdentification
 	addressToDial := ThisAddressAndPortInfo.GatewayIpAddress + ":" + strconv.FormatInt(int64(ThisAddressAndPortInfo.GatewayChildrenCallOnThisPort), 10)
 
 	// Set up connection to Parent Gateway or Fenix
@@ -279,8 +279,8 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 			gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 			// ChangeSenderId to this gatway's SenderId before sending the data forward
-			informationMessageToBeForwarded.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
-			informationMessageToBeForwarded.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
+			informationMessageToBeForwarded.SenderId = common_code.GatewayConfig.GatewayIdentification.GatewayId
+			informationMessageToBeForwarded.SenderName = common_code.GatewayConfig.GatewayIdentification.GatewayName
 
 			// Do gRPC-call to client gateway or Fenix
 			ctx := context.Background()
@@ -307,7 +307,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 
 			} else {
 				// gRPC Send message OK
-				common_code.logger.WithFields(logrus.Fields{
+				common_code.Logger.WithFields(logrus.Fields{
 					"ID":            "d9074bbc-a110-45de-8559-b063ec6122f1",
 					"addressToDial": addressToDial,
 				}).Debug("gRPC-send OK of 'informationMessageToBeForwarded' to Parent-Gateway or Fenix")
@@ -326,7 +326,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 func TestDatabase(t *testing.T) {
 
 	// Create the channel that the client address should be sent back on
-	returnParentAddressChannel := make(chan common_code.dbResultMessageStruct)
+	returnParentAddressChannel := make(chan common_code.DbResultMessageStruct)
 
 	// Get Clients address
 	dbMessage := common_code.dbMessageStruct{

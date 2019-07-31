@@ -2,10 +2,10 @@ package TestExecutionGateway
 
 import (
 	"encoding/json"
+	"github.com/jlambert68/FenixInception/go_code/common_code"
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
-	"github.com/jlambert68/FenixInception/go_code/common_code"
 )
 
 // ********************************************************************************************
@@ -14,9 +14,9 @@ import (
 func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) RegisterClientAddress(ctx context.Context, registerClientAddressRequest *gRPC.RegisterClientAddressRequest) (*gRPC.RegisterClientAddressResponse, error) {
 
 	var registerClientAddressResponse *gRPC.RegisterClientAddressResponse
-	var clientRPCAddress common_code.clientsAddressAndPortStruct
+	var clientRPCAddress common_code.ClientsAddressAndPortStruct
 
-	common_code.logger.WithFields(logrus.Fields{
+	common_code.Logger.WithFields(logrus.Fields{
 		"ID":                           "b88ad310-944f-44ed-bfca-6b06337b81be",
 		"registerClientAddressRequest": registerClientAddressRequest,
 	}).Info("Incoming gRPC: 'RegisterClientAddress'")
@@ -28,14 +28,14 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         registerClientAddressRequest.CallingSystemId,
 			OriginalSenderName:       registerClientAddressRequest.CallingSystemName,
-			SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 common_code.GatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               common_code.GatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Child gateway/Plugin is using wrong version of gRPC-defition",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   common_code.GatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: common_code.GatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
@@ -59,7 +59,7 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 	// Convert Client Gateway/Plugin address info-struct into a byte array
 	childgRPCAddressByteArray, err := json.Marshal(clientRPCAddress)
 	if err != nil {
-		common_code.logger.WithFields(logrus.Fields{
+		common_code.Logger.WithFields(logrus.Fields{
 			"ID":                        "f0b16a20-649f-4b69-97f2-649bc686a5a3",
 			"childgRPCAddressByteArray": childgRPCAddressByteArray,
 			"err":                       err,
@@ -67,16 +67,16 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 
 		// Send Error information to Fenix
 		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-			OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
-			OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
-			SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
+			OriginalSenderId:         common_code.GatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       common_code.GatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 common_code.GatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               common_code.GatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Error when converting 'clientRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress.",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   common_code.GatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: common_code.GatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		registerClientAddressResponse = &gRPC.RegisterClientAddressResponse{
@@ -91,7 +91,7 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 
 	// Save childgRPCAddressByteArray to local database, using local channel
 	// Return Channel
-	returnChannel := make(chan common_code.dbResultMessageStruct)
+	returnChannel := make(chan common_code.DbResultMessageStruct)
 
 	dbMessage := common_code.dbMessageStruct{
 		common_code.DbWrite,
@@ -108,23 +108,23 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 	close(returnChannel)
 
 	if returnDBMessage.err != nil {
-		common_code.logger.WithFields(logrus.Fields{
+		common_code.Logger.WithFields(logrus.Fields{
 			"ID":  "446cb366-9d84-4c1c-a628-ef162f7c1747",
 			"err": err,
 		}).Error("Got an error when Saveing to local DB")
 
 		// Send Error information to Fenix
 		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-			OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
-			OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
-			SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
+			OriginalSenderId:         common_code.GatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       common_code.GatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 common_code.GatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               common_code.GatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Got an error when Saveing to local DB",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   common_code.GatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: common_code.GatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		// Create message back to child Gateway/Plugin
@@ -139,7 +139,7 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 	} else {
 
 		// Return port for client to listen to
-		common_code.logger.WithFields(logrus.Fields{
+		common_code.Logger.WithFields(logrus.Fields{
 			"ID": "b6be47f6-c6ee-44c8-b21c-d64891e70038",
 		}).Debug("Registration of client was done")
 

@@ -1,10 +1,10 @@
 package TestExecutionGateway
 
 import (
+	"github.com/jlambert68/FenixInception/go_code/common_code"
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
-	"github.com/jlambert68/FenixInception/go_code/common_code"
 )
 
 // ********************************************************************************************
@@ -14,18 +14,18 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) SendTest
 
 	var returnMessage *gRPC.AckNackResponse
 
-	common_code.logger.WithFields(logrus.Fields{
+	common_code.Logger.WithFields(logrus.Fields{
 		"ID":                                    "65959397-cd47-4c2c-a051-76338d44aeb7",
 		"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
 	}).Debug("Incoming gRPC: 'SendTestInstructionResultTowardsFenix'")
 
 	// Put testInstructionExecutionResultMessage on queue for further processing
 	common_code.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix <- testInstructionExecutionResultMessage
-	common_code.logger.WithFields(logrus.Fields{
+	common_code.Logger.WithFields(logrus.Fields{
 		"ID": "0a7d5580-609f-4a74-8b9c-1c06ee8bd771",
 	}).Debug("'SupportedTestDataDomainsMessage' was put on the channel")
 
-	common_code.logger.WithFields(logrus.Fields{
+	common_code.Logger.WithFields(logrus.Fields{
 		"ID": "16766064-6c77-4f3b-8a31-0dedc4303b7c",
 	}).Debug("Leaving gRPC: 'SendTestInstructionResultTowardsFenix'")
 

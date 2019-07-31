@@ -5,8 +5,8 @@ package TestExecutionGateway
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"github.com/jlambert68/FenixInception/go_code/common_code"
+	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
@@ -100,7 +100,7 @@ func InitGatewayPart1() {
 
 	// Ensure that all services don't start before everything has been started
 	log.Println("Process 'gatewayMustStopProcessing'")
-	common_code.gatewayMustStopProcessing = true
+	common_code.GatewayMustStopProcessing = true
 
 	// Initiate Database
 	log.Println("Process 'initiateDB'")
@@ -191,7 +191,7 @@ func removeFile(fileToBeRemoved string) {
 
 func TestDatabase(t *testing.T) {
 	// Pretend to use the db
-	fmt.Println(common_code.gatewayConfig)
+	fmt.Println(common_code.GatewayConfig)
 }
 
 // Validate that gateway did a simulated exit because there are no parent gateway
