@@ -2,37 +2,38 @@ package TestExecutionGateway
 
 import (
 	"github.com/sirupsen/logrus"
+	"jlambert/FenixInception2/go_code/common_code"
 	"log"
 	"os"
 	"time"
 )
 
 func initLogger(filename string) {
-	logger = logrus.StandardLogger()
+	common_code.logger = logrus.StandardLogger()
 
-	switch gatewayConfig.LoggingLevel.LoggingLevel {
+	switch common_code.gatewayConfig.LoggingLevel.LoggingLevel {
 
 	case logrus.DebugLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", common_code.gatewayConfig.LoggingLevel.LoggingLevel)
 
 	case logrus.InfoLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", common_code.gatewayConfig.LoggingLevel.LoggingLevel)
 
 	case logrus.WarnLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", common_code.gatewayConfig.LoggingLevel.LoggingLevel)
 
 	case logrus.FatalLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", common_code.gatewayConfig.LoggingLevel.LoggingLevel)
 
 	default:
 		log.Println("fea6e90c-c1cd-478a-b423-9008e2463608")
-		log.Println("Not correct value for debugging-level, this was used: ", gatewayConfig.LoggingLevel.LoggingLevel)
-		log.Println("'gatewayConfig': ", gatewayConfig)
+		log.Println("Not correct value for debugging-level, this was used: ", common_code.gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'gatewayConfig': ", common_code.gatewayConfig)
 		os.Exit(0)
 
 	}
 
-	logrus.SetLevel(gatewayConfig.LoggingLevel.LoggingLevel)
+	logrus.SetLevel(common_code.gatewayConfig.LoggingLevel.LoggingLevel)
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,
@@ -43,20 +44,20 @@ func initLogger(filename string) {
 	//If no file then set standard out
 
 	if filename == "" {
-		logger.Out = os.Stdout
+		common_code.logger.Out = os.Stdout
 
 	} else {
 		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0666) //os.O_CREATE
 		if err == nil {
-			logger.Out = file
+			common_code.logger.Out = file
 
-			logger.Info("********* *************** *********")
-			logger.Info("")
-			logger.WithFields(logrus.Fields{
+			common_code.logger.Info("********* *************** *********")
+			common_code.logger.Info("")
+			common_code.logger.WithFields(logrus.Fields{
 				"ID": "d6b7454e-eb99-4c7d-9ec9-84249a7ee848",
 			}).Info("********* Logger started *********")
-			logger.Info("")
-			logger.Info("********* *************** *********")
+			common_code.logger.Info("")
+			common_code.logger.Info("********* *************** *********")
 		} else {
 			log.Println("Failed to log to file, using default stderr")
 		}

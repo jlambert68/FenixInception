@@ -6,6 +6,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"jlambert/FenixInception2/go_code/common_code"
 	"strconv"
 )
 
@@ -15,36 +16,36 @@ import (
 func tryToRegisterGatewayAtParent() {
 
 	// Check if this gateway i used in integration test mode and only should start without any connection to parent gateway
-	if gatewayConfig.IntegrationTest.StartWithOutAnyParent == false {
+	if common_code.gatewayConfig.IntegrationTest.StartWithOutAnyParent == false {
 		// Register gateway/client at parent Gateway/Fenix
 		resultBool, err := registerThisGatewayAtParentGateway()
 		if err != nil || resultBool == false {
 			// If this gateway never has been connected to parent gateway/Fenix then Exit
 			// due to that parent doesn't know this gateways address yet
-			if gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
-				if gatewayConfig.IntegrationTest.UsedInIntegrationTest == false {
+			if common_code.gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce == false {
+				if common_code.gatewayConfig.IntegrationTest.UsedInIntegrationTest == false {
 					// Gateway is NOT in IsInSelfIntegrationTestMode
-					logger.WithFields(logrus.Fields{
+					common_code.logger.WithFields(logrus.Fields{
 						"ID": "c7ea051f-37b2-41d2-820e-5050a560cfbb",
 					}).Fatal("This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
 				} else {
 					// Gateway IS in IsInSelfIntegrationTestMode
-					logger.WithFields(logrus.Fields{
+					common_code.logger.WithFields(logrus.Fields{
 						"ID": "580d2c7d-b8d3-40f7-b238-eb096d859355",
 					}).Error("USed for IntegrationTest: This gateway has never been connected to parent gateway/Fenix so Exit, because Parent Gateway/Fenix doesn't know the address to this gateway")
 				}
 			} else {
-				logger.WithFields(logrus.Fields{
+				common_code.logger.WithFields(logrus.Fields{
 					"ID": "35b7981d-ed97-48bf-8f5e-9807da4cced4",
 				}).Warning("Parent Gateway/Fenix is not alive so Waiting for Gateway/Fenix to reconnect")
 			}
 		} else {
-			logger.WithFields(logrus.Fields{
+			common_code.logger.WithFields(logrus.Fields{
 				"ID": "9401d538-0d13-4213-bab8-d5e546784738",
 			}).Debug("Success in connectiing to parent Gateway/Fenix ")
 		}
 	} else {
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID": "db3709f2-a848-44be-82a0-509cc4bc08db",
 		}).Debug("No Connection done to parent Gateway/Fenix. This gateway is used for Integrations Tests ")
 	}
@@ -60,19 +61,19 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 	var addressToDial string
 
 	// Find parents address and port to call
-	addressToDial = gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress + ":" + strconv.FormatInt(int64(gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort), 10)
+	addressToDial = common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress + ":" + strconv.FormatInt(int64(common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort), 10)
 
 	// Information sent to parent gateway/Fenix
 	registerClientAddressRequest := gRPC.RegisterClientAddressRequest{
 		GRPCVersion:            gRPC.CurrentVersionEnum_VERSION_0_1_0,
-		CallingSystemId:        gatewayConfig.GatewayIdentification.GatewayId,
-		CallingSystemName:      gatewayConfig.GatewayIdentification.GatewayName,
-		CallingSystemIpAddress: gatewayConfig.GatewayIdentification.GatewayIpAddress}
+		CallingSystemId:        common_code.gatewayConfig.GatewayIdentification.GatewayId,
+		CallingSystemName:      common_code.gatewayConfig.GatewayIdentification.GatewayName,
+		CallingSystemIpAddress: common_code.gatewayConfig.GatewayIdentification.GatewayIpAddress}
 
 	// Set up connection to Parent Gateway/Fenix Server
-	remoteGatewayServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
+	common_code.remoteGatewayServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
 	if err != nil {
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":            "fbd24ed4-638a-43ac-a07b-c622f0ab325c",
 			"addressToDial": addressToDial,
 			"error message": err,
@@ -80,18 +81,18 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 		return false, err
 
 	} else {
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":            "14d029db-0031-4837-b139-7b04b707fabf",
 			"addressToDial": addressToDial,
 		}).Debug("gRPC connection OK to Parent gateway")
 
 		// Creates a new Gateway Client
-		gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteGatewayServerConnection)
+		gatewayClient := gRPC.NewGatewayTowardsFenixClient(common_code.remoteGatewayServerConnection)
 
 		ctx := context.Background()
 		registerClientAddressResponse, err := gatewayClient.RegisterClientAddress(ctx, &registerClientAddressRequest)
 		if err != nil {
-			logger.WithFields(logrus.Fields{
+			common_code.logger.WithFields(logrus.Fields{
 				"ID":            "364e2a90-1c8b-47df-be64-b73457317911",
 				"returnMessage": registerClientAddressResponse,
 				"error":         err,
@@ -102,7 +103,7 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 		} else {
 			// Check answer from parent Gateway/Fenix
 			if registerClientAddressResponse.Acknack == false {
-				logger.WithFields(logrus.Fields{
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":            "236cf5a9-c038-4a2a-b9bc-24015becec18",
 					"returnMessage": registerClientAddressResponse,
 					"error":         err,
@@ -111,7 +112,7 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 				return false, err
 
 			} else {
-				logger.WithFields(logrus.Fields{
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":            "116024c5-268b-4688-97ca-272ab3db385f",
 					"returnMessage": registerClientAddressResponse,
 					"error":         err,
@@ -120,15 +121,15 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 		}
 
 		// Save Port to memory object
-		gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort = registerClientAddressResponse.ClientPort
-		gatewayConfig.GatewayIdentification.CreatedDateTime = generaTimeStampUTC()
+		common_code.gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort = registerClientAddressResponse.ClientPort
+		common_code.gatewayConfig.GatewayIdentification.CreatedDateTime = generaTimeStampUTC()
 
 		// Save information that about that registration was successful. Used for knowning that registration was made at least once
-		gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce = true
-		gatewayConfig.ParentgRPCAddress.ConnectionToParentLastConnectionDateTime = generaTimeStampUTC()
+		common_code.gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce = true
+		common_code.gatewayConfig.ParentgRPCAddress.ConnectionToParentLastConnectionDateTime = generaTimeStampUTC()
 
 		// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-		gatewayIdentificationByteArray, err := json.Marshal(gatewayConfig.GatewayIdentification)
+		gatewayIdentificationByteArray, err := json.Marshal(common_code.gatewayConfig.GatewayIdentification)
 
 		if err != nil {
 			// Error when Marshaling to []byte
@@ -145,15 +146,15 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 
 			// Save gateWayIdentifaction information to local DB
 			_ = SaveMessageToLocalDB(
-				BucketKeyForGatewayIdentificationInfo,
+				common_code.BucketKeyForGatewayIdentificationInfo,
 				gatewayIdentificationByteArray,
-				BucketForGatewayIdentificationInfo,
+				common_code.BucketForGatewayIdentificationInfo,
 				"ddc66d46-b9b9-45f4-8da8-75acdb17b8be",
 			)
 		}
 
 		// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
-		parentgRPCAddressByteArray, err := json.Marshal(gatewayConfig.ParentgRPCAddress)
+		parentgRPCAddressByteArray, err := json.Marshal(common_code.gatewayConfig.ParentgRPCAddress)
 
 		if err != nil {
 			// Error when Marshaling to []byte
@@ -170,9 +171,9 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 
 			// Save message to local DB for later processing
 			_ = SaveMessageToLocalDB(
-				BucketKeyForParentAddress,
+				common_code.BucketKeyForParentAddress,
 				parentgRPCAddressByteArray,
-				BucketForParentAddress,
+				common_code.BucketForParentAddress,
 				"36dc5c00-64b6-4122-af7f-69962442889e",
 			)
 		}
@@ -231,19 +232,19 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	}
 
 	// Initiate internal gatewau channels
-	initiateGatewayChannels()
+	InitiateGatewayChannels()
 
 	//  Initiate the memory structure to hold all client gateway/plugin's address information
 	initiateClientAddressMemoryDB()
 
 	// Ensure that all services don't start before everything has been started
-	gatewayMustStopProcessing = true
+	common_code.gatewayMustStopProcessing = true
 
 	// Initiate Database
 	initiateDB(databaseFile) // If "" then Use default database file name
 
 	// Start all Dispatch- and Transmit-Engines
-	initiateTransmitEnginesTowardsFenix()
+	initiateAllTransmitAndDispatchEngines()
 
 	// Try to Register this Gateway At Parent
 	tryToRegisterGatewayAtParent()
@@ -261,7 +262,7 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	updateMemoryAddressForParentAddressInfo()
 
 	// Start all services at the same time
-	gatewayMustStopProcessing = false
+	common_code.gatewayMustStopProcessing = false
 
 	// Ask clients to ReRegister them self to this gateway
 	// TODO Make all Clients ReRegister them self

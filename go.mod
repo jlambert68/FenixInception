@@ -1,6 +1,7 @@
 module jlambert/FenixInception2
 
 require (
-	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/BurntSushi/toml-test v0.1.0 // indirect
+	github.com/sirupsen/logrus v1.4.2
+	go.etcd.io/bbolt v1.3.3
+	google.golang.org/grpc v1.22.1
 )

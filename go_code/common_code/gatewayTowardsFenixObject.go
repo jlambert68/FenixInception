@@ -1,4 +1,4 @@
-package TestExecutionGateway
+package common_code
 
 import (
 	"google.golang.org/grpc"
@@ -17,19 +17,19 @@ var (
 
 // The following variables is saved in DB and reloaded At Startup
 var (
-	// Have this Gateway/Client ever been connected to parent Gateway/Fenix
-	gatewayClientHasBeenConnectedToParentGateway bool
+// Have this Gateway/Client ever been connected to parent Gateway/Fenix
+//gatewayClientHasBeenConnectedToParentGateway bool TODO Remove this becasue it will not be used, 190717
 )
 
 // ChannelType
-const channelTypeInformationMessageTowardsFenix = "channelTypeinformationMessageTowardsFenix"
-const channelTypeTestInstructionTimeOutMessageTowardsFenix = "channelTypeTestInstructionTimeOutMessageTowardsFenix"
-const channelTypeTestExecutionLogMessageTowardsFenix = "channelTypeTestExecutionLogMessageTowardsFenix"
-const channelTypeSupportedTestDataDomainsMessageTowardsFenix = "channelTypeSupportedTestDataDomainsMessageTowardsFenix"
-const channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix = "channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix"
-const channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix = "channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix"
-const channelTypeTestInstructionExecutionResultMessageTowardsFenix = "channelTypeTestInstructionExecutionResultMessageTowardsFenix"
-const channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix = "channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix"
+const ChannelTypeInformationMessageTowardsFenix = "ChannelTypeInformationMessageTowardsFenix"
+const ChannelTypeTestInstructionTimeOutMessageTowardsFenix = "ChannelTypeTestInstructionTimeOutMessageTowardsFenix"
+const ChannelTypeTestExecutionLogMessageTowardsFenix = "ChannelTypeTestExecutionLogMessageTowardsFenix"
+const ChannelTypeSupportedTestDataDomainsMessageTowardsFenix = "ChannelTypeSupportedTestDataDomainsMessageTowardsFenix"
+const ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix = "ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix"
+const ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix = "ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix"
+const ChannelTypeTestInstructionExecutionResultMessageTowardsFenix = "ChannelTypeTestInstructionExecutionResultMessageTowardsFenix"
+const ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix = "ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix"
 
 // *** Internal queues used by the gateway towards Fenix ***
 

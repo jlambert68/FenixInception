@@ -5,17 +5,18 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"jlambert/FenixInception2/go_code/common_code"
 	"time"
 )
 
 // ********************************************************************************************
 // Call from parent Gateway/Fenix for incoming TestInstructions that should be sent towards Plugin
 //
-func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 
-	logger.WithFields(logrus.Fields{
+	common_code.logger.WithFields(logrus.Fields{
 		"ID":              "b80b7746-04a8-4ef5-bdc5-2f9e07de754e",
 		"testInstruction": *testInstruction,
 	}).Debug("Incoming gRPC: 'SendTestInstructionTowardsPlugin'")
@@ -47,7 +48,7 @@ func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) SendTestInstructio
 	saveOK := SaveMessageToLocalDB(
 		testInstruction.TestInstructionGuid,
 		testInstructionByteArray,
-		BucketForTestInstructions,
+		common_code.BucketForResendTestInstructionTowardsPlugin,
 		"275bebe1-cb7e-4790-b2b5-070acedfff9a",
 	)
 
@@ -58,15 +59,15 @@ func (gRPCServerTowardsPlugin *GRPCServerTowardsPluginStruct) SendTestInstructio
 		return returnMessage, nil
 	} else {
 
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":              "5a98f0f1-5de9-4dcc-af76-f2888aaebf76",
 			"testInstruction": testInstruction,
 		}).Debug("TestInstructions was saved in local database")
 
 		// Put TestInstruction on queue for further processing
-		testInstructionMessageChannelTowardsPlugin <- testInstruction
+		common_code.testInstructionMessageChannelTowardsPlugin <- testInstruction
 
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":              "73e44541-c793-4ccd-8bc8-c94320f49f29",
 			"testInstruction": testInstruction,
 		}).Debug("Leaving: 'SendTestInstructionTowardsPlugin'")

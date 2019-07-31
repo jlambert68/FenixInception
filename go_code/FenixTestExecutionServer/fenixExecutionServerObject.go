@@ -1,4 +1,6 @@
-package TestExecutionGateway
+package FenixTestExecutionServer
+
+//TODO Remove all that have to do with "gateway" and change into "Fenix"
 
 import (
 	"github.com/sirupsen/logrus"
@@ -6,51 +8,15 @@ import (
 	"time"
 )
 
-/*
-// ****************************************************************
-// object for Integration Override of some vaiables
-// Set up as default as posible
-//
-var GatewayInIntegrationTestMode = &gatewayIsInIntegrationTestModeStruct{
-	IsInSelfIntegrationTestMode: false,
-	StartWithOutAnyParent:       false,
-	UsedInIntegrationTest:       false,
-	ListeningOnThisPortAsParent: 0,
-}
-*/
-
-type gatewayIsInIntegrationTestModeStruct struct {
-	// Gateway is parent or child gateway as a slave for the tested gateway
-	IsInSelfIntegrationTestMode bool  // Variable for handling when Gateway is in IntegrationTest-mode
-	StartWithOutAnyParent       bool  // Used for Integration Tests and the gateway could be started without any parent of its own
-	ListeningOnThisPortAsParent int64 // Used for Integration Tests and the gateway should used this port
-	// borde alltid vara 127.0.0.1 ListeningOnThisAddressAsParent int64 // Used for Integration Tests and the gateway should used this address
-
-	// Thia used for the tested gateway
-	parentIsListeningOnThisPort    int64  // Used for Integration Tests and is used for connecting to parent
-	parentIsListeningOnThisAddress string // Used for Integration Tests and is used for connecting to parent
-
-	//
-	UsedInIntegrationTest bool
-}
-
-// ****************************************************************
-
-// TODO fortsätt här
-
 var (
-	// Common logger for the gateway
+	// Common logger for Fenix
 	logger *logrus.Logger
 
-	// Database object used for storing any persistant data within Gateway
+	// Database object used for storing any persistent data within Fenix
 	db *bolt.DB
 
-	// Database queue used for sending questions to databse
+	// Database queue used for sending questions to database
 	dbMessageQueue chan dbMessageStruct
-
-	// Channel for informationMessage initiated in this gateway
-	// removed becasue it resides in object for messages towards Fenix
-	//      gatewayTowardsFenixObject.informationMessageChannelTowardsFenix chan *gRPC.InformationMessage
 )
 
 // TODO `json:"page"` fixa detta för de objekt som ska sparas i localDB
@@ -161,7 +127,8 @@ type IntegrationTestStruct struct {
 // Administatetive Buckets
 const BucketForParentAddress = "Parent"
 const BucketKeyForParentAddress = "ParentId"
-const BucketForTestInstructions = "TestInstructions" // TODO  <-- Is this used?
+
+//const BucketForTestInstructions = "TestInstructions" // Not used, might be used when TestInstructions should be stored for their current execution station
 const BucketForGatewayIdentificationInfo = "GateWayIdentifaction"
 const BucketForClients = "Clients"
 const BucketKeyForGatewayIdentificationInfo = "GateWayIdentifactionId"
@@ -182,6 +149,8 @@ const BucketForResendOfGetTestdataDomainsToPlugin = "ReSendGetTestDataDomainsMes
 // Used for initiate TransmitDispatchEngine
 const dispatchEngineTowardsPlugin = "dispatchEngineTowardsPlugin"
 const transmitEngineTowardsFenix = "transmitEngineTowardsFenix"
+const fenixEngineSaveToSqlDB = "fenixEngineSaveToSqlDB"
+const gatewayEngine = "gatewayEngine"
 
 // Memory Object for all clients
 var clientsAddressAndPort map[string]clientsAddressAndPortStruct

@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"io/ioutil"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"jlambert/FenixInception2/go_code/common_code"
 	"log"
 	"os"
 	"regexp"
@@ -117,8 +118,8 @@ func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseF
 	initLogger(logfileForTest)
 
 	// Initiate internal gatewau channels
-	log.Println("Process 'initiateGatewayChannels'")
-	initiateGatewayChannels()
+	log.Println("Process 'InitiateGatewayChannels'")
+	InitiateGatewayChannels()
 
 	//  Initiate the memory structure to hold all client gateway/plugin's address information
 	log.Println("Process 'initiateClientAddressMemoryDB'")
@@ -126,39 +127,19 @@ func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseF
 
 	// Ensure that all services don't start before everything has been started
 	log.Println("Process 'gatewayMustStopProcessing'")
-	gatewayMustStopProcessing = true
+	common_code.gatewayMustStopProcessing = true
 
 	// Initiate Database
 	log.Println("Process 'initiateDB'")
 	initiateDB(databaseFile)
 
-	// Start 'dispatchEngineForTestInstructions'
-	log.Println("Process 'gatewayTowardsPluginObject.initiateDispatchEngineForTestInstructiona'")
-	gatewayTowardsPluginObject.initiateDispatchEngineForTestInstructiona()
-
-	// Start 'dispatchEngineForSupportedTestDomains'
-	log.Println("Process 'gatewayTowardsPluginObject.initiateDispatchEngineForSupportedTestDomains'")
-	gatewayTowardsPluginObject.initiateDispatchEngineForSupportedTestDomains()
-
-	// Start 'transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix'
-	log.Println("Process 'gatewayTowardsFenixObject.initiateRegistrateAvailableTestDataDomainsTowardsFenix'")
-	gatewayTowardsFenixObject.initiateRegistrateAvailableTestDataDomainsTowardsFenix()
-
-	// Start 'transmitEngineForSendMessageToFenix'
-	log.Println("Process 'gatewayTowardsFenixObject.initiateSendMessageToFenix'")
-	gatewayTowardsFenixObject.initiateSendMessageToFenix()
-
-	// Start 'transmitEngineForSendTestExecutionLogTowardsFenix'
-	log.Println("Process 'gatewayTowardsFenixObject.initiateSendTestExecutionLogTowardsFenix('")
-	gatewayTowardsFenixObject.initiateSendTestExecutionLogTowardsFenix()
-
-	// Start 'transmitEngineForSendTestInstructionTimeOutTowardsFenix'
-	log.Println("Process 'gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix'")
-	gatewayTowardsFenixObject.initiateSendTestInstructionTimeOutTowardsFenix()
+	// Start all Dispatch- and Transmit-Engines
+	log.Println("Process 'initiateAllTransmitAndDispatchEngines'")
+	initiateAllTransmitAndDispatchEngines()
 
 	// Try to Register this Gateway At Parent
 	log.Println("Process 'gatewayTowardsFenixObject.tryToRegisterGatewayAtParent'")
-	gatewayTowardsFenixObject.tryToRegisterGatewayAtParent()
+	tryToRegisterGatewayAtParent()
 	/*
 		// Listen to gRPC-calls from parent gateway/Fenix
 		log.Println("Process 'startGatewayGRPCServerForMessagesTowardsFenix'")
@@ -180,7 +161,7 @@ func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseF
 
 	// Start all services at the same time
 	log.Println("Process 'gatewayMustStopProcessing = false'")
-	gatewayMustStopProcessing = false
+	common_code.gatewayMustStopProcessing = false
 
 }
 
@@ -223,7 +204,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 	var err error = nil
 
 	// ***** Send InfoMessage to THIS gateway using gRPC-call ****
-	ThisAddressAndPortInfo := gatewayConfig.GatewayIdentification
+	ThisAddressAndPortInfo := common_code.gatewayConfig.GatewayIdentification
 	addressToDial := ThisAddressAndPortInfo.GatewayIpAddress + ":" + strconv.FormatInt(int64(ThisAddressAndPortInfo.GatewayChildrenCallOnThisPort), 10)
 
 	// Set up connection to Parent Gateway or Fenix
@@ -261,7 +242,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 			_ = SaveMessageToLocalDB(
 				informationMessageToBeForwarded.MessageId,
 				informationMessageToBeForwardedByteArray,
-				BucketForResendOfInfoMessagesTowardsFenix,
+				common_code.BucketForResendOfInfoMessagesTowardsFenix,
 				"2154b0cc-fdf3-49bd-8e9e-2ebd24710359",
 			)
 		}
@@ -290,7 +271,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 			_ = SaveMessageToLocalDB(
 				informationMessageToBeForwarded.MessageId,
 				informationMessageToBeForwardedByteArray,
-				BucketForResendOfInfoMessagesTowardsFenix,
+				common_code.BucketForResendOfInfoMessagesTowardsFenix,
 				"01ed6538-efd9-4ce5-af5c-c7869e8a4eb1",
 			)
 
@@ -298,8 +279,8 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 			gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 			// ChangeSenderId to this gatway's SenderId before sending the data forward
-			informationMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-			informationMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+			informationMessageToBeForwarded.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+			informationMessageToBeForwarded.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 			// Do gRPC-call to client gateway or Fenix
 			ctx := context.Background()
@@ -319,14 +300,14 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 				_ = SaveMessageToLocalDB(
 					informationMessageToBeForwarded.MessageId,
 					informationMessageToBeForwardedByteArray,
-					BucketForResendOfInfoMessagesTowardsFenix,
+					common_code.BucketForResendOfInfoMessagesTowardsFenix,
 					"0d378676-3dd3-4bb9-a76b-66e410d5c280",
 				)
 				return err
 
 			} else {
 				// gRPC Send message OK
-				logger.WithFields(logrus.Fields{
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":            "d9074bbc-a110-45de-8559-b063ec6122f1",
 					"addressToDial": addressToDial,
 				}).Debug("gRPC-send OK of 'informationMessageToBeForwarded' to Parent-Gateway or Fenix")
@@ -345,18 +326,18 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 func TestDatabase(t *testing.T) {
 
 	// Create the channel that the client address should be sent back on
-	returnParentAddressChannel := make(chan dbResultMessageStruct)
+	returnParentAddressChannel := make(chan common_code.dbResultMessageStruct)
 
 	// Get Clients address
-	dbMessage := dbMessageStruct{
-		DbRead,
-		BucketForParentAddress,
-		BucketKeyForParentAddress,
+	dbMessage := common_code.dbMessageStruct{
+		common_code.DbRead,
+		common_code.BucketForParentAddress,
+		common_code.BucketKeyForParentAddress,
 		nil,
 		returnParentAddressChannel}
 
 	// Send Read message to database to receive address
-	dbMessageQueue <- dbMessage
+	common_code.dbMessageQueue <- dbMessage
 	// Wait for address from channel, then close the channel
 	databaseReturnMessage := <-returnParentAddressChannel
 	close(returnParentAddressChannel)

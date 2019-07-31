@@ -6,46 +6,47 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"jlambert/FenixInception2/go_code/common_code"
 	"time"
 )
 
 // ********************************************************************************************
-// Initiate Transmit Engines for messages towards Fenix'
+// Initiate Transmit Engines for messages towards Fenix and Dispatch Engines for messages towards Plugins
 //
 
-func initiateTransmitEnginesTowardsFenix() {
+func initiateAllTransmitAndDispatchEngines() {
 
 	// *** Towards Plugin ***
 	// Start a Dispatch Engine, for 'TestInstructionMessageTowardsPlugin' as a go-routine
-	go transmitAndDispatchEngine(channelTypeTestInstructionMessageTowardsPlugin, dispatchEngineTowardsPlugin)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, common_code.GatewayEngine, nil)
 
 	// Start a Dispatch Engine, for 'SupportedTestDataDomainsRequestMessageTowardsPlugin,' as a go-routine
-	go transmitAndDispatchEngine(channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin, dispatchEngineTowardsPlugin)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, common_code.GatewayEngine, nil)
 
 	// *** Towards Fenix ***
 	// Start a Transmit Engine, for 'informationMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeInformationMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeInformationMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 	// Start a Transmit Engine, for 'timeOutMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeTestInstructionTimeOutMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 	// Start a Transmit Engine, for 'spportedTestDataDomainsMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeTestExecutionLogMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestExecutionLogMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 	// Start a Transmit Engine, for 'availbleTestInstructionAtPluginMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeSupportedTestDataDomainsMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 	// Start a Transmit Engine, for 'testInstructionExecutionResultMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeTestInstructionExecutionResultMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 	// Start a Transmit Engine, for 'supportedTestDataDomainsWithHeadersMessageToBeForwarded' as a go-routine
-	go transmitAndDispatchEngine(channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, transmitEngineTowardsFenix)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
 
 }
 
@@ -53,7 +54,7 @@ func initiateTransmitEnginesTowardsFenix() {
 // Forward X-message from channel towards Fenix
 //
 
-func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType string) {
+func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType string, fenixOrGatewayType string, fenixFunctionToCall func()) {
 
 	// Messages towards Plugin
 	var (
@@ -94,7 +95,7 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 		dialSuccess    = false
 	)
 
-	var gRRCerr error
+	var gRPCerr error
 	var returnMessageAckNackResponse *gRPC.AckNackResponse
 	var returnMessageString string
 
@@ -110,9 +111,9 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 	for {
 
 		// Service can be started and Stopped by central control of the Gateway
-		if gatewayMustStopProcessing == true || dialSuccess == false {
+		if common_code.gatewayMustStopProcessing == true || dialSuccess == false {
 			// Service should be stopped from processing any messages
-			time.Sleep(ServieSleepTime * time.Second)
+			time.Sleep(common_code.ServieSleepTime * time.Second)
 
 			// Check it is possible to dial parent gateway/Fenix or child gatway/plugin
 			addressToDial, dialSuccess, gRpcClientTowardsFenix, gRpcClientTowardPlugin, remoteServerConnection = dialChildOrParenGateway(addressToDial, dialSuccess, gRpcClientTowardsFenix, gRpcClientTowardPlugin, remoteServerConnection, transmitOrDispatchEngineType, pluginId)
@@ -122,12 +123,12 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 			// Check for ONE message, in DB, to Resend (If so then put IT on channel)
 			objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(true, channelType, transmitOrDispatchEngineType)
 			if objectsWherPutOnChannel == true {
-				logger.WithFields(logrus.Fields{
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":                      "84821702-66f1-48bc-a8cd-eee8951fb880",
 					"objectsWherPutOnChannel": objectsWherPutOnChannel,
 				}).Debug("DB checked for one saved objects and there was one object saved in DB that were put on channel again")
 			} else {
-				logger.WithFields(logrus.Fields{
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":                      "74168c9d-42b2-4050-a9da-c5ff58910302",
 					"objectsWherPutOnChannel": objectsWherPutOnChannel,
 				}).Debug("DB checked for saved one object and there were NO objects saved in DB")
@@ -143,11 +144,11 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 			switch transmitOrDispatchEngineType {
 
 			// Choose DispatchEngine
-			case dispatchEngineTowardsPlugin:
+			case common_code.DispatchEngineTowardsPlugin:
 				//  Decide the correct DispatchEngine to use
 				switch channelType {
-				case channelTypeTestInstructionMessageTowardsPlugin:
-					testInstructionMessageToBeForwardedTowardsPlugin = <-testInstructionMessageChannelTowardsPlugin
+				case common_code.ChannelTypeTestInstructionMessageTowardsPlugin:
+					testInstructionMessageToBeForwardedTowardsPlugin = <-common_code.testInstructionMessageChannelTowardsPlugin
 					messageToBeForwardedByteArray, err = json.Marshal(*testInstructionMessageToBeForwardedTowardsPlugin)
 					// If error when marshaling then use the following information
 					id = "22318eb6-5d57-4183-8238-0bc40e16ff7f"
@@ -157,16 +158,16 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "testInstructionMessageToBeForwardedTowardsPlugin"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					testInstructionMessageToBeForwardedTowardsPlugin.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					testInstructionMessageToBeForwardedTowardsPlugin.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					testInstructionMessageToBeForwardedTowardsPlugin.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					testInstructionMessageToBeForwardedTowardsPlugin.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = testInstructionMessageToBeForwardedTowardsPlugin.MessageId
-					bucket = BucketForResendTestInstructionTowardsPlugin
-					NumberOfMessagesInChannel = len(testInstructionMessageChannelTowardsPlugin)
+					bucket = common_code.BucketForResendTestInstructionTowardsPlugin
+					NumberOfMessagesInChannel = len(common_code.testInstructionMessageChannelTowardsPlugin)
 
-				case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
-					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin = <-supportedTestDataDomainsRequestChannelTowardsPlugin
+				case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin = <-common_code.supportedTestDataDomainsRequestChannelTowardsPlugin
 					messageToBeForwardedByteArray, err = json.Marshal(*testInstructionMessageToBeForwardedTowardsPlugin)
 					// If error when marshaling then use the following information
 					id = "5f0cc657-97fb-49d0-9c10-e63f6a527676"
@@ -176,13 +177,13 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.MessageId
-					bucket = BucketForResendOfGetTestdataDomainsToPlugin
-					NumberOfMessagesInChannel = len(supportedTestDataDomainsRequestChannelTowardsPlugin)
+					bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
+					NumberOfMessagesInChannel = len(common_code.supportedTestDataDomainsRequestChannelTowardsPlugin)
 
 				default:
 					LogErrorAndSendInfoToFenix(
@@ -196,11 +197,11 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 				}
 
 				// Choose TransmitEngine
-			case transmitEngineTowardsFenix:
+			case common_code.TransmitEngineTowardsFenix:
 				//  Deside the correct TransmitEngine to use
 				switch channelType {
-				case channelTypeInformationMessageTowardsFenix:
-					informationMessageToBeForwardedTowardsFenix = <-informationMessageChannelTowardsFenix
+				case common_code.ChannelTypeInformationMessageTowardsFenix:
+					informationMessageToBeForwardedTowardsFenix = <-common_code.informationMessageChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*informationMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "6798902d-36b9-4598-a125-4be3abd4a23b"
@@ -210,16 +211,16 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "informationMessageToBeForwardedTowardsFenix"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					informationMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					informationMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					informationMessageToBeForwardedTowardsFenix.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					informationMessageToBeForwardedTowardsFenix.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = informationMessageToBeForwardedTowardsFenix.MessageId
-					bucket = BucketForResendOfInfoMessagesTowardsFenix
-					NumberOfMessagesInChannel = len(informationMessageChannelTowardsFenix)
+					bucket = common_code.BucketForResendOfInfoMessagesTowardsFenix
+					NumberOfMessagesInChannel = len(common_code.informationMessageChannelTowardsFenix)
 
-				case channelTypeTestInstructionTimeOutMessageTowardsFenix:
-					timeOutMessageToBeForwardedTowardsFenix = <-testInstructionTimeOutMessageChannelTowardsFenix
+				case common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix:
+					timeOutMessageToBeForwardedTowardsFenix = <-common_code.testInstructionTimeOutMessageChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*timeOutMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "e80978f1-2f2c-43f7-bd4b-218e852f2f72"
@@ -229,16 +230,16 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "timeOutMessageToBeForwardedTowardsFenix"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					timeOutMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					timeOutMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					timeOutMessageToBeForwardedTowardsFenix.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					timeOutMessageToBeForwardedTowardsFenix.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = timeOutMessageToBeForwardedTowardsFenix.MessageId
-					bucket = BucketForResendOTimeOutMesagesTowardsFenix
-					NumberOfMessagesInChannel = len(testInstructionTimeOutMessageChannelTowardsFenix)
+					bucket = common_code.BucketForResendOTimeOutMesagesTowardsFenix
+					NumberOfMessagesInChannel = len(common_code.testInstructionTimeOutMessageChannelTowardsFenix)
 
-				case channelTypeTestExecutionLogMessageTowardsFenix:
-					testExecutionLogMessageToBeForwardedTowardsFenix = <-testExecutionLogMessageChannelTowardsFenix
+				case common_code.ChannelTypeTestExecutionLogMessageTowardsFenix:
+					testExecutionLogMessageToBeForwardedTowardsFenix = <-common_code.testExecutionLogMessageChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*testExecutionLogMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "3f8b01b6-da9b-4cee-b787-6a0e9efe9fed"
@@ -248,16 +249,16 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "testExecutionLogMessageToBeForwardedTowardsFenix"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					testExecutionLogMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					testExecutionLogMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					testExecutionLogMessageToBeForwardedTowardsFenix.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					testExecutionLogMessageToBeForwardedTowardsFenix.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = testExecutionLogMessageToBeForwardedTowardsFenix.LogMessageId
-					bucket = BucketForResendOfLogMesagesTowardsFenix
-					NumberOfMessagesInChannel = len(testExecutionLogMessageChannelTowardsFenix)
+					bucket = common_code.BucketForResendOfLogMesagesTowardsFenix
+					NumberOfMessagesInChannel = len(common_code.testExecutionLogMessageChannelTowardsFenix)
 
-				case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
-					spportedTestDataDomainsMessageToBeForwardedTowardsFenix = <-supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix
+				case common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix:
+					spportedTestDataDomainsMessageToBeForwardedTowardsFenix = <-common_code.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "d3a33be3-6cf8-459d-bda2-ff64c53d249a"
@@ -267,16 +268,16 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "spportedTestDataDomainsMessageToBeForwardedTowardsFenix"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					spportedTestDataDomainsMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					spportedTestDataDomainsMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					spportedTestDataDomainsMessageToBeForwardedTowardsFenix.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					spportedTestDataDomainsMessageToBeForwardedTowardsFenix.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = spportedTestDataDomainsMessageToBeForwardedTowardsFenix.MessageId
-					bucket = BucketForResendOfSupportedTestDataDomainsTowardsFenix
-					NumberOfMessagesInChannel = len(supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix)
+					bucket = common_code.BucketForResendOfSupportedTestDataDomainsTowardsFenix
+					NumberOfMessagesInChannel = len(common_code.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix)
 
-				case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
-					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix = <-availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix
+				case common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix = <-common_code.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "6524a739-e628-4265-a6cb-d64597a20c3e"
@@ -286,16 +287,16 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.MessageId
-					bucket = BucketForResendOfAvailableTestInstructionsTowardsFenix
-					NumberOfMessagesInChannel = len(availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix)
+					bucket = common_code.BucketForResendOfAvailableTestInstructionsTowardsFenix
+					NumberOfMessagesInChannel = len(common_code.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix)
 
-				case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
-					availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix = <-availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix
+				case common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+					availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix = <-common_code.availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "14b2aa63-7e69-4e80-9d6b-796c286997c9"
@@ -305,11 +306,11 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix"
 
 					messageId = availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix.MessageId
-					bucket = BucketForResendOfAvailableTestContainersTowardsFenix
-					NumberOfMessagesInChannel = len(availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix)
+					bucket = common_code.BucketForResendOfAvailableTestContainersTowardsFenix
+					NumberOfMessagesInChannel = len(common_code.availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix)
 
-				case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
-					testInstructionExecutionResultMessageToBeForwardedTowardsFenix = <-testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix
+				case common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix:
+					testInstructionExecutionResultMessageToBeForwardedTowardsFenix = <-common_code.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "72d128f7-e84c-408a-87a9-e0c8b84c6841"
@@ -319,16 +320,16 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "testInstructionExecutionResultMessageToBeForwardedTowardsFenix"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					testInstructionExecutionResultMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					testInstructionExecutionResultMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					testInstructionExecutionResultMessageToBeForwardedTowardsFenix.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					testInstructionExecutionResultMessageToBeForwardedTowardsFenix.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = testInstructionExecutionResultMessageToBeForwardedTowardsFenix.MessageId
-					bucket = BucketForResendOfTestInstructionExecutionResultTowardsFenix
-					NumberOfMessagesInChannel = len(testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix)
+					bucket = common_code.BucketForResendOfTestInstructionExecutionResultTowardsFenix
+					NumberOfMessagesInChannel = len(common_code.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix)
 
-				case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
-					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix = <-supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix
+				case common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix = <-common_code.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "89df74d0-8ba7-47df-bddc-5864a9b376f1"
@@ -338,13 +339,13 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					message = "supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix"
 
 					// ChangeSenderId to this gatway's SenderId before sending the data forward
-					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.SenderId = gatewayConfig.GatewayIdentification.GatewayId
-					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.SenderName = gatewayConfig.GatewayIdentification.GatewayName
+					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.SenderId = common_code.gatewayConfig.GatewayIdentification.GatewayId
+					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.SenderName = common_code.gatewayConfig.GatewayIdentification.GatewayName
 
 					// Information used when saving message to local database
 					messageId = supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.MessageId
-					bucket = BucketForResendOfGetTestdataDomainsToPlugin
-					NumberOfMessagesInChannel = len(supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix)
+					bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
+					NumberOfMessagesInChannel = len(common_code.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix)
 
 				default:
 					LogErrorAndSendInfoToFenix(
@@ -383,7 +384,7 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 
 			} else {
 				// Converting into byteArray succeeded
-				logger.WithFields(logrus.Fields{
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":                   "1eb79d7e-9a44-4315-bbd4-9e008b0c55fc",
 					"messageTOBeForwarded": infoHeader,
 				}).Debug("Received a new message to be forwarded")
@@ -395,133 +396,172 @@ func transmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 
 				//TODO kopier **switch transmitOrDispatchEngineType {** to första Switchen
 
-				// Do the gRPC-call to parent gateway/Fenix or child gatway/plugin
-				// Decide if it's TransmitEngine or a DispatchEngine
-				switch transmitOrDispatchEngineType {
+				// Decide if "we" are Fenix, then save message to SQL-DB otherwise send message forward to parent/child
+				switch fenixOrGatewayType {
 
-				// Choose DispatchEngine
-				case dispatchEngineTowardsPlugin:
-					//  Decide the correct DispatchEngine to use
-					switch channelType {
-					case channelTypeTestInstructionMessageTowardsPlugin:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardPlugin.SendTestInstructionTowardsPlugin(gRpcContexType, testInstructionMessageToBeForwardedTowardsPlugin)
-						returnMessageString = returnMessageAckNackResponse.String()
+				case common_code.FenixEngine:
+					// Save incoming mesage to SQL-DB and trigger Fenix by calling the function that was sent when initializing
+					fenixFunctionToCall()
 
-					case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardPlugin.GetSupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin)
-						returnMessageString = returnMessageAckNackResponse.String()
+				case common_code.GatewayEngine:
+					// Do the gRPC-call to parent gateway/Fenix or child gatway/plugin
+					// Decide if it's TransmitEngine or a DispatchEngine
+					switch transmitOrDispatchEngineType {
+
+					// Choose DispatchEngine
+					case common_code.DispatchEngineTowardsPlugin:
+						//  Decide the correct DispatchEngine to use
+						switch channelType {
+						case common_code.ChannelTypeTestInstructionMessageTowardsPlugin:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardPlugin.SendTestInstructionTowardsPlugin(gRpcContexType, testInstructionMessageToBeForwardedTowardsPlugin)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardPlugin.GetSupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						default:
+							LogErrorAndSendInfoToFenix(
+								"03a585ed-3bc9-46a8-b1b9-55426c4ecc84",
+								gRPC.InformationMessage_FATAL,
+								"No know 'channelType'",
+								channelType,
+								err.Error(),
+								"No know 'channelType' in DispatchEngine",
+							)
+						}
+
+						// Choose TransmitEngine
+					case common_code.TransmitEngineTowardsFenix:
+						//  Deside the correct TransmitEngine to use
+						switch channelType {
+						case common_code.ChannelTypeInformationMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.SendTestInstructionTimeOutTowardsFenix(gRpcContexType, timeOutMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeTestExecutionLogMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.SendTestExecutionLogTowardsFenix(gRpcContexType, testExecutionLogMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.RegistrateAvailableTestDataDomains(gRpcContexType, spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.RegisterAvailbleTestInstructions(gRpcContexType, availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.RegistrateAailableTestContainers(gRpcContexType, availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.SendTestInstructionResultTowardsFenix(gRpcContexType, testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						case common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+							returnMessageAckNackResponse, gRPCerr = gRpcClientTowardsFenix.SupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
+							returnMessageString = returnMessageAckNackResponse.String()
+
+						default:
+							LogErrorAndSendInfoToFenix(
+								"d38c0522-77a6-4f90-b98e-02a4d37f3114",
+								gRPC.InformationMessage_FATAL,
+								"No know 'channelType'",
+								channelType,
+								err.Error(),
+								"No know 'channelType' in TransmitEngine",
+							)
+						}
 
 					default:
+						// No known 'transmitOrDispatchEngineType'
 						LogErrorAndSendInfoToFenix(
-							"03a585ed-3bc9-46a8-b1b9-55426c4ecc84",
+							"2c976770-ef52-4bd1-8a52-aaf1f64ebc69",
 							gRPC.InformationMessage_FATAL,
-							"No know 'channelType'",
-							channelType,
-							err.Error(),
-							"No know 'channelType' in DispatchEngine",
-						)
-					}
-
-					// Choose TransmitEngine
-				case transmitEngineTowardsFenix:
-					//  Deside the correct TransmitEngine to use
-					switch channelType {
-					case channelTypeInformationMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendMessageToFenix(gRpcContexType, informationMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					case channelTypeTestInstructionTimeOutMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestInstructionTimeOutTowardsFenix(gRpcContexType, timeOutMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					case channelTypeTestExecutionLogMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestExecutionLogTowardsFenix(gRpcContexType, testExecutionLogMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegistrateAvailableTestDataDomains(gRpcContexType, spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegisterAvailbleTestInstructions(gRpcContexType, availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.RegistrateAailableTestContainers(gRpcContexType, availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SendTestInstructionResultTowardsFenix(gRpcContexType, testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
-						returnMessageAckNackResponse, gRRCerr = gRpcClientTowardsFenix.SupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
-						returnMessageString = returnMessageAckNackResponse.String()
-
-					default:
-						LogErrorAndSendInfoToFenix(
-							"d38c0522-77a6-4f90-b98e-02a4d37f3114",
-							gRPC.InformationMessage_FATAL,
-							"No know 'channelType'",
-							channelType,
-							err.Error(),
-							"No know 'channelType' in TransmitEngine",
+							"No know 'transmitOrDispatchEngineType'",
+							transmitOrDispatchEngineType,
+							"No known 'transmitOrDispatchEngineType when dialing to child/parent",
+							"No known 'transmitOrDispatchEngineType when dialing to child/parent",
 						)
 					}
 
 				default:
-					// No known 'transmitOrDispatchEngineType'
 					LogErrorAndSendInfoToFenix(
-						"2c976770-ef52-4bd1-8a52-aaf1f64ebc69",
+						"721a5122-192d-492f-9882-ab40157b651d",
 						gRPC.InformationMessage_FATAL,
-						"No know 'transmitOrDispatchEngineType'",
-						transmitOrDispatchEngineType,
-						"No known 'transmitOrDispatchEngineType when dialing to child/parent",
-						"No known 'transmitOrDispatchEngineType when dialing to child/parent",
+						"No know 'fenixOrGatewayType'",
+						fenixOrGatewayType,
+						err.Error(),
+						"No know 'fenixOrGatewayType' in TransmitEngine/Fenix",
 					)
 				}
 
-				if gRRCerr != nil {
-					// Error when sending gRPC to parent gatewayFenix or child gatway/plugin
-					dialSuccess = false
+				switch fenixOrGatewayType {
+				// Are "we" at Fenix or at a gateway
+				case common_code.FenixEngine:
+					// At Fenix
+					// Do nothing
 
-					LogErrorAndSendInfoToFenix(
-						"e642a035-fd95-45aa-b625-4dcedd65c3a5",
-						gRPC.InformationMessage_WARNING,
-						"returnMessage",
-						returnMessageString,
-						err.Error(),
-						"Problem to send message from '"+channelType+"' to parent Gateway/Fenix or or child Gatway/Plugin",
-					)
+				case common_code.GatewayEngine:
+					// At Gateway
 
-					// Save message to local DB for later processing
-					_ = SaveMessageToLocalDB(
-						messageId,
-						messageToBeForwardedByteArray,
-						bucket,
-						"05d6219e-0ab8-40e8-b671-0bea0ea24978",
-					)
+					if gRPCerr != nil {
+						// Error when sending gRPC to parent gatewayFenix or child gatway/plugin
+						dialSuccess = false
 
-				} else {
-					// gRPC Send message OK
-					logger.WithFields(logrus.Fields{
-						"ID":            "9c3204ea-7f1b-4a34-ae5e-e11d45b1c17f",
-						"addressToDial": addressToDial,
-					}).Debug("gRPC-send OK for '" + infoHeader + "' to Parent-Gateway or Fenix")
+						LogErrorAndSendInfoToFenix(
+							"e642a035-fd95-45aa-b625-4dcedd65c3a5",
+							gRPC.InformationMessage_WARNING,
+							"returnMessage",
+							returnMessageString,
+							err.Error(),
+							"Problem to send message from '"+channelType+"' to parent Gateway/Fenix or or child Gatway/Plugin",
+						)
 
-					// Check for All messages, in DB, to Resend (If so then put THEM ALL on channel)
-					objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(false, channelType, transmitOrDispatchEngineType)
-					if objectsWherPutOnChannel == true {
-						logger.WithFields(logrus.Fields{
-							"ID":                      "b9dbbd63-b6ac-45de-b92e-09d3b049822c",
-							"objectsWherPutOnChannel": objectsWherPutOnChannel,
-						}).Debug("DB checked for all saved objects and there were objects saved in DB that were put on channel again")
+						// Save message to local DB for later processing
+						_ = SaveMessageToLocalDB(
+							messageId,
+							messageToBeForwardedByteArray,
+							bucket,
+							"05d6219e-0ab8-40e8-b671-0bea0ea24978",
+						)
+
 					} else {
-						logger.WithFields(logrus.Fields{
-							"ID":                      "dd93ce5f-e5f2-4b91-b54d-f720a7b6a437",
-							"objectsWherPutOnChannel": objectsWherPutOnChannel,
-						}).Debug("DB checked for saved ALL objects and there were NO objects saved in DB")
+						// gRPC Send message OK
+						common_code.logger.WithFields(logrus.Fields{
+							"ID":            "9c3204ea-7f1b-4a34-ae5e-e11d45b1c17f",
+							"addressToDial": addressToDial,
+						}).Debug("gRPC-send OK for '" + infoHeader + "' to Parent-Gateway or Fenix")
+
+						// Check for All messages, in DB, to Resend (If so then put THEM ALL on channel)
+						objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(false, channelType, transmitOrDispatchEngineType)
+						if objectsWherPutOnChannel == true {
+							common_code.logger.WithFields(logrus.Fields{
+								"ID":                      "b9dbbd63-b6ac-45de-b92e-09d3b049822c",
+								"objectsWherPutOnChannel": objectsWherPutOnChannel,
+							}).Debug("DB checked for all saved objects and there were objects saved in DB that were put on channel again")
+						} else {
+							common_code.logger.WithFields(logrus.Fields{
+								"ID":                      "dd93ce5f-e5f2-4b91-b54d-f720a7b6a437",
+								"objectsWherPutOnChannel": objectsWherPutOnChannel,
+							}).Debug("DB checked for saved ALL objects and there were NO objects saved in DB")
+						}
 					}
+
+				default:
+					LogErrorAndSendInfoToFenix(
+						"af30d945-42c1-4fdf-868f-d8a7d857399b",
+						gRPC.InformationMessage_FATAL,
+						"No know 'fenixOrGatewayType'",
+						fenixOrGatewayType,
+						err.Error(),
+						"No know 'fenixOrGatewayType' in TransmitEngine/Fenix",
+					)
 				}
 			}
 		}
@@ -537,11 +577,11 @@ func dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientT
 
 	// Get address to parent or child depending if we are running a TransmitEngine or a DispatchEngine
 	switch transmitOrDispatchEngineType {
-	case dispatchEngineTowardsPlugin:
+	case common_code.DispatchEngineTowardsPlugin:
 		// Get address to next child gateway/plugin
 		addressToDial = getClientAddressAndPort(pluginId)
 
-	case transmitEngineTowardsFenix:
+	case common_code.TransmitEngineTowardsFenix:
 		// Get adress to parent gateway/Fenix
 		addressToDial = getParentAddressAndPort()
 
@@ -577,11 +617,11 @@ func dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientT
 
 		// Creates a new gateway gRPC-Client
 		switch transmitOrDispatchEngineType {
-		case dispatchEngineTowardsPlugin:
+		case common_code.DispatchEngineTowardsPlugin:
 			// Creates a new gateway gRPC-Client towards Plugin
 			gRpcClientTowardPlugin = gRPC.NewGatewayTowayPluginClient(remoteServerConnection)
 
-		case transmitEngineTowardsFenix:
+		case common_code.TransmitEngineTowardsFenix:
 			// Creates a new gateway gRPC-Client towards Fenix
 			gRpcClientTowardsFenix = gRPC.NewGatewayTowardsFenixClient(remoteServerConnection)
 
@@ -664,16 +704,16 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 	switch transmitOrDispatchEngineType {
 
 	// Choose DispatchEngine
-	case dispatchEngineTowardsPlugin:
+	case common_code.DispatchEngineTowardsPlugin:
 		//  Decide the correct DispatchEngine to use
 		switch channelType {
-		case channelTypeTestInstructionMessageTowardsPlugin:
+		case common_code.ChannelTypeTestInstructionMessageTowardsPlugin:
 			id = "d7151e7e-362e-44e8-a27e-fd8dc969e6f9"
-			bucket = BucketForResendTestInstructionTowardsPlugin
+			bucket = common_code.BucketForResendTestInstructionTowardsPlugin
 
-		case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+		case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
 			id = "1fb35cdf-4689-4372-92d3-937f0420a0ae"
-			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+			bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
 
 		default:
 			LogErrorAndSendInfoToFenix(
@@ -687,40 +727,40 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 		}
 
 		// Choose TransmitEngine
-	case transmitEngineTowardsFenix:
+	case common_code.TransmitEngineTowardsFenix:
 		//  Deside the correct TransmitEngine to use
 		switch channelType {
-		case channelTypeInformationMessageTowardsFenix:
+		case common_code.ChannelTypeInformationMessageTowardsFenix:
 			id = "63f924bf-b73f-4065-987d-821acb08bae4"
-			bucket = BucketForResendOfInfoMessagesTowardsFenix
+			bucket = common_code.BucketForResendOfInfoMessagesTowardsFenix
 
-		case channelTypeTestInstructionTimeOutMessageTowardsFenix:
+		case common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix:
 			id = "f9337ae2-ec8b-494c-ad2d-ded4f1e67c15"
-			bucket = BucketForResendOTimeOutMesagesTowardsFenix
+			bucket = common_code.BucketForResendOTimeOutMesagesTowardsFenix
 
-		case channelTypeTestExecutionLogMessageTowardsFenix:
+		case common_code.ChannelTypeTestExecutionLogMessageTowardsFenix:
 			id = "f4bc8914-e31b-4a52-91fe-bb1ab20a89e5"
-			bucket = BucketForResendOfLogMesagesTowardsFenix
+			bucket = common_code.BucketForResendOfLogMesagesTowardsFenix
 
-		case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
+		case common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix:
 			id = "dfde3eec-639a-4962-80d9-e660b40bd2d2"
-			bucket = BucketForResendOfSupportedTestDataDomainsTowardsFenix
+			bucket = common_code.BucketForResendOfSupportedTestDataDomainsTowardsFenix
 
-		case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+		case common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
 			id = "70fba10a-aefd-4c7f-bb2d-e1fd4452f976"
-			bucket = BucketForResendOfAvailableTestInstructionsTowardsFenix
+			bucket = common_code.BucketForResendOfAvailableTestInstructionsTowardsFenix
 
-		case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+		case common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
 			id = "8e2ce6e9-13bc-4ea4-b51b-58d29cf54735"
-			bucket = BucketForResendOfAvailableTestContainersTowardsFenix
+			bucket = common_code.BucketForResendOfAvailableTestContainersTowardsFenix
 
-		case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
+		case common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix:
 			id = "89badf8e-8c5e-47a3-9aa0-9dc4cdaf257a"
-			bucket = BucketForResendOfTestInstructionExecutionResultTowardsFenix
+			bucket = common_code.BucketForResendOfTestInstructionExecutionResultTowardsFenix
 
-		case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+		case common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
 			id = "4ae89ab0-edad-4d7b-a97e-1dd20a3743ff"
-			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+			bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
 
 		default:
 			LogErrorAndSendInfoToFenix(
@@ -746,18 +786,18 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 	}
 
 	// Create the channel that the database object should be sent back on
-	returnChannel := make(chan dbResultMessageStruct)
+	returnChannel := make(chan common_code.dbResultMessageStruct)
 
 	// Get first found object in bucket
-	dbMessage := dbMessageStruct{
-		DBGetFirstObjectFromBucket,
+	dbMessage := common_code.dbMessageStruct{
+		common_code.DBGetFirstObjectFromBucket,
 		bucket,
 		nil,
 		nil,
 		returnChannel}
 
 	// Send Read message to database to receive object
-	dbMessageQueue <- dbMessage
+	common_code.dbMessageQueue <- dbMessage
 	// Wait for object from channel, then close the channel
 	databaseReturnMessage := <-returnChannel
 	close(returnChannel)
@@ -765,7 +805,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 	// Check if an error occured
 	if databaseReturnMessage.err != nil {
 		// No object found
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":     "b6cda913-364c-4296-b3c4-07b89de1a134",
 			"Bucket": bucket,
 		}).Debug("No object found when reading bucket")
@@ -779,10 +819,10 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 	switch transmitOrDispatchEngineType {
 
 	// Choose DispatchEngine
-	case dispatchEngineTowardsPlugin:
+	case common_code.DispatchEngineTowardsPlugin:
 		//  Decide the correct DispatchEngine to use
 		switch channelType {
-		case channelTypeTestInstructionMessageTowardsPlugin:
+		case common_code.ChannelTypeTestInstructionMessageTowardsPlugin:
 			id = "abb58bad-ee31-4137-b686-1b0654428f5b"
 
 			// Convert saved json object into Go-struct
@@ -802,14 +842,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			testInstructionMessageChannelTowardsPlugin <- testInstructionMessageToBeForwardedTowardsPlugin
+			common_code.testInstructionMessageChannelTowardsPlugin <- testInstructionMessageToBeForwardedTowardsPlugin
 
 			// Delete saved message from DB
 			id = "3937cf9b-b2ed-4fd8-bfe8-e67d67ea8a6e"
-			bucket = BucketForResendTestInstructionTowardsPlugin
+			bucket = common_code.BucketForResendTestInstructionTowardsPlugin
 			key = testInstructionMessageToBeForwardedTowardsPlugin.MessageId
 
-		case channelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+		case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
 			id = "63829f26-75aa-40a1-942f-550e97bf1731"
 
 			// Convert saved json object into Go-struct
@@ -829,11 +869,11 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			supportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin
+			common_code.supportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin
 
 			// Delete saved message from DB
 			id = "7577bdbb-e8ca-431f-be51-b2a8563a2ddf"
-			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+			bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
 			key = supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.MessageId
 
 		default:
@@ -848,10 +888,10 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 		}
 
 		// Choose TransmitEngine
-	case transmitEngineTowardsFenix:
+	case common_code.TransmitEngineTowardsFenix:
 		//  Deside the correct TransmitEngine to use
 		switch channelType {
-		case channelTypeInformationMessageTowardsFenix:
+		case common_code.ChannelTypeInformationMessageTowardsFenix:
 			id = "bc704210-b491-4f71-8bc4-2f231ad6d27d"
 
 			// Convert saved json object into Go-struct
@@ -871,14 +911,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			informationMessageChannelTowardsFenix <- informationMessageToBeForwardedTowardsFenix
+			common_code.informationMessageChannelTowardsFenix <- informationMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "f9f427f4-172f-4211-af4f-94f6168da900"
-			bucket = BucketForResendOfInfoMessagesTowardsFenix
+			bucket = common_code.BucketForResendOfInfoMessagesTowardsFenix
 			key = informationMessageToBeForwardedTowardsFenix.MessageId
 
-		case channelTypeTestInstructionTimeOutMessageTowardsFenix:
+		case common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix:
 			id = "09af5d8a-211e-491e-80e2-31ecd5d21040"
 
 			// Convert saved json object into Go-struct
@@ -898,14 +938,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			testInstructionTimeOutMessageChannelTowardsFenix <- timeOutMessageToBeForwardedTowardsFenix
+			common_code.testInstructionTimeOutMessageChannelTowardsFenix <- timeOutMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "40275a25-d96c-42ae-9b62-aa5e129fa134"
-			bucket = BucketForResendOTimeOutMesagesTowardsFenix
+			bucket = common_code.BucketForResendOTimeOutMesagesTowardsFenix
 			key = timeOutMessageToBeForwardedTowardsFenix.MessageId
 
-		case channelTypeTestExecutionLogMessageTowardsFenix:
+		case common_code.ChannelTypeTestExecutionLogMessageTowardsFenix:
 			id = "ddef7843-5671-49e6-83a5-66d7501dea0c"
 
 			// Convert saved json object into Go-struct
@@ -925,14 +965,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			testExecutionLogMessageChannelTowardsFenix <- testExecutionLogMessageToBeForwardedTowardsFenix
+			common_code.testExecutionLogMessageChannelTowardsFenix <- testExecutionLogMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "79f3650c-1c2c-4b94-b972-7076b90f2a16"
-			bucket = BucketForResendOfLogMesagesTowardsFenix
+			bucket = common_code.BucketForResendOfLogMesagesTowardsFenix
 			key = testExecutionLogMessageToBeForwardedTowardsFenix.LogMessageId
 
-		case channelTypeSupportedTestDataDomainsMessageTowardsFenix:
+		case common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix:
 			id = "e7555770-551e-4bf3-9336-2b93bcd9ef46"
 
 			// Convert saved json object into Go-struct
@@ -952,14 +992,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix <- spportedTestDataDomainsMessageToBeForwardedTowardsFenix
+			common_code.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix <- spportedTestDataDomainsMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "3c5fa6a6-8748-4549-826c-ee8cb65ed811"
-			bucket = BucketForResendOfSupportedTestDataDomainsTowardsFenix
+			bucket = common_code.BucketForResendOfSupportedTestDataDomainsTowardsFenix
 			key = spportedTestDataDomainsMessageToBeForwardedTowardsFenix.MessageId
 
-		case channelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+		case common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
 			id = "c1c0b462-2d3a-4b79-8bd2-0be3a7d22818"
 
 			// Convert saved json object into Go-struct
@@ -979,14 +1019,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix
+			common_code.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "2f9683b1-ff0a-49a3-9d8d-fc592ac7895c"
-			bucket = BucketForResendOfAvailableTestInstructionsTowardsFenix
+			bucket = common_code.BucketForResendOfAvailableTestInstructionsTowardsFenix
 			key = availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.MessageId
 
-		case channelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+		case common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
 			id = "fe55e3b5-3888-4be4-aec8-da4fb5344f30"
 
 			// Convert saved json object into Go-struct
@@ -1006,14 +1046,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix
+			common_code.availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "29925a0d-8c35-4f5c-b413-045ecff1a758"
-			bucket = BucketForResendOfAvailableTestContainersTowardsFenix
+			bucket = common_code.BucketForResendOfAvailableTestContainersTowardsFenix
 			key = availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix.MessageId
 
-		case channelTypeTestInstructionExecutionResultMessageTowardsFenix:
+		case common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix:
 			id = "8097651f-aeb7-4e4d-b54c-e3c3fdd0357a"
 
 			// Convert saved json object into Go-struct
@@ -1033,14 +1073,14 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix <- testInstructionExecutionResultMessageToBeForwardedTowardsFenix
+			common_code.testInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix <- testInstructionExecutionResultMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "c20a05e6-e985-446e-95f4-65081eb07829"
-			bucket = BucketForResendOfTestInstructionExecutionResultTowardsFenix
+			bucket = common_code.BucketForResendOfTestInstructionExecutionResultTowardsFenix
 			key = testInstructionExecutionResultMessageToBeForwardedTowardsFenix.MessageId
 
-		case channelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
+		case common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
 			id = "797e8dd6-931f-4cad-a956-7aa4871ad5f4"
 
 			// Convert saved json object into Go-struct
@@ -1060,11 +1100,11 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 			}
 
 			// Put message on channel
-			supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix <- supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix
+			common_code.supportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix <- supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix
 
 			// Delete saved message from DB
 			id = "77063b14-ade2-4e10-b8c3-a38918db5ef6"
-			bucket = BucketForResendOfGetTestdataDomainsToPlugin
+			bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
 			key = supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.MessageId
 
 		default:
@@ -1094,18 +1134,18 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 
 	// Delete message from Database
 	// Create the channel that the database object should be sent back on
-	returnChannel = make(chan dbResultMessageStruct)
+	returnChannel = make(chan common_code.dbResultMessageStruct)
 
 	// Get first found object in bucket
-	dbMessage = dbMessageStruct{
-		DBDelete,
+	dbMessage = common_code.dbMessageStruct{
+		common_code.DBDelete,
 		bucket,
 		key,
 		nil,
 		returnChannel}
 
 	// Send Read message to database to receive object
-	dbMessageQueue <- dbMessage
+	common_code.dbMessageQueue <- dbMessage
 	// Wait for object from channel, then close the channel
 	databaseReturnMessage = <-returnChannel
 	close(returnChannel)
@@ -1113,7 +1153,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 	// Check if an error occured
 	if databaseReturnMessage.err != nil {
 		// No object found
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":     "b6cda913-364c-4296-b3c4-07b89de1a134",
 			"Bucket": bucket,
 		}).Debug("No object found when reading bucket")

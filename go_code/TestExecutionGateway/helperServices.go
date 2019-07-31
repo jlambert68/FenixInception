@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	gRPC "jlambert/FenixInception2/go_code/TestExecutionGateway/Gateway_gRPC_api"
+	"jlambert/FenixInception2/go_code/common_code"
 	"net"
 	"strconv"
 	"time"
@@ -20,7 +21,7 @@ func generateUUID() string {
 	newUuidString = newUuid.String()
 
 	if err != nil {
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":            "d67c6284-2629-43c3-9a1c-6cff2dc403fa",
 			"error message": err,
 		}).Fatal("Couldn't generate a new UUID, stopping execution of Gateway")
@@ -51,14 +52,14 @@ func generaTimeStampDateDateTime() string {
 //
 func getClientAddressAndPort(pluginId string) (addressAndPort string) {
 	// Get Client-info object from Clients-memory-object
-	clientsAddressAndPortInfo, keyExists := clientsAddressAndPort[pluginId]
+	clientsAddressAndPortInfo, keyExists := common_code.clientsAddressAndPort[pluginId]
 
 	if keyExists == true {
 		addressAndPort = clientsAddressAndPortInfo.clientAddress + strconv.FormatInt(int64(clientsAddressAndPortInfo.clientPort), 10)
 
 	} else {
 		// Key not found, send message to Fenix about Error
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":       "80a08767-b706-4e6f-bcee-b1b19202d165",
 			"pluginId": pluginId,
 		}).Fatal("Couldn't not find address-data about Plugin, stopping execution of Gateway")
@@ -73,7 +74,7 @@ func getClientAddressAndPort(pluginId string) (addressAndPort string) {
 //
 func getParentAddressAndPort() (addressAndPort string) {
 	// Get Parent-info object from Clients-memory-object
-	ParentAddressAndPortInfo := gatewayConfig.ParentgRPCAddress
+	ParentAddressAndPortInfo := common_code.gatewayConfig.ParentgRPCAddress
 
 	addressAndPort = ParentAddressAndPortInfo.ParentGatewayServerAddress + ":" + strconv.FormatInt(int64(ParentAddressAndPortInfo.ParentGatewayServerPort), 10)
 
@@ -90,18 +91,18 @@ func updateMemoryAddressForParentAddressInfo() {
 	var err error
 
 	// Create the channel that the client address should be sent back on
-	returnParentAddressChannel := make(chan dbResultMessageStruct)
+	returnParentAddressChannel := make(chan common_code.dbResultMessageStruct)
 
 	// Get Clients address
-	dbMessage := dbMessageStruct{
-		DbRead,
-		BucketForParentAddress,
-		BucketKeyForParentAddress,
+	dbMessage := common_code.dbMessageStruct{
+		common_code.DbRead,
+		common_code.BucketForParentAddress,
+		common_code.BucketKeyForParentAddress,
 		nil,
 		returnParentAddressChannel}
 
 	// Send Read message to database to receive address
-	dbMessageQueue <- dbMessage
+	common_code.dbMessageQueue <- dbMessage
 	// Wait for address from channel, then close the channel
 	databaseReturnMessage := <-returnParentAddressChannel
 	close(returnParentAddressChannel)
@@ -109,7 +110,7 @@ func updateMemoryAddressForParentAddressInfo() {
 	// Check if an error occured
 	if databaseReturnMessage.err != nil {
 		// Error when reading database
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                         "1a2ce5e8-c872-4fbb-aeb4-df6828f372d3",
 			"databaseReturnMessage.err,": databaseReturnMessage.err,
 			"databaseReturnMessage.key":  databaseReturnMessage.key,
@@ -120,77 +121,77 @@ func updateMemoryAddressForParentAddressInfo() {
 		err = json.Unmarshal(databaseReturnMessage.value, &parentAddress)
 		if err != nil {
 			// Problem with unmarshal the json object
-			logger.WithFields(logrus.Fields{
+			common_code.logger.WithFields(logrus.Fields{
 				"ID":                     "261a6391-abc0-4d9f-a59f-3d0a67e5e52c",
 				"databaseReturnMessage,": databaseReturnMessage,
 			}).Error("Can't unmarshal gRPCParent-address object from database")
 
 			// Send FATAL information to Fenix
-			informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-				OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
-				OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
-				SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
-				SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
+			common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+				OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
+				OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
+				SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
+				SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
 				MessageId:                generateUUID(),
 				MessageType:              gRPC.InformationMessage_FATAL,
 				Message:                  "Can't unmarshal gRPCParent-address object from database",
 				OrginalCreateDateTime:    generaTimeStampUTC(),
-				OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
-				OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
+				OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
+				OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
 			}
 		} else {
 
 			// If Saved data differs from memory data then change in memory object
 			// First check ip address
-			if parentAddress.GatewayAddress != gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress {
-				logger.WithFields(logrus.Fields{
+			if parentAddress.GatewayAddress != common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress {
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":                           "560c2b17-c71e-45dd-9a38-a3dfd1a2bbd6",
 					"parentAddress.GatewayAddress": parentAddress.GatewayAddress,
-					"gatewayConfig.ParentgRPCAddress.parentGatewayInitialServer_address": gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress,
+					"gatewayConfig.ParentgRPCAddress.parentGatewayInitialServer_address": common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress,
 				}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
-					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
-					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
-					SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
+				common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+					OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
+					OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
+					SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
+					SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
 					MessageId:                generateUUID(),
 					MessageType:              gRPC.InformationMessage_INFO,
 					Message:                  "Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
 					OrginalCreateDateTime:    generaTimeStampUTC(),
-					OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
-					OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
+					OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
+					OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
 				}
 
 				// Change Address in memory object
-				gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress = parentAddress.GatewayAddress
+				common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress = parentAddress.GatewayAddress
 			}
 
 			// Second check port
-			if parentAddress.GatewayPort != gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort {
-				logger.WithFields(logrus.Fields{
+			if parentAddress.GatewayPort != common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort {
+				common_code.logger.WithFields(logrus.Fields{
 					"ID":                        "50a3b7ad-6631-42c5-ab5c-777e04ad9728",
 					"parentAddress.GatewayPort": parentAddress.GatewayPort,
-					"gatewayConfig.ParentgRPCAddress.parentGatewayInitialServer_port": gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort,
+					"gatewayConfig.ParentgRPCAddress.parentGatewayInitialServer_port": common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort,
 				}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
-					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
-					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
-					SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
+				common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+					OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
+					OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
+					SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
+					SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
 					MessageId:                generateUUID(),
 					MessageType:              gRPC.InformationMessage_WARNING,
 					Message:                  "Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
 					OrginalCreateDateTime:    generaTimeStampUTC(),
-					OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
-					OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
+					OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
+					OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
 				}
 
 				// Change Port in memory object
-				gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort = parentAddress.GatewayPort
+				common_code.gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort = parentAddress.GatewayPort
 			}
 
 		}
@@ -212,87 +213,87 @@ func LogErrorAndSendInfoToFenix(
 	switch messageType {
 	case gRPC.InformationMessage_DEBUG:
 		// Only logg information and do not send to Fenix
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                 id,
 			infoHeaderForLogging: infoForLogging,
 		}).Debug(messageToFenix)
 
 	case gRPC.InformationMessage_INFO:
 		// Log information
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                 id,
 			infoHeaderForLogging: infoForLogging,
 			"error":              errorMessageForLogging,
 		}).Info(messageToFenix)
 
 		// Send information to Fenix
-		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
-			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
-			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
+		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+			OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_INFO,
 			Message:                  messageToFenix,
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 	case gRPC.InformationMessage_WARNING:
 		// Log information
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                 id,
 			infoHeaderForLogging: infoForLogging,
 			"error":              errorMessageForLogging,
 		}).Warning(messageToFenix)
 
 		// Send Warning information to Fenix
-		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
-			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
-			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
+		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+			OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_WARNING,
 			Message:                  messageToFenix,
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 	case gRPC.InformationMessage_ERROR:
 		// Log information
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                 id,
 			infoHeaderForLogging: infoForLogging,
 			"error":              errorMessageForLogging,
 		}).Error(messageToFenix)
 
 		// Send Error information to Fenix
-		informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
-			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
-			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
+		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+			OriginalSenderId:         common_code.gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       common_code.gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 common_code.gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               common_code.gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  messageToFenix,
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   common_code.gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: common_code.gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 	case gRPC.InformationMessage_FATAL:
 		// Only log and then Terminate Gateway due to problems
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                 id,
 			infoHeaderForLogging: infoForLogging,
 			"error":              errorMessageForLogging,
 		}).Fatal(messageToFenix)
 
 	default:
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":          "d83326f4-1b06-4d13-8010-70b6c829cc88",
 			"messageType": messageType,
 		}).Fatal("Unknown messageType, stopping gateway")
@@ -311,17 +312,17 @@ func SaveMessageToLocalDB(
 ) (saveOK bool) {
 
 	// Create return channel for save-status from DB
-	returnChannel := make(chan dbResultMessageStruct)
+	returnChannel := make(chan common_code.dbResultMessageStruct)
 
-	dbMessage := dbMessageStruct{
-		DbWrite,
+	dbMessage := common_code.dbMessageStruct{
+		common_code.DbWrite,
 		bucket,
 		key,
 		valueToStoreInDB,
 		returnChannel}
 
 	// Send message to Database
-	dbMessageQueue <- dbMessage
+	common_code.dbMessageQueue <- dbMessage
 
 	// Wait for result on result channel and then close returnChannel
 	returnDBMessage := <-returnChannel
@@ -351,7 +352,7 @@ func channelSinaling(
 	channelName string,
 	id string) {
 	// if channel items is greater than upper warning levels then lg warning
-	if numberOfMessagesInChannel >= UpperBounderyForSignalingMessagesInChannel {
+	if numberOfMessagesInChannel >= common_code.UpperBounderyForSignalingMessagesInChannel {
 
 		LogErrorAndSendInfoToFenix(
 			id,
@@ -361,13 +362,13 @@ func channelSinaling(
 			"",
 			"Upper WARNING level reached for number of items in channel")
 	} else {
-		if numberOfMessagesInChannel >= LowerBounderyForSignalingMessagesInChannel {
-			logger.WithFields(logrus.Fields{
+		if numberOfMessagesInChannel >= common_code.LowerBounderyForSignalingMessagesInChannel {
+			common_code.logger.WithFields(logrus.Fields{
 				"ID": id,
 				"Number of message in Channel '" + channelName + "'": numberOfMessagesInChannel,
 			}).Info("Lower INFO level reached for number of items in channel")
 		} else {
-			logger.WithFields(logrus.Fields{
+			common_code.logger.WithFields(logrus.Fields{
 				"ID": id,
 				"Number of message in Channel '" + channelName + "'": numberOfMessagesInChannel,
 			}).Debug("Number of items in channel")
@@ -388,9 +389,15 @@ func getHighestGRPCVersion() (currentVersion string) {
 
 // *********************************************************************************
 // Initiate map for clients addresses
-//
+
+// Private
 func initiateClientAddressMemoryDB() {
-	clientsAddressAndPort = make(map[string]clientsAddressAndPortStruct)
+	common_code.clientsAddressAndPort = make(map[string]common_code.clientsAddressAndPortStruct)
+}
+
+// Public
+func InitiateClientAddressMemoryDB() {
+	initiateClientAddressMemoryDB()
 }
 
 // *********************************************************************************
@@ -423,7 +430,7 @@ func getNextFreeClientPort(ipAddress string) (port int32) {
 	// If child's address is the same as gateway address then use 127.0.0.1 as address as key
 	if childUseSamteIp == true {
 
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":        "291e7759-a002-4363-bbfa-3604bd3255a0",
 			"ipAddress": ipAddress,
 		}).Debug("Child gateway/Plugin ip-address is the same as this gateway's ip address, will use '127.0.0.1' as key in memory DB.")
@@ -433,27 +440,27 @@ func getNextFreeClientPort(ipAddress string) (port int32) {
 	}
 
 	// Try to get vaule from key and check if it exits
-	clientAddresAndPortInfo, ifExists := clientsAddressAndPort[ipAddress]
+	clientAddresAndPortInfo, ifExists := common_code.clientsAddressAndPort[ipAddress]
 	if ifExists == true {
 		// IP-address exists, Add +1 to current port-counter and save in memory DB
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                      "8800e41f-d46c-4857-b7f3-8ec23f904f77",
 			"ipAddress":               ipAddress,
 			"clientAddresAndPortInfo": clientAddresAndPortInfo,
 		}).Debug("Current ip-address exists in memory DB.")
 
 		clientAddresAndPortInfo.clientPort = clientAddresAndPortInfo.clientPort + 1
-		clientsAddressAndPort[ipAddress] = clientAddresAndPortInfo
+		common_code.clientsAddressAndPort[ipAddress] = clientAddresAndPortInfo
 	} else {
 		// IP-address does not exists, Use start Port from config and save in memory DB
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                      "35528300-e5ee-4c0a-b41a-15a5d37d8186",
 			"ipAddress":               ipAddress,
-			"clientAddresAndPortInfo": gatewayConfig.InitialClientPort.InitialClientPort,
+			"clientAddresAndPortInfo": common_code.gatewayConfig.InitialClientPort.InitialClientPort,
 		}).Debug("IP-address not used before, will use standard start port")
 
-		clientAddresAndPortInfo.clientPort = gatewayConfig.InitialClientPort.InitialClientPort
-		clientsAddressAndPort[ipAddress] = clientAddresAndPortInfo
+		clientAddresAndPortInfo.clientPort = common_code.gatewayConfig.InitialClientPort.InitialClientPort
+		common_code.clientsAddressAndPort[ipAddress] = clientAddresAndPortInfo
 
 	}
 
@@ -466,17 +473,17 @@ func getNextFreeClientPort(ipAddress string) (port int32) {
 func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		logger.WithFields(logrus.Fields{
+		common_code.logger.WithFields(logrus.Fields{
 			"ID":                      "118517f0-6839-49b5-9f8f-850e82d3de23",
 			"err":                     err,
-			"clientAddresAndPortInfo": gatewayConfig.InitialClientPort.InitialClientPort,
+			"clientAddresAndPortInfo": common_code.gatewayConfig.InitialClientPort.InitialClientPort,
 		}).Fatal("Error when getting this gateways own IP-address")
 	}
 
 	defer func() {
 		err := conn.Close()
 		if err != nil {
-			logger.WithFields(logrus.Fields{
+			common_code.logger.WithFields(logrus.Fields{
 				"ID":  "1805f803f-6bfd-49d0-82b6-947677a539bb",
 				"err": err,
 			}).Fatal("Fatal ERROR when closing udp-connection when checking local IP-address in function 'GetOutboundIP()'")
@@ -484,7 +491,7 @@ func GetOutboundIP() string {
 	}()
 
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	logger.WithFields(logrus.Fields{
+	common_code.logger.WithFields(logrus.Fields{
 		"ID":        "2a2a4450-2a09-4084-bc1b-c5ac6ee58bcb",
 		"localAddr": localAddr,
 	}).Debug("This gateways own address info")
@@ -495,36 +502,36 @@ func GetOutboundIP() string {
 // *********************************************************************************
 //  Initiate channels used within gatway
 //
-func initiateGatewayChannels() {
+func InitiateGatewayChannels() {
 
-	logger.WithFields(logrus.Fields{
+	common_code.logger.WithFields(logrus.Fields{
 		"ID": "",
 	}).Debug("Initiate local gateway channels")
 
 	// Databasechannel for reading and Writing
-	dbMessageQueue = make(chan dbMessageStruct, SuppertedNumberOfMessagesInChannels)
+	common_code.dbMessageQueue = make(chan common_code.dbMessageStruct, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// *** Towards Fenix ***
 	// informationMessage-channel towards Fenix
-	informationMessageChannelTowardsFenix = make(chan *gRPC.InformationMessage, SuppertedNumberOfMessagesInChannels)
+	common_code.informationMessageChannelTowardsFenix = make(chan *gRPC.InformationMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// testInstructionTimeOutMessage-channel towards Fenix
-	testInstructionTimeOutMessageChannelTowardsFenix = make(chan *gRPC.TestInstructionTimeOutMessage, SuppertedNumberOfMessagesInChannels)
+	common_code.testInstructionTimeOutMessageChannelTowardsFenix = make(chan *gRPC.TestInstructionTimeOutMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// testExecutionLogMessage-channel towards Fenix
-	testExecutionLogMessageChannelTowardsFenix = make(chan *gRPC.TestExecutionLogMessage, SuppertedNumberOfMessagesInChannels)
+	common_code.testExecutionLogMessageChannelTowardsFenix = make(chan *gRPC.TestExecutionLogMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsMessage-channel towards Fenix
-	supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsMessage, SuppertedNumberOfMessagesInChannels)
+	common_code.supportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// availbleTestInstruction<AtPluginMessage-channel towards Fenix
-	availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, SuppertedNumberOfMessagesInChannels)
+	common_code.availbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// *** Towards Plugina ***
 	// TestInstruction Towards Plugin
-	testInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, SuppertedNumberOfMessagesInChannels)
+	common_code.testInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsRequest Towards Plugin
-	supportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, SuppertedNumberOfMessagesInChannels)
+	common_code.supportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, common_code.SuppertedNumberOfMessagesInChannels)
 
 }

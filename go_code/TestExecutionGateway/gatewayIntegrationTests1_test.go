@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"jlambert/FenixInception2/go_code/common_code"
 	"log"
 	"os"
 	"regexp"
@@ -90,8 +91,8 @@ func InitGatewayPart1() {
 	initLogger(logfileForTest)
 
 	// Initiate internal gatewau channels
-	log.Println("Process 'initiateGatewayChannels'")
-	initiateGatewayChannels()
+	log.Println("Process 'InitiateGatewayChannels'")
+	InitiateGatewayChannels()
 
 	//  Initiate the memory structure to hold all client gateway/plugin's address information
 	log.Println("Process 'initiateClientAddressMemoryDB'")
@@ -99,7 +100,7 @@ func InitGatewayPart1() {
 
 	// Ensure that all services don't start before everything has been started
 	log.Println("Process 'gatewayMustStopProcessing'")
-	gatewayMustStopProcessing = true
+	common_code.gatewayMustStopProcessing = true
 
 	// Initiate Database
 	log.Println("Process 'initiateDB'")
@@ -190,7 +191,7 @@ func removeFile(fileToBeRemoved string) {
 
 func TestDatabase(t *testing.T) {
 	// Pretend to use the db
-	fmt.Println(gatewayConfig)
+	fmt.Println(common_code.gatewayConfig)
 }
 
 // Validate that gateway did a simulated exit because there are no parent gateway
