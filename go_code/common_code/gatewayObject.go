@@ -214,7 +214,7 @@ var GatewayMustStopProcessing = true
 const ServieSleepTime time.Duration = 10
 
 // *** Internal channels used by the gateway towards Fenix ***
-type gatewayChannelPakageStruct struct {
+type GatewayChannelPakageStruct struct {
 
 	//  informationMessage towards Fenix
 	InformationMessageChannelTowardsFenix chan *gRPC.InformationMessage
