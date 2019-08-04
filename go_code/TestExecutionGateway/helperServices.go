@@ -94,7 +94,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 				SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 				SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
-				MessageId:                generateUUID(),
+				MessageId:                common_code.GenerateUUID(),
 				MessageType:              gRPC.InformationMessage_FATAL,
 				Message:                  "Can't unmarshal gRPCParent-address object from database",
 				OrginalCreateDateTime:    generaTimeStampUTC(),

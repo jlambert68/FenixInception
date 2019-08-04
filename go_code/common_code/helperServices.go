@@ -10,7 +10,7 @@ import (
 // *********************************************************************************
 // Generate a new unique uuid
 //
-func generateUUID(logger *logrus.Logger) string {
+func GenerateUUID(logger *logrus.Logger) string {
 	var newUuidString = ""
 
 	newUuid, err := uuid.NewUUID()
@@ -30,7 +30,7 @@ func generateUUID(logger *logrus.Logger) string {
 // *********************************************************************************
 // Genrerate UTC DateTime timestamp
 //
-func generaTimeStampUTC() string {
+func GeneraTimeStampUTC() string {
 	now := time.Now()
 	return now.String()
 }
@@ -47,7 +47,7 @@ func generaTimeStampDateDateTime() string {
 // Get highest gRPC version
 //
 
-func getHighestGRPCVersion() (currentVersion string) {
+func GetHighestGRPCVersion() (currentVersion string) {
 	maxVersionCount := int32(len(gRPC.CurrentVersionEnum_name) - 1)
 
 	maxVersion := gRPC.CurrentVersionEnum_name[maxVersionCount]
