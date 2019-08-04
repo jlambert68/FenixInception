@@ -55,7 +55,7 @@ func initLogger(filename string) {
 			common_code.Logger.Info("")
 			common_code.Logger.WithFields(logrus.Fields{
 				"ID": "d6b7454e-eb99-4c7d-9ec9-84249a7ee848",
-			}).Info("********* Logger started *********")
+			}).Info("********* logger started *********")
 			common_code.Logger.Info("")
 			common_code.Logger.Info("********* *************** *********")
 		} else {

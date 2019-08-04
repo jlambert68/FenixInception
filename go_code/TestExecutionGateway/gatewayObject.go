@@ -8,13 +8,13 @@ import (
 
 var (
 	// Common logger for the gateway
-	Logger *logrus.Logger
+	logger *logrus.Logger
 
 	// Database object used for storing any persistent data within Gateway
 	db *bolt.DB
 
 	// Database queue used for sending questions to database
-	DbMessageQueue chan common_code.DbMessageStruct
+	dbMessageQueue chan common_code.DbMessageStruct
 
 	// Channel for informationMessage initiated in this gateway
 	// removed becasue it resides in object for messages towards Fenix
@@ -22,10 +22,10 @@ var (
 )
 
 // All config parameter will be stored in the following parameter
-var GatewayConfig common_code.TomlConfigStruct
+var gatewayConfig common_code.TomlConfigStruct
 
 // Memory Object for all clients
-var ClientsAddressAndPort map[string]common_code.ClientsAddressAndPortStruct
+var clientsAddressAndPort map[string]common_code.ClientsAddressAndPortStruct
 
 // Variable used for sync all services to be able to start and stop them at the same time
-var GatewayMustStopProcessing = true
+var gatewayMustStopProcessing = true
