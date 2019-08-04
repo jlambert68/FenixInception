@@ -1,0 +1,44 @@
+# This is a TOML document.
+# Config parameters for gateway
+
+# Identification for the Fenix
+[gatewayIdentification]
+gatewayId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
+gatewayName = "Fenix Execution Server"
+gatewayIpAddress = "127.0.0.1"
+gatewaParentCallOnThisPort = -1
+gatewayChildrenCallOnThisPort = 7001
+createdDateTime = ""
+
+# Identification of the the domain that Fenix belongs to
+[systemDomain]
+gatewayDomainId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
+gatewayDomainName = "Fenix Execution Server"
+
+# Initial IP and Port for Parent Gateway/Fenix.
+[parentgRPCAddress]
+parentGatewayId =""
+parentGatewayName = ""
+parentGatewayServerAddress = ""
+parentGatewayServerPort = -1
+createdDateTime = ""
+connectionToParentDoneAtLeastOnce = false
+connectionToParentLastConnectionDateTime = ""
+
+# The first port in port range for child-gateways or Plugins, for each ip address
+[initialClientPort]
+initialClientPort = 6660
+
+# The logging level. Inly yse Debug for finding error otherwise use Info as standard logging level
+[loggingLevel]
+loggingLevel = "Debug"
+# loggingLevel = "Info"
+# loggingLevel = "Warning"
+
+# Used for when Fenix is used in Integration tests
+[integrationTest]
+usedInIntegrationTest = false
+actAsParentGatewayInTest = false
+actAsMainGatewayInTest = false
+actAsChildGatewayInTest = false
+startWithOutAnyParent = false
