@@ -29,3 +29,6 @@ var clientsAddressAndPort map[string]common_code.ClientsAddressAndPortStruct
 
 // Variable used for sync all services to be able to start and stop them at the same time
 var gatewayMustStopProcessing = true
+
+// *** Internal channels used by the gateway ***
+var gatewayChannelPakage common_code.GatewayChannelPakageStruct

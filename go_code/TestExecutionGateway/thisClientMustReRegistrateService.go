@@ -16,7 +16,7 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) Please
 	var returnMessage *gRPC.AckNackResponse
 	var parentgRPCAddress common_code.ParentgRPCAddressStruct
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID":                         "b9e6bde2-0a59-4459-83c4-d723d50a080c",
 		"reRegisterToGatewayMessage": reRegisterToGatewayMessage,
 	}).Info("Incoming gRPC: 'PleaseReRegisterClientAddress'")
@@ -31,24 +31,24 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) Please
 	// Convert Parent Gateway address info-struct into a byte array
 	parentgRPCAddressByteArray, err := json.Marshal(reRegisterToGatewayMessage)
 	if err != nil {
-		common_code.Logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID":                "6df384d3-ebe9-4a65-947f-e51814c8544c",
 			"ParentgRPCAddress": parentgRPCAddress,
 			"err":               err,
 		}).Error("Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration.")
 
 		// Send Error information to Fenix
-		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-			OriginalSenderId:         common_code.GatewayConfig.GatewayIdentification.GatewayId,
-			OriginalSenderName:       common_code.GatewayConfig.GatewayIdentification.GatewayName,
-			SenderId:                 common_code.GatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               common_code.GatewayConfig.GatewayIdentification.GatewayName,
+		gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration.",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   common_code.GatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: common_code.GatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		returnMessage.Comments = "Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration."
@@ -61,7 +61,7 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) Please
 	// Return Channel
 	returnChannel := make(chan common_code.DbResultMessageStruct)
 
-	dbMessage := common_code.dbMessageStruct{
+	dbMessage := common_code.DbMessageStruct{
 		common_code.DbWrite,
 		common_code.BucketForParentAddress,
 		common_code.BucketKeyForParentAddress, // Key allways hardcoded due to one gateway or plugin can only have one parent
@@ -69,30 +69,30 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) Please
 		returnChannel}
 
 	// Send message to Database
-	common_code.dbMessageQueue <- dbMessage
+	dbMessageQueue <- dbMessage
 
 	// Wait for result on result channel then close returnChannel
 	returnDBMessage := <-returnChannel
 	close(returnChannel)
 
-	if returnDBMessage.err != nil {
-		common_code.Logger.WithFields(logrus.Fields{
+	if returnDBMessage.Err != nil {
+		logger.WithFields(logrus.Fields{
 			"ID":  "446cb366-9d84-4c1c-a628-ef162f7c1747",
 			"err": err,
 		}).Error("Got an error when Saveing to local DB")
 
 		// Send Error information to Fenix
-		common_code.informationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
-			OriginalSenderId:         common_code.GatewayConfig.GatewayIdentification.GatewayId,
-			OriginalSenderName:       common_code.GatewayConfig.GatewayIdentification.GatewayName,
-			SenderId:                 common_code.GatewayConfig.GatewayIdentification.GatewayId,
-			SenderName:               common_code.GatewayConfig.GatewayIdentification.GatewayName,
+		gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
+			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
+			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
+			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
 			MessageId:                generateUUID(),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Got an error when Saveing to local DB",
 			OrginalCreateDateTime:    generaTimeStampUTC(),
-			OriginalSystemDomainId:   common_code.GatewayConfig.SystemDomain.GatewayDomainId,
-			OriginalSystemDomainName: common_code.GatewayConfig.SystemDomain.GatewayDomainName,
+			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
+			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
 
 		// Create message back to parent Gateway/Fenix
@@ -101,7 +101,7 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) Please
 		return returnMessage, nil
 	}
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID": "fdf7081a-e7da-4bf1-a87c-82c51b8f575b",
 	}).Debug("Reregistration info was saved in local database")
 
@@ -110,7 +110,7 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) Please
 	registerSuccess, err := registerThisGatewayAtParentGateway()
 
 	if registerSuccess == true {
-		common_code.Logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID": "14ae3650-c0dd-4e23-b197-9706d5dfc8bd",
 		}).Debug("Rereregistration to parent gateway/Fenix was successful")
 
@@ -120,7 +120,7 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) Please
 		return returnMessage, nil
 
 	} else {
-		common_code.Logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID":  "e5c273a8-f257-4c9f-bcbe-1697a2de1663",
 			"err": err,
 		}).Error("Rereregistration to parent gateway/Fenix could not be done")

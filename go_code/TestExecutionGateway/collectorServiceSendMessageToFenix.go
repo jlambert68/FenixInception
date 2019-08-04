@@ -14,18 +14,18 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) SendMess
 
 	var returnMessage *gRPC.AckNackResponse
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID":                 "25d5b2fd-cfb6-4cb8-9c7c-898e92c50e51",
 		"informationMessage": informationMessage,
 	}).Debug("Incoming gRPC: 'SendMessageToFenix'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	common_code.informationMessageChannelTowardsFenix <- informationMessage
-	common_code.Logger.WithFields(logrus.Fields{
+	gatewayChannelPakage.InformationMessageChannelTowardsFenix <- informationMessage
+	logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("InformationMessage was put on the channel")
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID": "becb4e61-05e3-4395-b852-2c26377d8388",
 	}).Debug("Leaving gRPC: 'SendMessageToFenix'")
 
@@ -43,7 +43,7 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) SendMess
 func initiateSendLocalMessageToFenixEngine() {
 
 	// Start Transmit Engine, for SupportedTestDataDomainsMessage-messages as a go-routine
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID": "85e5448f-0d6d-4f72-be4b-70e51fc3d362",
 	}).Info("Initiate: 'transmitEngineForRegistrateAvailableTestDataDomainsTowardsFenix'")
 
@@ -57,20 +57,20 @@ func sendLocalMessageToFenixEngine() {
 
 	for {
 		// Wait for data comes from 'local' channel for messages initiated in this gateway
-		localInformationMessage := <-common_code.informationMessageChannelTowardsFenix
+		localInformationMessage := <-gatewayChannelPakage.InformationMessageChannelTowardsFenix
 
-		common_code.Logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID":                      "f74b3a27-77ad-47a4-8e77-ed680f4c419f",
 			"localInformationMessage": localInformationMessage,
 		}).Debug("Received a new 'localInformationMessage' from local channel that shoud be forwarded")
 
 		// Put localInformationMessage on queue for further processing
-		common_code.informationMessageChannelTowardsFenix <- localInformationMessage
-		common_code.Logger.WithFields(logrus.Fields{
+		gatewayChannelPakage.InformationMessageChannelTowardsFenix <- localInformationMessage
+		logger.WithFields(logrus.Fields{
 			"ID": "fbc22674-d6ec-4885-8c38-89a049abafee",
 		}).Debug("self created 'MessageToFenix' was put on the channel")
 
-		common_code.Logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID": "521cc222-88f7-4e52-9315-0a891fc06111",
 		}).Debug("Leaving Send self created 'MessageToFenix'")
 

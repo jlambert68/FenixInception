@@ -8,16 +8,16 @@ import (
 
 var (
 	// Connection parameters for connecting to parent Gateway/Fenix
-	RemoteGatewayServerConnection *grpc.ClientConn
-	GrpcClient                    gRPC.GatewayTowardsFenixClient
+	remoteGatewayServerConnection *grpc.ClientConn
+	grpcClient                    gRPC.GatewayTowardsFenixClient
 
 	// Port where Parent Gateway/Fenix will call this gateway/client
 	//incomingPortForCallsFromParentGateway string
 )
 
 var (
-	RegisterGatewayTowardsFenixServer *grpc.Server
-	GatewayTowardsFenixListener       net.Listener
+	registerGatewayTowardsFenixServer *grpc.Server
+	gatewayTowardsFenixListener       net.Listener
 
 	// gRPC server used to handle all traffic Towards the Plugins
 

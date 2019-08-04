@@ -204,7 +204,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 	var err error = nil
 
 	// ***** Send InfoMessage to THIS gateway using gRPC-call ****
-	ThisAddressAndPortInfo := common_code.GatewayConfig.GatewayIdentification
+	ThisAddressAndPortInfo := gatewayConfig.GatewayIdentification
 	addressToDial := ThisAddressAndPortInfo.GatewayIpAddress + ":" + strconv.FormatInt(int64(ThisAddressAndPortInfo.GatewayChildrenCallOnThisPort), 10)
 
 	// Set up connection to Parent Gateway or Fenix
@@ -279,8 +279,8 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 			gatewayClient := gRPC.NewGatewayTowardsFenixClient(remoteParentServerConnection)
 
 			// ChangeSenderId to this gatway's SenderId before sending the data forward
-			informationMessageToBeForwarded.SenderId = common_code.GatewayConfig.GatewayIdentification.GatewayId
-			informationMessageToBeForwarded.SenderName = common_code.GatewayConfig.GatewayIdentification.GatewayName
+			informationMessageToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
+			informationMessageToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
 			// Do gRPC-call to client gateway or Fenix
 			ctx := context.Background()
@@ -307,7 +307,7 @@ func SendMessageToFenix(informationMessageToBeForwarded *gRPC.InformationMessage
 
 			} else {
 				// gRPC Send message OK
-				common_code.Logger.WithFields(logrus.Fields{
+				logger.WithFields(logrus.Fields{
 					"ID":            "d9074bbc-a110-45de-8559-b063ec6122f1",
 					"addressToDial": addressToDial,
 				}).Debug("gRPC-send OK of 'informationMessageToBeForwarded' to Parent-Gateway or Fenix")

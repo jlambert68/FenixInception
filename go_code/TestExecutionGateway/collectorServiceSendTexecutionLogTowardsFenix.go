@@ -14,18 +14,18 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) SendTest
 
 	var returnMessage *gRPC.AckNackResponse
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID":                            "6ef6943e-7a05-42cd-80b5-e35231c14f04",
 		"testInstructionTimeOutMessage": testExecutionLogMessage,
 	}).Debug("Incoming gRPC: 'TestExecutionLogMessage'")
 
 	// Put testExecutionLogMessage on queue for further processing
-	common_code.testExecutionLogMessageChannelTowardsFenix <- testExecutionLogMessage
-	common_code.Logger.WithFields(logrus.Fields{
+	gatewayChannelPakage.TestExecutionLogMessageChannelTowardsFenix <- testExecutionLogMessage
+	logger.WithFields(logrus.Fields{
 		"ID": "bbd8fdc7-16cb-4dae-b4a1-821fb30ccb70",
 	}).Debug("'testExecutionLogMessage' was put on the channel")
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID": "f07b61d0-16cc-4b9b-84a3-2e6c642125c3",
 	}).Debug("Leaving gRPC: 'SendTexecutionLogTowardsFenix'")
 

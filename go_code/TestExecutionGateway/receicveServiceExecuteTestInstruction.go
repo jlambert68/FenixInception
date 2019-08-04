@@ -16,7 +16,7 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) SendTe
 
 	var returnMessage *gRPC.AckNackResponse
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID":              "b80b7746-04a8-4ef5-bdc5-2f9e07de754e",
 		"testInstruction": *testInstruction,
 	}).Debug("Incoming gRPC: 'SendTestInstructionTowardsPlugin'")
@@ -59,15 +59,15 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) SendTe
 		return returnMessage, nil
 	} else {
 
-		common_code.Logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID":              "5a98f0f1-5de9-4dcc-af76-f2888aaebf76",
 			"testInstruction": testInstruction,
 		}).Debug("TestInstructions was saved in local database")
 
 		// Put TestInstruction on queue for further processing
-		common_code.TestInstructionMessageChannelTowardsPlugin <- testInstruction
+		gatewayChannelPakage.TestInstructionMessageChannelTowardsPlugin <- testInstruction
 
-		common_code.Logger.WithFields(logrus.Fields{
+		logger.WithFields(logrus.Fields{
 			"ID":              "73e44541-c793-4ccd-8bc8-c94320f49f29",
 			"testInstruction": testInstruction,
 		}).Debug("Leaving: 'SendTestInstructionTowardsPlugin'")

@@ -14,18 +14,18 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) Registra
 
 	var returnMessage *gRPC.AckNackResponse
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID":                                    "ead1b630-27cd-4c1b-9e55-5bd28198a9f8",
 		"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
 	}).Debug("Incoming gRPC: 'RegistrateAailableTestContainers'")
 
 	// Put testExecutionLogMessage on queue for further processing
-	common_code.availbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessage
-	common_code.Logger.WithFields(logrus.Fields{
+	gatewayChannelPakage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessage
+	logger.WithFields(logrus.Fields{
 		"ID": "14c40c76-0dea-4279-84cf-ed78da51aa3e",
 	}).Debug("'SupportedTestDataDomainsMessage' was put on the channel")
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID": "b658c4b5-a47e-4ec5-908c-134973d6ec95",
 	}).Debug("Leaving gRPC: 'RegistrateAailableTestContainers'")
 

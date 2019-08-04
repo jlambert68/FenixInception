@@ -74,8 +74,6 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 		supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix *gRPC.SupportedTestDataDomainsWithHeadersMessage
 	)
 
-	// *** Internal channels used by the gateway ***
-	var gatewayChannelPakage common_code.GatewayChannelPakageStruct
 	/*
 		//  informationMessage towards Fenix
 		var (

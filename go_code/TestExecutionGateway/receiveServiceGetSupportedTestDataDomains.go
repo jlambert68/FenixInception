@@ -14,18 +14,18 @@ func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) GetSup
 
 	var returnMessage *gRPC.AckNackResponse
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID":                              "97ba5adb-248f-4186-9d7c-2e457af826a7",
 		"supportedTestDataDomainsRequest": *supportedTestDataDomainsRequest,
 	}).Debug("Incoming gRPC: 'GetSupportedTestDataDomains'")
 
 	// Put supportedTestDataDomainsRequest on queue for further processing
-	common_code.SupportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsRequest
-	common_code.Logger.WithFields(logrus.Fields{
+	gatewayChannelPakage.SupportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsRequest
+	logger.WithFields(logrus.Fields{
 		"ID": "5009cdce-c2a7-4a33-b0fa-e6f55cd805f8",
 	}).Debug("SupportedTestDataDomainsRequest was put on the channel")
 
-	common_code.Logger.WithFields(logrus.Fields{
+	logger.WithFields(logrus.Fields{
 		"ID": "ece8cd79-bdd2-4ab2-8500-f52ca0a5c226",
 	}).Debug("Leaving gRPC: 'GetSupportedTestDataDomains'")
 

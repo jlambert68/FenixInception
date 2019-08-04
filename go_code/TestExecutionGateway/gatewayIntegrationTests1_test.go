@@ -191,7 +191,7 @@ func removeFile(fileToBeRemoved string) {
 
 func TestDatabase(t *testing.T) {
 	// Pretend to use the db
-	fmt.Println(common_code.GatewayConfig)
+	fmt.Println(gatewayConfig)
 }
 
 // Validate that gateway did a simulated exit because there are no parent gateway
