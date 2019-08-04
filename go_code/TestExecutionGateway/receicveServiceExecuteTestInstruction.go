@@ -12,7 +12,7 @@ import (
 // ********************************************************************************************
 // Call from parent Gateway/Fenix for incoming TestInstructions that should be sent towards Plugin
 //
-func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsPlugin *gRPCServerTowardsPluginStruct) SendTestInstructionTowardsPlugin(ctx context.Context, testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 

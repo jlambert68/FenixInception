@@ -11,7 +11,7 @@ import (
 // ********************************************************************************************
 // Call from parent Gateway/Fenix that this gateway should register itself to parent
 //gatewayTowardsPluginObjectStruct
-func (gRPCServerTowardsPlugin *common_code.GRPCServerTowardsPluginStruct) PleaseReRegisterClientAddress(ctx context.Context, reRegisterToGatewayMessage *gRPC.ReRegisterToGatewayMessage) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsPlugin *gRPCServerTowardsPluginStruct) PleaseReRegisterClientAddress(ctx context.Context, reRegisterToGatewayMessage *gRPC.ReRegisterToGatewayMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 	var parentgRPCAddress common_code.ParentgRPCAddressStruct

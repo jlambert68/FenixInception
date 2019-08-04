@@ -11,7 +11,7 @@ import (
 // ********************************************************************************************
 // Call from Client Gateway/Plugin with an registration of itself
 //
-func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) RegisterClientAddress(ctx context.Context, registerClientAddressRequest *gRPC.RegisterClientAddressRequest) (*gRPC.RegisterClientAddressResponse, error) {
+func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClientAddress(ctx context.Context, registerClientAddressRequest *gRPC.RegisterClientAddressRequest) (*gRPC.RegisterClientAddressResponse, error) {
 
 	var registerClientAddressResponse *gRPC.RegisterClientAddressResponse
 	var clientRPCAddress common_code.ClientsAddressAndPortStruct
@@ -23,17 +23,17 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 
 	// Check if calling client is using an old gRPC-version-defitnition file (wrong version)
 	// TODO Denna jämförelse är troligen som Äpplen och Päron
-	if registerClientAddressRequest.GRPCVersion.String() != getHighestGRPCVersion() {
+	if registerClientAddressRequest.GRPCVersion.String() != common_code.GetHighestGRPCVersion() {
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         registerClientAddressRequest.CallingSystemId,
 			OriginalSenderName:       registerClientAddressRequest.CallingSystemName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
-			MessageId:                generateUUID(),
+			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Child gateway/Plugin is using wrong version of gRPC-defition",
-			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
@@ -71,10 +71,10 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
-			MessageId:                generateUUID(),
+			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Error when converting 'clientRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress.",
-			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
@@ -119,10 +119,10 @@ func (gRPCServerTowardsFenixStruct *common_code.GRPCServerTowardsFenixStruct) Re
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
-			MessageId:                generateUUID(),
+			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Got an error when Saveing to local DB",
-			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}

@@ -3,5 +3,3 @@ package common_code
 // ChannelType
 const ChannelTypeTestInstructionMessageTowardsPlugin = "ChannelTypeTestInstructionMessageTowardsPlugin"
 const ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin = "ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin"
-
-type GRPCServerTowardsPluginStruct struct{}

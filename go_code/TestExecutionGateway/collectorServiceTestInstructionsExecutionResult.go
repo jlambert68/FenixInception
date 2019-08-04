@@ -10,7 +10,7 @@ import (
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a testInstructionExecutionResultMessage toward Fenix
 //
-func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) SendTestInstructionResultTowardsFenix(ctx context.Context, testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (*gRPC.AckNackResponse, error) {
+func (gRPCServerTowardsFenix *gRPCServerTowardsFenixStruct) SendTestInstructionResultTowardsFenix(ctx context.Context, testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
 

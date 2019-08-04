@@ -12,3 +12,5 @@ var (
 	// gRPC server used to handle all traffic Towards the Plugins
 
 )
+
+type gRPCServerTowardsPluginStruct struct{}
