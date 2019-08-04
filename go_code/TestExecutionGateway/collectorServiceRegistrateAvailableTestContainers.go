@@ -20,7 +20,7 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) Registra
 	}).Debug("Incoming gRPC: 'RegistrateAailableTestContainers'")
 
 	// Put testExecutionLogMessage on queue for further processing
-	gatewayChannelPakage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessage
+	gatewayChannelPackage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "14c40c76-0dea-4279-84cf-ed78da51aa3e",
 	}).Debug("'SupportedTestDataDomainsMessage' was put on the channel")

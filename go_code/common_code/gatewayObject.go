@@ -189,7 +189,7 @@ const UpperBounderyForSignalingMessagesInChannel = 90
 const ServieSleepTime time.Duration = 10
 
 // *** Internal channels used by the gateway towards Fenix ***
-type GatewayChannelPakageStruct struct {
+type GatewayChannelPackageStruct struct {
 
 	//  informationMessage towards Fenix
 	InformationMessageChannelTowardsFenix chan *gRPC.InformationMessage

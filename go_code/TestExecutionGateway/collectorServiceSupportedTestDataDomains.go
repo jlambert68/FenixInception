@@ -20,7 +20,7 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) Supporte
 	}).Debug("Incoming gRPC: 'SupportedTestDataDomains'")
 
 	// Put supportedTestDataDomainsWithHeadersMessage on queue for further processing
-	gatewayChannelPakage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix <- supportedTestDataDomainsWithHeadersMessage
+	gatewayChannelPackage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix <- supportedTestDataDomainsWithHeadersMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "43fef475-85a7-4b29-926b-e40dffa81503",
 	}).Debug("'supportedTestDataDomainsWithHeadersMessage' was put on the channel")

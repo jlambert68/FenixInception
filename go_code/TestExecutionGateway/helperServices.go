@@ -127,7 +127,7 @@ func updateMemoryAddressForParentAddressInfo() {
 			}).Error("Can't unmarshal gRPCParent-address object from database")
 
 			// Send FATAL information to Fenix
-			gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+			gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 				OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 				OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 				SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -151,7 +151,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+				gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -177,7 +177,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
 				//Send Warning information to Fenix
-				gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+				gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 					OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 					SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -227,7 +227,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Info(messageToFenix)
 
 		// Send information to Fenix
-		gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -249,7 +249,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Warning(messageToFenix)
 
 		// Send Warning information to Fenix
-		gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -271,7 +271,7 @@ func LogErrorAndSendInfoToFenix(
 		}).Error(messageToFenix)
 
 		// Send Error information to Fenix
-		gatewayChannelPakage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
+		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
@@ -513,25 +513,25 @@ func InitiateGatewayChannels() {
 
 	// *** Towards Fenix ***
 	// informationMessage-channel towards Fenix
-	gatewayChannelPakage.InformationMessageChannelTowardsFenix = make(chan *gRPC.InformationMessage, common_code.SuppertedNumberOfMessagesInChannels)
+	gatewayChannelPackage.InformationMessageChannelTowardsFenix = make(chan *gRPC.InformationMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// testInstructionTimeOutMessage-channel towards Fenix
-	gatewayChannelPakage.TestInstructionTimeOutMessageChannelTowardsFenix = make(chan *gRPC.TestInstructionTimeOutMessage, common_code.SuppertedNumberOfMessagesInChannels)
+	gatewayChannelPackage.TestInstructionTimeOutMessageChannelTowardsFenix = make(chan *gRPC.TestInstructionTimeOutMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// testExecutionLogMessage-channel towards Fenix
-	gatewayChannelPakage.TestExecutionLogMessageChannelTowardsFenix = make(chan *gRPC.TestExecutionLogMessage, common_code.SuppertedNumberOfMessagesInChannels)
+	gatewayChannelPackage.TestExecutionLogMessageChannelTowardsFenix = make(chan *gRPC.TestExecutionLogMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsMessage-channel towards Fenix
-	gatewayChannelPakage.SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsMessage, common_code.SuppertedNumberOfMessagesInChannels)
+	gatewayChannelPackage.SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// availbleTestInstruction<AtPluginMessage-channel towards Fenix
-	gatewayChannelPakage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, common_code.SuppertedNumberOfMessagesInChannels)
+	gatewayChannelPackage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// *** Towards Plugina ***
 	// TestInstruction Towards Plugin
-	gatewayChannelPakage.TestInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, common_code.SuppertedNumberOfMessagesInChannels)
+	gatewayChannelPackage.TestInstructionMessageChannelTowardsPlugin = make(chan *gRPC.TestInstruction_RT, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// supportedTestDataDomainsRequest Towards Plugin
-	gatewayChannelPakage.SupportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, common_code.SuppertedNumberOfMessagesInChannels)
+	gatewayChannelPackage.SupportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, common_code.SuppertedNumberOfMessagesInChannels)
 
 }

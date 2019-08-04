@@ -31,4 +31,4 @@ var clientsAddressAndPort map[string]common_code.ClientsAddressAndPortStruct
 var gatewayMustStopProcessing = true
 
 // *** Internal channels used by the gateway ***
-var gatewayChannelPakage common_code.GatewayChannelPakageStruct
+var gatewayChannelPackage common_code.GatewayChannelPackageStruct

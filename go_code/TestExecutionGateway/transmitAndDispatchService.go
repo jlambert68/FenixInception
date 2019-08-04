@@ -159,7 +159,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 		} else {
 
 			// Check for ONE message, in DB, to Resend (If so then put IT on channel)
-			objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(true, channelType, transmitOrDispatchEngineType, &gatewayChannelPakage)
+			objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(true, channelType, transmitOrDispatchEngineType, &gatewayChannelPackage)
 			if objectsWherPutOnChannel == true {
 				logger.WithFields(logrus.Fields{
 					"ID":                      "84821702-66f1-48bc-a8cd-eee8951fb880",
@@ -186,7 +186,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 				//  Decide the correct DispatchEngine to use
 				switch channelType {
 				case common_code.ChannelTypeTestInstructionMessageTowardsPlugin:
-					testInstructionMessageToBeForwardedTowardsPlugin = <-gatewayChannelPakage.TestInstructionMessageChannelTowardsPlugin
+					testInstructionMessageToBeForwardedTowardsPlugin = <-gatewayChannelPackage.TestInstructionMessageChannelTowardsPlugin
 					messageToBeForwardedByteArray, err = json.Marshal(*testInstructionMessageToBeForwardedTowardsPlugin)
 					// If error when marshaling then use the following information
 					id = "22318eb6-5d57-4183-8238-0bc40e16ff7f"
@@ -202,10 +202,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = testInstructionMessageToBeForwardedTowardsPlugin.MessageId
 					bucket = common_code.BucketForResendTestInstructionTowardsPlugin
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.TestInstructionMessageChannelTowardsPlugin)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.TestInstructionMessageChannelTowardsPlugin)
 
 				case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
-					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin = <-gatewayChannelPakage.SupportedTestDataDomainsRequestChannelTowardsPlugin
+					supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin = <-gatewayChannelPackage.SupportedTestDataDomainsRequestChannelTowardsPlugin
 					messageToBeForwardedByteArray, err = json.Marshal(*testInstructionMessageToBeForwardedTowardsPlugin)
 					// If error when marshaling then use the following information
 					id = "5f0cc657-97fb-49d0-9c10-e63f6a527676"
@@ -221,7 +221,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin.MessageId
 					bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.SupportedTestDataDomainsRequestChannelTowardsPlugin)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.SupportedTestDataDomainsRequestChannelTowardsPlugin)
 
 				default:
 					LogErrorAndSendInfoToFenix(
@@ -239,7 +239,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 				//  Deside the correct TransmitEngine to use
 				switch channelType {
 				case common_code.ChannelTypeInformationMessageTowardsFenix:
-					informationMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.InformationMessageChannelTowardsFenix
+					informationMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.InformationMessageChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*informationMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "6798902d-36b9-4598-a125-4be3abd4a23b"
@@ -255,10 +255,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = informationMessageToBeForwardedTowardsFenix.MessageId
 					bucket = common_code.BucketForResendOfInfoMessagesTowardsFenix
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.InformationMessageChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.InformationMessageChannelTowardsFenix)
 
 				case common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix:
-					timeOutMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.TestInstructionTimeOutMessageChannelTowardsFenix
+					timeOutMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.TestInstructionTimeOutMessageChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*timeOutMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "e80978f1-2f2c-43f7-bd4b-218e852f2f72"
@@ -274,10 +274,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = timeOutMessageToBeForwardedTowardsFenix.MessageId
 					bucket = common_code.BucketForResendOTimeOutMesagesTowardsFenix
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.TestInstructionTimeOutMessageChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.TestInstructionTimeOutMessageChannelTowardsFenix)
 
 				case common_code.ChannelTypeTestExecutionLogMessageTowardsFenix:
-					testExecutionLogMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.TestExecutionLogMessageChannelTowardsFenix
+					testExecutionLogMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.TestExecutionLogMessageChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*testExecutionLogMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "3f8b01b6-da9b-4cee-b787-6a0e9efe9fed"
@@ -293,10 +293,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = testExecutionLogMessageToBeForwardedTowardsFenix.LogMessageId
 					bucket = common_code.BucketForResendOfLogMesagesTowardsFenix
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.TestExecutionLogMessageChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.TestExecutionLogMessageChannelTowardsFenix)
 
 				case common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix:
-					spportedTestDataDomainsMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix
+					spportedTestDataDomainsMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "d3a33be3-6cf8-459d-bda2-ff64c53d249a"
@@ -312,10 +312,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = spportedTestDataDomainsMessageToBeForwardedTowardsFenix.MessageId
 					bucket = common_code.BucketForResendOfSupportedTestDataDomainsTowardsFenix
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix)
 
 				case common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
-					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix
+					availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "6524a739-e628-4265-a6cb-d64597a20c3e"
@@ -331,10 +331,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix.MessageId
 					bucket = common_code.BucketForResendOfAvailableTestInstructionsTowardsFenix
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix)
 
 				case common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
-					availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix
+					availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "14b2aa63-7e69-4e80-9d6b-796c286997c9"
@@ -345,10 +345,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 
 					messageId = availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix.MessageId
 					bucket = common_code.BucketForResendOfAvailableTestContainersTowardsFenix
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix)
 
 				case common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix:
-					testInstructionExecutionResultMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix
+					testInstructionExecutionResultMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "72d128f7-e84c-408a-87a9-e0c8b84c6841"
@@ -364,10 +364,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = testInstructionExecutionResultMessageToBeForwardedTowardsFenix.MessageId
 					bucket = common_code.BucketForResendOfTestInstructionExecutionResultTowardsFenix
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix)
 
 				case common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix:
-					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix = <-gatewayChannelPakage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix
+					supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix = <-gatewayChannelPackage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix
 					messageToBeForwardedByteArray, err = json.Marshal(*supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
 					// If error when marshaling then use the following information
 					id = "89df74d0-8ba7-47df-bddc-5864a9b376f1"
@@ -383,7 +383,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// Information used when saving message to local database
 					messageId = supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix.MessageId
 					bucket = common_code.BucketForResendOfGetTestdataDomainsToPlugin
-					NumberOfMessagesInChannel = len(gatewayChannelPakage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix)
+					NumberOfMessagesInChannel = len(gatewayChannelPackage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix)
 
 				default:
 					LogErrorAndSendInfoToFenix(
@@ -577,7 +577,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						}).Debug("gRPC-send OK for '" + infoHeader + "' to Parent-Gateway or Fenix")
 
 						// Check for All messages, in DB, to Resend (If so then put THEM ALL on channel)
-						objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(false, channelType, transmitOrDispatchEngineType, &gatewayChannelPakage)
+						objectsWherPutOnChannel := checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(false, channelType, transmitOrDispatchEngineType, &gatewayChannelPackage)
 						if objectsWherPutOnChannel == true {
 							logger.WithFields(logrus.Fields{
 								"ID":                      "b9dbbd63-b6ac-45de-b92e-09d3b049822c",
@@ -684,7 +684,7 @@ func dialChildOrParenGateway(addressToDial string, dialSuccess bool, gRpcClientT
 // ********************************************************************************************
 // Try to get ONE object from db and put on channel or get ALL objects and put on channel
 //TODO Add internal structure for checking DB and delete message from DB when put on channel
-func checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(onlyOneObject bool, channelType string, transmitOrDispatchEngineType string, channelToUse *common_code.GatewayChannelPakageStruct) (foundObjectsThatWherePutOnChannel bool) {
+func checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(onlyOneObject bool, channelType string, transmitOrDispatchEngineType string, channelToUse *common_code.GatewayChannelPackageStruct) (foundObjectsThatWherePutOnChannel bool) {
 
 	// Decide if one or all objects thould be put back on channel
 	if onlyOneObject == true {
@@ -711,7 +711,7 @@ func checkForSavedTemporaryObjectsInDbThatWillBePutOnChannel(onlyOneObject bool,
 // ********************************************************************************************
 // Try to get one object from specific bucket and put on correct channel
 //TODO Add internal structure for checking DB and DELETE message from DB when put on channel
-func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, transmitOrDispatchEngineType string, channelToUse *common_code.GatewayChannelPakageStruct) (foundObjectsThatWherePutOnChannel bool) {
+func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, transmitOrDispatchEngineType string, channelToUse *common_code.GatewayChannelPackageStruct) (foundObjectsThatWherePutOnChannel bool) {
 
 	var (
 		err    error

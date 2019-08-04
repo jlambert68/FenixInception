@@ -20,7 +20,7 @@ func (gRPCServerTowardsFenix *common_code.GRPCServerTowardsFenixStruct) Register
 	}).Debug("Incoming gRPC: 'RegisterAvailbleTestInstructions'")
 
 	// Put availbleTestInstructionAtPluginMessage on queue for further processing
-	gatewayChannelPakage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestInstructionAtPluginMessage
+	gatewayChannelPackage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestInstructionAtPluginMessage
 	logger.WithFields(logrus.Fields{
 		"ID": "e6ed9172-39ad-4a7c-bb07-b76f2555b36a",
 	}).Debug("'availbleTestInstructionAtPluginMessage' was put on the channel")
