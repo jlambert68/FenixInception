@@ -244,18 +244,18 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	initiateDB(databaseFile) // If "" then Use default database file name
 
 	// Start all Dispatch- and Transmit-Engines as a Gateway Engine and no function references, use nil
-	initiateAllTransmitAndDispatchEngines(funcTypeStruct{
+	InitiateAllTransmitAndDispatchEngines(common_code.funcTypeStruct{
 		fenixOrGatewayType: common_code.GatewayEngine,
-		fenixAndPluginFunctionMap: map[funcType]FuncType{
-			ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
-			ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
-			ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
-			ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
-			ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
-			ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
-			ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
-			ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
-			ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
+		fenixAndPluginFunctionMap: map[common_code.funcType]common_code.FuncType{
+			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
+			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
+			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
+			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
+			common_code.ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
+			common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
+			common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
 		},
 	})
 
