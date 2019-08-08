@@ -122,11 +122,11 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 
 		// Save Port to memory object
 		gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort = registerClientAddressResponse.ClientPort
-		gatewayConfig.GatewayIdentification.CreatedDateTime = generaTimeStampUTC()
+		gatewayConfig.GatewayIdentification.CreatedDateTime = common_code.GeneraTimeStampUTC()
 
 		// Save information that about that registration was successful. Used for knowning that registration was made at least once
 		gatewayConfig.ParentgRPCAddress.ConnectionToParentDoneAtLeastOnce = true
-		gatewayConfig.ParentgRPCAddress.ConnectionToParentLastConnectionDateTime = generaTimeStampUTC()
+		gatewayConfig.ParentgRPCAddress.ConnectionToParentLastConnectionDateTime = common_code.GeneraTimeStampUTC()
 
 		// Convert testExecutionLogMessageToBeForwarded-struct into a byte array
 		gatewayIdentificationByteArray, err := json.Marshal(gatewayConfig.GatewayIdentification)
@@ -204,7 +204,7 @@ func cleanup() {
 		cleanupProcessed = true
 
 		// CLose database
-		closeDB()
+		CloseDB()
 
 		// Stop gRPC-relateds listing and close towards Fenix
 		stopGatewayGRPCServerForMessagesTowardsFenix()
@@ -232,7 +232,7 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	}
 
 	// Initiate internal gatewau channels
-	InitiateGatewayChannels()
+	initiateGatewayChannels()
 
 	//  Initiate the memory structure to hold all client gateway/plugin's address information
 	initiateClientAddressMemoryDB()
@@ -243,8 +243,21 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	// Initiate Database
 	initiateDB(databaseFile) // If "" then Use default database file name
 
-	// Start all Dispatch- and Transmit-Engines
-	initiateAllTransmitAndDispatchEngines()
+	// Start all Dispatch- and Transmit-Engines as a Gateway Engine and no function references, use nil
+	initiateAllTransmitAndDispatchEngines(funcTypeStruct{
+		fenixOrGatewayType: common_code.GatewayEngine,
+		fenixAndPluginFunctionMap: map[funcType]FuncType{
+			ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
+			ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
+			ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
+			ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
+			ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
+			ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
+			ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
+			ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
+			ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
+		},
+	})
 
 	// Try to Register this Gateway At Parent
 	tryToRegisterGatewayAtParent()

@@ -87,8 +87,8 @@ func TestMain(m *testing.M) {
 	result := m.Run()
 
 	// Close database
-	log.Println("Process 'closeDB'")
-	closeDB()
+	log.Println("Process 'CloseDB'")
+	CloseDB()
 
 	// Check if should be removed before finish the test
 	if *removeFilesAfterTest == true {
@@ -118,8 +118,8 @@ func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseF
 	initLogger(logfileForTest)
 
 	// Initiate internal gatewau channels
-	log.Println("Process 'InitiateGatewayChannels'")
-	InitiateGatewayChannels()
+	log.Println("Process 'initiateGatewayChannels'")
+	initiateGatewayChannels()
 
 	//  Initiate the memory structure to hold all client gateway/plugin's address information
 	log.Println("Process 'initiateClientAddressMemoryDB'")

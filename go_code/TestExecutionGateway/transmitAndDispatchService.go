@@ -13,41 +13,41 @@ import (
 // ********************************************************************************************
 // Initiate Transmit Engines for messages towards Fenix and Dispatch Engines for messages towards Plugins
 //
+// TODO MOve the below to 'common_code'
 
-func initiateAllTransmitAndDispatchEngines() {
+func InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint funcTypeStruct) {
 
 	// *** Towards Plugin ***
 	// Start a Dispatch Engine, for 'TestInstructionMessageTowardsPlugin' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestInstructionMessageTowardsPluginFunction])
 
 	// Start a Dispatch Engine, for 'SupportedTestDataDomainsRequestMessageTowardsPlugin,' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction])
 
 	// *** Towards Fenix ***
 	// Start a Transmit Engine, for 'informationMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeInformationMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeInformationMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeInformationMessageTowardsFenixFunction])
 
 	// Start a Transmit Engine, for 'timeOutMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction])
 
 	// Start a Transmit Engine, for 'spportedTestDataDomainsMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestExecutionLogMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestExecutionLogMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestExecutionLogMessageTowardsFenixFunction])
 
 	// Start a Transmit Engine, for 'availbleTestInstructionAtPluginMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeSupportedTestDataDomainsMessageTowardsFenixFunction])
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction])
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction])
 
 	// Start a Transmit Engine, for 'testInstructionExecutionResultMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
+	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction])
 
 	// Start a Transmit Engine, for 'supportedTestDataDomainsWithHeadersMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, common_code.GatewayEngine, nil)
-
+	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction])
 }
 
 // ********************************************************************************************
@@ -440,6 +440,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 				case common_code.FenixEngine:
 					// Save incoming mesage to SQL-DB and trigger Fenix by calling the function that was sent when initializing
 					fenixFunctionToCall()
+					// TODO FORSÄTT HÄR, genom att göra en switch och skicka rätt object precis som vid gRPC-anropen
 
 				case common_code.GatewayEngine:
 					// Do the gRPC-call to parent gateway/Fenix or child gatway/plugin

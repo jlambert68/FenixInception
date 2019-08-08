@@ -453,7 +453,7 @@ func GetOutboundIP() string {
 // *********************************************************************************
 //  Initiate channels used within gatway
 //
-func InitiateGatewayChannels() {
+func initiateGatewayChannels() {
 
 	logger.WithFields(logrus.Fields{
 		"ID": "",
@@ -477,6 +477,15 @@ func InitiateGatewayChannels() {
 
 	// availbleTestInstruction<AtPluginMessage-channel towards Fenix
 	gatewayChannelPackage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestInstructionAtPluginMessage, common_code.SuppertedNumberOfMessagesInChannels)
+
+	//availbleTestContainersAtPluginMessage-channel towars Fenix
+	gatewayChannelPackage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.AvailbleTestContainersAtPluginMessage, common_code.SuppertedNumberOfMessagesInChannels)
+
+	//availbleTestContainersAtPluginMessage-channel towars Fenix
+	gatewayChannelPackage.TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.TestInstructionExecutionResultMessage, common_code.SuppertedNumberOfMessagesInChannels)
+
+	//supportedTestDataDomainsWithHeadersMessage-channel towars Fenix
+	gatewayChannelPackage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix = make(chan *gRPC.SupportedTestDataDomainsWithHeadersMessage, common_code.SuppertedNumberOfMessagesInChannels)
 
 	// *** Towards Plugina ***
 	// TestInstruction Towards Plugin

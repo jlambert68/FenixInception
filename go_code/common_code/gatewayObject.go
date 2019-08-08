@@ -222,3 +222,29 @@ type GatewayChannelPackageStruct struct {
 	// supportedTestDataDomainsRequest Towards Plugin
 	SupportedTestDataDomainsRequestChannelTowardsPlugin chan *gRPC.SupportedTestDataDomainsRequest
 }
+
+// ***********************************************************************************
+// Used for sending function references to Dispatch/TransmitENgine to be used of sending using gRPC when in Fenix and Plugin
+//
+type funcTypeStruct struct {
+	fenixOrGatewayType        string
+	fenixAndPluginFunctionMap map[funcType]FuncType
+}
+type FuncType func()
+type funcType int
+
+const (
+	ChannelTypeTestInstructionMessageTowardsPluginFunction funcType = iota
+	ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction
+
+	ChannelTypeInformationMessageTowardsFenixFunction
+	ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction
+	ChannelTypeTestExecutionLogMessageTowardsFenixFunction
+	ChannelTypeSupportedTestDataDomainsMessageTowardsFenixFunction
+	ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction
+	ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction
+	ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction
+	ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction
+)
+
+// ***********************************************************************************

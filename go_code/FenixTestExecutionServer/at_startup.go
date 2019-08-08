@@ -56,8 +56,21 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	// Initiate Database
 	initiateDB(databaseFile) // If "" then Use default database file name
 
-	// Start all Dispatch- and Transmit-Engines
-	initiateAllTransmitAndDispatchEngines()
+	// Start all Dispatch- and Transmit-Engines as a Gateway Engine and no function references, use nil
+	InitiateAllTransmitAndDispatchEngines(common_code.funcTypeStruct{
+		common_code.fenixOrGatewayType: common_code.GatewayEngine,
+		common_code.fenixAndPluginFunctionMap: map[common_code.funcType]common_code.FuncType{
+			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
+			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
+			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
+			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
+			common_code.ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
+			common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
+			common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
+		},
+	})
 
 	// Listen to gRPC-calls from parent gateway/Fenix
 	//startGatewayGRPCServerForMessagesTowardsFenix()

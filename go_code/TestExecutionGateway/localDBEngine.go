@@ -45,7 +45,7 @@ func initiateDB(localDBFile string) {
 // ********************************************************************************************
 // Close the database file
 //
-func closeDB() {
+func CloseDB() {
 
 	err := db.Close()
 	if err != nil {
