@@ -244,9 +244,9 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	initiateDB(databaseFile) // If "" then Use default database file name
 
 	// Start all Dispatch- and Transmit-Engines as a Gateway Engine and no function references, use nil
-	InitiateAllTransmitAndDispatchEngines(common_code.funcTypeStruct{
+	InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
 		fenixOrGatewayType: common_code.GatewayEngine,
-		fenixAndPluginFunctionMap: map[common_code.funcType]common_code.FuncType{
+		fenixAndPluginFunctionMap: map[common_code.FunctionType funcType]common_code.FuncType{
 			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
 			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
 			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
