@@ -1,4 +1,4 @@
-package FenixTestExecutionServer
+package FenixGatewayServer
 
 import (
 	"fmt"
@@ -10,16 +10,16 @@ import (
 	"time"
 )
 
-func TestExecutionMain(configFileAndPath string, logfileForTest string, databaseFile string) {
+func TestExecutionServerMain(configFileAndPath string, logfileForTest string, databaseFile string) {
 
 	// Cleanup all gRPC connections
 	defer cleanup()
 
 	// Start all Services as a Gateway Engine and no function references, use nil as function reference
 	TestExecutionGateway.StartAllServices(configFileAndPath, logfileForTest, databaseFile, common_code.FunctionsInsteadOfgRPCStruct{
-		FenixOrGatewayTypeOrPlugin: common_code.GatewayEngine,
+		FenixOrGatewayTypeOrPlugin: common_code.FenixEngine,
 		FenixAndPluginFunctionMap: map[common_code.FunctionType]common_code.FunctionReference{
-			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
+			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    CallBackRegisterAvailbleTestInstructions,
 			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
 			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
 			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,

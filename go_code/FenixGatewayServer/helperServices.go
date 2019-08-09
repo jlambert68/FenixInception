@@ -1,4 +1,4 @@
-package FenixTestExecutionServer
+package FenixGatewayServer
 
 import (
 	"github.com/jlambert68/FenixInception/go_code/common_code"

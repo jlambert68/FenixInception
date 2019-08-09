@@ -9,6 +9,8 @@ gatewayIpAddress = "127.0.0.1"
 gatewaParentCallOnThisPort = 7000
 gatewayChildrenCallOnThisPort = 7001
 createdDateTime = ""
+gatewayEngineType = "GatewayEngine"
+# Type of gatwway ("FenixEngine", "GatewayEngine", "PluginEngine"
 
 # Identification of the the domain that this gateway belongs to
 [systemDomain]

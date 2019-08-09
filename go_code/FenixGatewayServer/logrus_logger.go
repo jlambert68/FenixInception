@@ -1,4 +1,4 @@
-package FenixTestExecutionServer
+package FenixGatewayServer
 
 import (
 	"github.com/sirupsen/logrus"

@@ -96,6 +96,7 @@ type GatewayIdentificationStruct struct {
 	GatewaParentCallOnThisPort    int32
 	GatewayChildrenCallOnThisPort int32
 	CreatedDateTime               string
+	GatewayEngineType             string
 }
 
 // Ovelall domain for toml-file, Custody Cash, Compis etc.
@@ -191,7 +192,6 @@ const ServieSleepTime time.Duration = 10
 
 // *** Internal channels used by the gateway towards Fenix ***
 type GatewayChannelPackageStruct struct {
-
 	//  informationMessage towards Fenix
 	InformationMessageChannelTowardsFenix chan *gRPC.InformationMessage
 
@@ -247,5 +247,13 @@ const (
 	ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction
 	ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction
 )
+
+type CallBackRegisterAvailbleTestInstructions func(availbleTestInstructionAtPluginMessage *gRPC.AvailbleTestInstructionAtPluginMessage) (*gRPC.AckNackResponse, error)
+type CallBackRegistrateAailableTestContainers func(availbleTestContainersAtPluginMessage *gRPC.AvailbleTestContainersAtPluginMessage) (*gRPC.AckNackResponse, error)
+type CallBackRegistrateAvailableTestDataDomains func(supportedTestDataDomainsMessage *gRPC.SupportedTestDataDomainsMessage) (*gRPC.AckNackResponse, error)
+type CallBackSendTestInstructionTimeOutTowardsFenix func(testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error)
+type CallBackSendTestExecutionLogTowardsFenix func(testExecutionLogMessage *gRPC.TestExecutionLogMessage) (*gRPC.AckNackResponse, error)
+type CallBackSupportedTestDataDomains func(supportedTestDataDomainsWithHeadersMessage *gRPC.SupportedTestDataDomainsWithHeadersMessage) (*gRPC.AckNackResponse, error)
+type CallBackSendTestInstructionResultTowardsFenix func(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (*gRPC.AckNackResponse, error)
 
 // ***********************************************************************************

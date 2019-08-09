@@ -1,6 +1,8 @@
 # This is a TOML document.
 # Config parameters for gateway
 
+
+
 # Identification for the Fenix
 [gatewayIdentification]
 gatewayId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
@@ -9,6 +11,8 @@ gatewayIpAddress = "127.0.0.1"
 gatewaParentCallOnThisPort = -1
 gatewayChildrenCallOnThisPort = 7001
 createdDateTime = ""
+gatewayEngineType = "FenixEngine"
+# Type of gatwway ("FenixEngine", "GatewayEngine", "PluginEngine"
 
 # Identification of the the domain that Fenix belongs to
 [systemDomain]
