@@ -167,6 +167,7 @@ const DispatchEngineTowardsPlugin = "DispatchEngineTowardsPlugin"
 const TransmitEngineTowardsFenix = "TransmitEngineTowardsFenix"
 const FenixEngine = "FenixEngine"
 const GatewayEngine = "GatewayEngine"
+const PluginEngine = "PluginEngine"
 
 // Definition for memory Object for all clients
 type ClientsAddressAndPortStruct struct {

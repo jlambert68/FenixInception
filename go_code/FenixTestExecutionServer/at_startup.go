@@ -48,18 +48,19 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	TestExecutionGateway.InitiateGatewayChannels()
 
 	//  Initiate the memory structure to hold all client gateway/plugin's address information
-	initiateClientAddressMemoryDB()
+	TestExecutionGateway.InitiateClientAddressMemoryDB()
 
 	// Ensure that all services don't start before everything has been started
-	gatewayMustStopProcessing = true
+	//TODO Change this into a function-call instead
+	TestExecutionGateway.GatewayMustStopProcessing = true
 
 	// Initiate Database
-	initiateDB(databaseFile) // If "" then Use default database file name
+	TestExecutionGateway.InitiateDB(databaseFile) // If "" then Use default database file name
 
-	// Start all Dispatch- and Transmit-Engines as a Gateway Engine and no function references, use nil
-	InitiateAllTransmitAndDispatchEngines(common_code.funcTypeStruct{
-		common_code.fenixOrGatewayType: common_code.GatewayEngine,
-		common_code.fenixAndPluginFunctionMap: map[common_code.funcType]common_code.FuncType{
+	// Start all Dispatch- and Transmit-Engines as a Gateway Engine inside Fenix and use function references instead of gRPC-calls
+	TestExecutionGateway.InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
+		FenixOrGatewayTypeOrPlugin: common_code.GatewayEngine,
+		FenixAndPluginFunctionMap: map[common_code.FunctionType]common_code.FunctionReference{
 			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
 			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
 			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
@@ -76,16 +77,18 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	//startGatewayGRPCServerForMessagesTowardsFenix()
 
 	// Listen to gRPC-calls from parent gateway/Fenix
-	startGatewayGRPCServerForMessagesTowardsPlugins()
+	// Not needed in Fenix
+	//startGatewayGRPCServerForMessagesTowardsPlugins()
 
 	// Listen to gRPC-calls from child gateway/plugin
-	startGatewayGRPCServerForMessagesTowardsFenix()
+	TestExecutionGateway.StartGatewayGRPCServerForMessagesTowardsFenix()
 
 	// Update Memory information about parent address and port with that saved in database, database overrule config-file
-	updateMemoryAddressForParentAddressInfo()
+	// Not needed for Fenix
+	//updateMemoryAddressForParentAddressInfo()
 
 	// Start all services at the same time
-	gatewayMustStopProcessing = false
+	TestExecutionGateway.GatewayMustStopProcessing = false
 
 	// Ask clients to ReRegister them self to this gateway
 	// TODO Make all Clients ReRegister them self

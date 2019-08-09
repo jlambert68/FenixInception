@@ -2,6 +2,8 @@ package FenixTestExecutionServer
 
 import (
 	"fmt"
+	"github.com/jlambert68/FenixInception/go_code/TestExecutionGateway"
+	"github.com/jlambert68/FenixInception/go_code/common_code"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,8 +15,21 @@ func TestExecutionMain(configFileAndPath string, logfileForTest string, database
 	// Cleanup all gRPC connections
 	defer cleanup()
 
-	// Start all Services
-	startAllServices(configFileAndPath, logfileForTest, databaseFile)
+	// Start all Services as a Gateway Engine and no function references, use nil as function reference
+	TestExecutionGateway.StartAllServices(configFileAndPath, logfileForTest, databaseFile, common_code.FunctionsInsteadOfgRPCStruct{
+		FenixOrGatewayTypeOrPlugin: common_code.GatewayEngine,
+		FenixAndPluginFunctionMap: map[common_code.FunctionType]common_code.FunctionReference{
+			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
+			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
+			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
+			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
+			common_code.ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
+			common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
+			common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
+		},
+	})
 
 	// Just waiting to quit
 	c := make(chan os.Signal, 2)

@@ -15,7 +15,7 @@ import (
 //
 // TODO MOve the below to 'common_code'
 
-func InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint funcTypeStruct) {
+func InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint common_code.FunctionsInsteadOfgRPCStruct) {
 
 	// *** Towards Plugin ***
 	// Start a Dispatch Engine, for 'TestInstructionMessageTowardsPlugin' as a go-routine

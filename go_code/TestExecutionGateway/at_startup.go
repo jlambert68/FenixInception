@@ -218,7 +218,7 @@ func cleanup() {
 // *******************************************************************
 // Start all Services
 //
-func startAllServices(configFileAndPath string, logfileForTest string, databaseFile string) {
+func StartAllServices(configFileAndPath string, logfileForTest string, databaseFile string, gatewayOrEndpoint common_code.FunctionsInsteadOfgRPCStruct) {
 	// Read 'gatewayConfig.toml' for config parameters
 	processConfigFile(configFileAndPath) // Use default toml-config-file name
 
@@ -231,55 +231,87 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 		initLogger(logfileForTest)
 	}
 
-	// Initiate internal gatewau channels
-	initiateGatewayChannels()
+	switch gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin {
+	case common_code.GatewayEngine:
 
-	//  Initiate the memory structure to hold all client gateway/plugin's address information
-	initiateClientAddressMemoryDB()
+		initiateGatewayChannels()
 
-	// Ensure that all services don't start before everything has been started
-	gatewayMustStopProcessing = true
+		initiateClientAddressMemoryDB()
 
-	// Initiate Database
-	initiateDB(databaseFile) // If "" then Use default database file name
+		gatewayMustStopProcessing = true
 
-	// Start all Dispatch- and Transmit-Engines as a Gateway Engine and no function references, use nil
-	InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
-		fenixOrGatewayType: common_code.GatewayEngine,
-		fenixAndPluginFunctionMap: map[common_code.FunctionType funcType]common_code.FuncType{
-			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
-			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
-			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
-			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
-			common_code.ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
-			common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
-			common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
-			common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
-			common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
-		},
-	})
+		initiateDB(databaseFile) // If "" then Use default database file name
 
-	// Try to Register this Gateway At Parent
-	tryToRegisterGatewayAtParent()
+		InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint)
 
-	// Listen to gRPC-calls from parent gateway/Fenix
-	//startGatewayGRPCServerForMessagesTowardsFenix()
+		tryToRegisterGatewayAtParent()
+		// Listen to gRPC-calls from parent gateway/Fenix
+		//startGatewayGRPCServerForMessagesTowardsFenix()
 
-	// Listen to gRPC-calls from parent gateway/Fenix
-	startGatewayGRPCServerForMessagesTowardsPlugins()
+		// Listen to gRPC-calls from parent gateway/Fenix
+		startGatewayGRPCServerForMessagesTowardsPlugins()
 
-	// Listen to gRPC-calls from child gateway/plugin
-	startGatewayGRPCServerForMessagesTowardsFenix()
+		startGatewayGRPCServerForMessagesTowardsFenix()
 
-	// Update Memory information about parent address and port with that saved in database, database overrule config-file
-	updateMemoryAddressForParentAddressInfo()
+		updateMemoryAddressForParentAddressInfo()
 
-	// Start all services at the same time
-	gatewayMustStopProcessing = false
-
-	// Ask clients to ReRegister them self to this gateway
-	// TODO Make all Clients ReRegister them self
+		gatewayMustStopProcessing = false
 
 	// Release all saved messages to channls
+	// TODO Make all Clients ReRegister them self
+	// Ask clients to ReRegister them self to this gateway
+	// Start all services at the same time
+	// Update Memory information about parent address and port with that saved in database, database overrule config-file
+	// Listen to gRPC-calls from child gateway/plugin
+	// Try to Register this Gateway At Parent
+	// Start all Dispatch- and Transmit-Engines
+	// Initiate Database
+	// Ensure that all services don't start before everything has been started
+	//  Initiate the memory structure to hold all client gateway/plugin's address information
+	// Initiate internal gatewau channels
+
 	// TODO Release all massages to channels
+
+	case common_code.FenixEngine:
+
+		initiateGatewayChannels()
+
+		initiateClientAddressMemoryDB()
+
+		gatewayMustStopProcessing = true
+
+		initiateDB(databaseFile) // If "", empty string, then Use default database file name
+
+		InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint)
+
+		tryToRegisterGatewayAtParent()
+		// Listen to gRPC-calls from parent gateway/Fenix
+		//startGatewayGRPCServerForMessagesTowardsFenix()
+
+		// Listen to gRPC-calls from parent gateway/Fenix
+		startGatewayGRPCServerForMessagesTowardsPlugins()
+
+		startGatewayGRPCServerForMessagesTowardsFenix()
+
+		updateMemoryAddressForParentAddressInfo()
+
+		gatewayMustStopProcessing = false
+
+		// Release all saved messages to channls
+		// TODO Make all Clients ReRegister them self
+		// Ask clients to ReRegister them self to this gateway
+		// Start all services at the same time
+		// Update Memory information about parent address and port with that saved in database, database overrule config-file
+		// Listen to gRPC-calls from child gateway/plugin
+		// Try to Register this Gateway At Parent
+		// Start all Dispatch- and Transmit-Engines
+		// Initiate Database
+		// Ensure that all services don't start before everything has been started
+		//  Initiate the memory structure to hold all client gateway/plugin's address information
+		// Initiate internal gatewau channels
+
+		// TODO Release all massages to channels
+
+		//case common_code.PluginEngine:
+	}
 }
