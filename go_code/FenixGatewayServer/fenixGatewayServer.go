@@ -15,11 +15,17 @@ func TestExecutionServerMain(configFileAndPath string, logfileForTest string, da
 	// Cleanup all gRPC connections
 	defer cleanup()
 
+	// Initiate connectio for Fenix Inceptions main Database
+	initiateMainDB()
+
+	// Close database when closing program
+	defer mainDB.Close()
+
 	// Start all Services as a Gateway Engine and no function references, use nil as function reference
 	TestExecutionGateway.StartAllServices(configFileAndPath, logfileForTest, databaseFile, common_code.FunctionsInsteadOfgRPCStruct{
 		FenixOrGatewayTypeOrPlugin: common_code.FenixEngine,
 		FenixAndPluginFunctionMap: map[common_code.FunctionType]common_code.FunctionReference{
-			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    CallBackRegisterAvailbleTestInstructions,
+			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    CallBackSendTestInstructionResultTowardsFenix,
 			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
 			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
 			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,

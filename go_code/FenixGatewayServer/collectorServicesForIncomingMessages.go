@@ -188,25 +188,46 @@ func CallBackSupportedTestDataDomains(supportedTestDataDomainsWithHeadersMessage
 func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
+	var positivReturnMesage = "'testInstructionExecutionResultMessage' was saved in Fenix database"
+	var negativReturnMesage = "'testInstructionExecutionResultMessage' could not be saved in Fenix database"
+
+	var testInstructionsThatAreStillExecuting []string
+	var err error
 
 	logger.WithFields(logrus.Fields{
-		"ID":                                    "d32b63f7-58fb-46f0-a04b-111c6af7b6fd",
+		"ID":                                    "76aef74f-4d2f-4f15-abb8-c179bcc55351",
 		"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
 	}).Debug("Incoming function CallBack: 'CallBackSendTestInstructionResultTowardsFenix'")
 
-	// Put testInstructionExecutionResultMessage on queue for further processing
-	gatewayChannelPackage.TestInstructionExecutionResultMessageTowardsFenixChannelTowardsFenix <- testInstructionExecutionResultMessage
-	logger.WithFields(logrus.Fields{
-		"ID": "6894a11c-ba36-479e-8fdc-2391f7820fc7",
-	}).Debug("'SupportedTestDataDomainsMessage' was put on the channel")
+	// Save testInstructionExecutionResultMessage to Fenix database and trigger Fenix for further processing
+	messageSavedInFenixDatabase := saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage)
+	if messageSavedInFenixDatabase == true {
+		logger.WithFields(logrus.Fields{
+			"ID": "56fe8fb4-05c3-4889-91bb-9fcb9d478276",
+		}).Debug("'testInstructionExecutionResultMessage' was saved in Fenix Database")
+
+		// Set gRPC returnMessage back to gateway
+		returnMessage.Comments = positivReturnMesage
+		returnMessage.Acknack = true
+
+		// Check if all peers are finished in their executions
+		TestInstructionsThatAreStillExecuting, err = listPeerTestInstructionPeersWhichIsExecuting(testInstructionExecutionResultMessage.TestInstructionGuid)
+		//TODO borde man inte skicka med PeerId i gRPC anropet mot Plugin och tillbaka, för att minska databas-anropen????????????????
+		// Trigger next TestInstructions that is waiting to be executed
+		currentTestInstructinId := testInstructionExecutionResultMessage.TestInstructionGuid
+		// Get all Testinstructions that are dependent on
+
+	} else {
+
+		// Set gRPC returnMessage back to gateway
+		returnMessage.Comments = negativReturnMesage
+		returnMessage.Acknack = false
+
+	}
 
 	logger.WithFields(logrus.Fields{
-		"ID": "1782261e-8bf2-4707-bd69-b2379f02e034",
+		"ID": "ab5efe48-54e4-43c0-975b-ef186aeb7140",
 	}).Debug("Leaving function CallBack: 'CallBackSendTestInstructionResultTowardsFenix'")
-
-	// Create message back to child Gateway/Plugin
-	returnMessage.Comments = "'testInstructionExecutionResultMessage' was forwarded towards Fenix"
-	returnMessage.Acknack = true
 
 	return returnMessage, nil
 }

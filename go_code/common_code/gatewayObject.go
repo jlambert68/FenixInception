@@ -228,8 +228,15 @@ type GatewayChannelPackageStruct struct {
 // Used for sending function references to Dispatch/TransmitENgine to be used of sending using gRPC when in Fenix and Plugin
 //
 type FunctionsInsteadOfgRPCStruct struct {
-	FenixOrGatewayTypeOrPlugin string
-	FenixAndPluginFunctionMap  map[FunctionType]FunctionReference
+	FenixOrGatewayTypeOrPlugin                     string
+	FenixAndPluginFunctionMap                      map[FunctionType]FunctionReference
+	callBackRegisterAvailbleTestInstructions       CallBackRegisterAvailbleTestInstructions
+	callBackRegistrateAailableTestContainers       CallBackRegistrateAailableTestContainers
+	callBackRegistrateAvailableTestDataDomains     CallBackRegistrateAvailableTestDataDomains
+	callBackSendTestInstructionTimeOutTowardsFenix CallBackSendTestInstructionTimeOutTowardsFenix
+	callBackSendTestExecutionLogTowardsFenix       CallBackSendTestExecutionLogTowardsFenix
+	callBackSupportedTestDataDomains               CallBackSupportedTestDataDomains
+	callBackSendTestInstructionResultTowardsFenix  CallBackSendTestInstructionResultTowardsFenix
 }
 type FunctionReference func()
 type FunctionType int
