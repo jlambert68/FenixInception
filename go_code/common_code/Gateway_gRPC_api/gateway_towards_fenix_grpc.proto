@@ -39,6 +39,7 @@ message TestInstructionExecutionResultMessage {
     string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
     string MessageId = 13; // A unique id for the message created by plugin
+    string PeerId = 14; // A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction
 }
 
 // Status for an ongoing TestExecution of a TestInstruction

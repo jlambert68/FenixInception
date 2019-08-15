@@ -40,6 +40,7 @@ message TestInstruction_RT {
     TestInstructionRTMetadata Metadata = 15; // Metadata around The TestInstruction, used for Send-DateTimes and DB-handling
     string OrginalCreateDateTime = 16; // The timestamp when the orignal message was created
     string MessageId = 17; // A unique id for the message gererated by Fenix
+    string PeerId = 18; // A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction
 }
 
 //  An attribute with it's type and value
