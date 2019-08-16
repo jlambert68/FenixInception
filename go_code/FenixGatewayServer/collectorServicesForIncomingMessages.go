@@ -210,12 +210,18 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 		returnMessage.Comments = positivReturnMesage
 		returnMessage.Acknack = true
 
-		// Check if all peers are finished in their executions
-		TestInstructionsThatAreStillExecuting, err = listPeerTestInstructionPeersWhichIsExecuting(testInstructionExecutionResultMessage.TestInstructionGuid)
-		//TODO borde man inte skicka med PeerId i gRPC anropet mot Plugin och tillbaka, för att minska databas-anropen????????????????
-		// Trigger next TestInstructions that is waiting to be executed
-		currentTestInstructinId := testInstructionExecutionResultMessage.TestInstructionGuid
-		// Get all Testinstructions that are dependent on
+		// Get all Testinstructions that are a peer to this TestInstruction, and can be run in parallell, and are still executing
+		testInstructionsThatAreStillExecuting, err = listPeerTestInstructionPeersWhichIsExecuting(testInstructionExecutionResultMessage.PeerId)
+
+		// Trigger next TestInstructions that is waiting to be executed if all current peers are finished
+		if  err == nil && len(testInstructionsThatAreStillExecuting) == 0 {
+			testInstructionPeersThatShouldBeExecutedNext, err := listNextPeersToBeExecuted(testInstructionExecutionResultMessage.PeerId))
+			if  err == nil && len(testInstructionsThatAreStillExecuting) > 0 {
+				err = triggerSendNextPeersForExecution(testInstructionPeersThatShouldBeExecutedNext)
+
+			}
+
+		}
 
 	} else {
 
