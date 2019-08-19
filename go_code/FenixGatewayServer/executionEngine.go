@@ -20,7 +20,7 @@ func triggerSendNextPeersForExecution(testInstructionPeersThatShouldBeExecutedNe
 		for arrayIndex := 0; arrayIndex < numberOfTestInstructions; arrayIndex++ {
 			testInstructionId = testInstructionPeersThatShouldBeExecutedNext[arrayIndex]
 			// Send the TestInstruction to next Gateway
-			err = sentTestInstructionTowardsPlugin(testInstructionId)
+			err = sendTestInstructionTowardsPlugin(testInstructionId)
 			if err != nil {
 				// Not sent towards plugin
 				logger.WithFields(logrus.Fields{

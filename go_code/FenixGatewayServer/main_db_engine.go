@@ -2,6 +2,7 @@ package FenixGatewayServer
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	_ "github.com/lib/pq"
@@ -270,6 +271,82 @@ func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (m
 
 	// Return if the messages was saved or not
 	return messageSavedInDB
+}
+
+// **********************************************************************************************************
+// Get TestInstruction-Payload to be sent to Plugin for Execution
+//
+func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstructionPayloadToPlugin string, err error) {
+
+	// Prepare SQL
+	var sqlToBeExecuted = "SELECT Payload "
+	sqlToBeExecuted = sqlToBeExecuted + "FROM testcaseexecutions.Executing_TestInstructions "
+	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestStepExecutionFinished isnull AND "
+	sqlToBeExecuted = sqlToBeExecuted + "testInstructionGuid = $1 "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+
+	if err != nil {
+		// Error while preparing SQL
+		logger.WithFields(logrus.Fields{
+			"ID":                  "dfbf3c87-f756-4f97-82d2-9a94e5a87ad2",
+			"err":                 err,
+			"testInstructionGuid": testInstructionGuid,
+			"sqlToBeExecuted":     sqlToBeExecuted,
+		}).Error("Error when Praparing SQL for getting TestInstructions-Payload to be sent for execution")
+
+	} else {
+		// Preparing SQL was OK
+		// Now Execute SQL in DB
+		sqlResult, err := sqlStatement.Query(testInstructionGuid)
+		if err != nil {
+			// Error while executing SQL
+			logger.WithFields(logrus.Fields{
+				"ID":        "",
+				"err":       err,
+				"sqlResult": sqlResult,
+			}).Error("Error when executing SQL for getting TestInstructions-Payload to be sent for execution")
+		} else {
+			// Executing SQL was OK
+			logger.WithFields(logrus.Fields{
+				"ID":        "8102b4d5-c2ed-493e-918a-3365669d9cba",
+				"sqlResult": sqlResult,
+			}).Debug("sqlResult for TestInstruction-Payload for getting TestInstructions-Payload to be sent for execution")
+
+			// Convert SQL-result into correct return message for function
+			//var testInstructionId string
+			var numberOfRowsInResult int
+			numberOfRowsInResult = 0
+			for sqlResult.Next() {
+				err = sqlResult.Scan(&testInstructionPayloadToPlugin)
+				if err != nil {
+					// Error while looping through result
+					logger.WithFields(logrus.Fields{
+						"ID":        "f03c9fc8-672c-45d2-9874-b7f70f42687a",
+						"err":       err,
+						"sqlResult": sqlResult,
+					}).Error("Error when processing SQL-result for for TestInstruction-Payload for getting TestInstructions-Payload to be sent for execution")
+				} else {
+					numberOfRowsInResult++
+				}
+			}
+
+			// If the SQL gave a result that differs from 1 row then something is wrong
+			if numberOfRowsInResult != 1 {
+				// Error while looping through result
+				logger.WithFields(logrus.Fields{
+					"ID":                   "bf187ebf-ddbd-49f5-ac07-0be1e3251985",
+					"numberOfRowsInResult": numberOfRowsInResult,
+				}).Error("Error, expected exactly one row in result set")
+
+				// Create an error
+				err = errors.New("Error, expected exactly one row in result set but got " + string(numberOfRowsInResult))
+			}
+		}
+	}
+
+	// Return if the messages was saved or not
+	return testInstructionPayloadToPlugin, err
 }
 
 /*
