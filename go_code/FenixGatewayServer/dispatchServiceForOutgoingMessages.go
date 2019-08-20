@@ -30,7 +30,7 @@ func sendTestInstructionTowardsPlugin(testInstructionId string) (err error) {
 }
 
 // ********************************************************************************************
-// Send TestInstructions to Fenix own Gateway for forwarding to Plugin
+// Send TestInstructions to Fenix own Gateway for then to be forwarded towards Plugin
 //
 
 func dispatchEngineForTestInstructions(testInstructionToBeForwarded *gRPC.TestInstruction_RT) (err error) {
@@ -48,10 +48,10 @@ func dispatchEngineForTestInstructions(testInstructionToBeForwarded *gRPC.TestIn
 			"testInstructionToBeForwarded": testInstructionToBeForwarded,
 		}).Debug("Received a new TestInstruction that shoud be forwarded")
 
-		// Send TestInstruction to client using gRPC-call
+		// Send TestInstruction to Fenix Gateway using gRPC-call
 		addressToDial := getClientAddressAndPort(testInstructionToBeForwarded.PluginId)
 
-		// Set up connection to Client Gateway or Plugin
+		// Set up connection to Fenix Gateway
 		remoteChildServerConnection, err := grpc.Dial(addressToDial, grpc.WithInsecure())
 		if err != nil {
 			logger.WithFields(logrus.Fields{
@@ -64,7 +64,7 @@ func dispatchEngineForTestInstructions(testInstructionToBeForwarded *gRPC.TestIn
 			logger.WithFields(logrus.Fields{
 				"ID":            "0110fa80-c543-4d5c-a02d-ea23fd8969f6",
 				"addressToDial": addressToDial,
-			}).Debug("gRPC connection OK to child-gateway- or Plugin-Server!")
+			}).Debug("gRPC connection OK to Fenix Gateway")
 
 			// Creates a new gateway Client
 			gatewayClient := gRPC.NewGatewayTowayPluginClient(remoteChildServerConnection)
@@ -73,7 +73,7 @@ func dispatchEngineForTestInstructions(testInstructionToBeForwarded *gRPC.TestIn
 			testInstructionToBeForwarded.SenderId = gatewayConfig.GatewayIdentification.GatewayId
 			testInstructionToBeForwarded.SenderName = gatewayConfig.GatewayIdentification.GatewayName
 
-			// Do gRPC-call to client gateway or Plugin
+			// Do gRPC-call to Fenix Gateway
 			ctx := context.Background()
 			returnMessage, err := gatewayClient.SendTestInstructionTowardsPlugin(ctx, testInstructionToBeForwarded)
 			if err != nil {
@@ -81,13 +81,13 @@ func dispatchEngineForTestInstructions(testInstructionToBeForwarded *gRPC.TestIn
 					"ID":            "69c6d6e9-f15e-4e73-a176-8ba947bf9f92",
 					"returnMessage": returnMessage,
 					"error":         err,
-				}).Error("Problem to send TestInstruction to child-Gateway or Plugin")
+				}).Error("Problem to send TestInstruction to Fenix Gateway")
 
 			} else {
 				logger.WithFields(logrus.Fields{
 					"ID":            "466ff0c7-eb34-4188-a1bc-d51bd3cda850",
 					"addressToDial": addressToDial,
-				}).Debug("gRPC-send TestInstruction to child-Gateway or Plugin")
+				}).Debug("gRPC-send TestInstruction to Fenix Gateway")
 
 			}
 		}

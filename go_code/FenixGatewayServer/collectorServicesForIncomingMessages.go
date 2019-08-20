@@ -190,9 +190,14 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 	var returnMessage *gRPC.AckNackResponse
 	var positivReturnMesage = "'testInstructionExecutionResultMessage' was saved in Fenix database"
 	var negativReturnMesage = "'testInstructionExecutionResultMessage' could not be saved in Fenix database"
+	var strangeErrorMessage = "When processing 'testInstructionExecutionResultMessage' an unknown error occured"
 
 	var testInstructionsThatAreStillExecuting []string
 	var err error
+
+	// Initiate returnMessage, should never be sent though
+	returnMessage.Comments = strangeErrorMessage
+	returnMessage.Acknack = false
 
 	logger.WithFields(logrus.Fields{
 		"ID":                                    "76aef74f-4d2f-4f15-abb8-c179bcc55351",
@@ -214,13 +219,11 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 		testInstructionsThatAreStillExecuting, err = listPeerTestInstructionPeersWhichIsExecuting(testInstructionExecutionResultMessage.PeerId)
 
 		// Trigger next TestInstructions that is waiting to be executed if all current peers are finished
-		if  err == nil && len(testInstructionsThatAreStillExecuting) == 0 {
+		if err == nil && len(testInstructionsThatAreStillExecuting) == 0 {
 			testInstructionPeersThatShouldBeExecutedNext, err := listNextPeersToBeExecuted(testInstructionExecutionResultMessage.PeerId))
-			if  err == nil && len(testInstructionsThatAreStillExecuting) > 0 {
+			if err == nil && len(testInstructionsThatAreStillExecuting) > 0 {
 				err = triggerSendNextPeersForExecution(testInstructionPeersThatShouldBeExecutedNext)
-
 			}
-
 		}
 
 	} else {
@@ -228,7 +231,6 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 		// Set gRPC returnMessage back to gateway
 		returnMessage.Comments = negativReturnMesage
 		returnMessage.Acknack = false
-
 	}
 
 	logger.WithFields(logrus.Fields{
