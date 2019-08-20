@@ -220,7 +220,7 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 
 		// Trigger next TestInstructions that is waiting to be executed if all current peers are finished
 		if err == nil && len(testInstructionsThatAreStillExecuting) == 0 {
-			testInstructionPeersThatShouldBeExecutedNext, err := listNextPeersToBeExecuted(testInstructionExecutionResultMessage.PeerId))
+			testInstructionPeersThatShouldBeExecutedNext, err := listNextPeersToBeExecuted(testInstructionExecutionResultMessage.PeerId)
 			if err == nil && len(testInstructionsThatAreStillExecuting) > 0 {
 				err = triggerSendNextPeersForExecution(testInstructionPeersThatShouldBeExecutedNext)
 			}
