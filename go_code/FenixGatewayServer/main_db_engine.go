@@ -276,7 +276,7 @@ func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (m
 // **********************************************************************************************************
 // Get TestInstruction-Payload to be sent to Plugin for Execution
 //
-func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstructionPayloadToPlugin string, err error) {
+func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstructionPayloadToPlugin *gRPC.TestInstruction_RT, err error) {
 
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT Payload "

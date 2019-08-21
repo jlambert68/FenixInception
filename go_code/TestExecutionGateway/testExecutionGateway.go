@@ -15,7 +15,7 @@ func TestExecutionMain(configFileAndPath string, logfileForTest string, database
 	defer cleanup()
 
 	// Start all Services as a Gateway Engine and no function references, use nil as function reference
-	startAllServices(configFileAndPath, logfileForTest, databaseFile, common_code.FunctionsInsteadOfgRPCStruct{
+	StartAllServices(configFileAndPath, logfileForTest, databaseFile, common_code.FunctionsInsteadOfgRPCStruct{
 		FenixOrGatewayTypeOrPlugin: common_code.GatewayEngine,
 		FenixAndPluginFunctionMap: map[common_code.FunctionType]common_code.FunctionReference{
 			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,

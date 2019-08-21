@@ -495,3 +495,23 @@ func initiateGatewayChannels() {
 	gatewayChannelPackage.SupportedTestDataDomainsRequestChannelTowardsPlugin = make(chan *gRPC.SupportedTestDataDomainsRequest, common_code.SuppertedNumberOfMessagesInChannels)
 
 }
+
+// *********************************************************************************
+//  External function for putting a message on TestInstructionMessageChannelTowardsPlugin
+//
+
+func PutTestInstructionMessageOnChannelTowardsPlugin(testInstructionMessage *gRPC.TestInstruction_RT) {
+
+	// Put TestInstruction on channel for further processing
+	gatewayChannelPackage.TestInstructionMessageChannelTowardsPlugin <- testInstructionMessage
+}
+
+// *********************************************************************************
+//  External function for putting a message on TestInstructionMessageChannelTowardsPlugin
+//
+
+func PutSupportedTestDataDomainsMessageOnChannelTowardsPlugin(supportedTestDataDomainsMessage *gRPC.SupportedTestDataDomainsRequest) {
+
+	// Put TestInstruction on channel for further processing
+	gatewayChannelPackage.SupportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsMessage
+}

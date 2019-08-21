@@ -2,8 +2,8 @@ package common_code
 
 import (
 	"github.com/google/uuid"
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
-	gRPC "jlambert/FenixInception2/go_code/common_code/Gateway_gRPC_api"
 	"time"
 )
 
