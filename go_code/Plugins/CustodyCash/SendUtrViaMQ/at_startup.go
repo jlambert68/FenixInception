@@ -59,14 +59,18 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 	// Start all Dispatch- and Transmit-Engines as a Gateway Engine inside Fenix and use function references instead of gRPC-calls
 	TestExecutionGateway.InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
-		FenixOrGatewayTypeOrPlugin:                           common_code.GatewayEngine,
-		common_code.CallBackRegisterAvailbleTestInstructions: CallBackRegisterAvailbleTestInstructions,
-		CallBackRegistrateAailableTestContainers:             CallBackRegistrateAailableTestContainers,
-		CallBackRegistrateAvailableTestDataDomains:           CallBackRegistrateAvailableTestDataDomains,
-		CallBackSendTestInstructionTimeOutTowardsFenix:       CallBackSendTestInstructionTimeOutTowardsFenix,
-		CallBackSendTestExecutionLogTowardsFenix:             CallBackSendTestExecutionLogTowardsFenix,
-		CallBackSupportedTestDataDomains:                     CallBackSupportedTestDataDomains,
-		CallBackSendTestInstructionResultTowardsFenix:        CallBackSendTestInstructionResultTowardsFenix,
+		FenixOrGatewayTypeOrPlugin: common_code.GatewayEngine,
+		FenixAndPluginFunctionMap: map[common_code.FunctionType]common_code.FunctionReference{
+			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
+			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
+			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
+			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
+			common_code.ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
+			common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
+			common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
+			common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
+		},
 	})
 
 	// Listen to gRPC-calls from parent gateway/Fenix

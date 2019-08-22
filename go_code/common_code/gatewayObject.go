@@ -229,14 +229,13 @@ type GatewayChannelPackageStruct struct {
 //
 type FunctionsInsteadOfgRPCStruct struct {
 	FenixOrGatewayTypeOrPlugin                     string
-	FenixAndPluginFunctionMap                      map[FunctionType]FunctionReference
-	callBackRegisterAvailbleTestInstructions       CallBackRegisterAvailbleTestInstructions
-	callBackRegistrateAailableTestContainers       CallBackRegistrateAailableTestContainers
-	callBackRegistrateAvailableTestDataDomains     CallBackRegistrateAvailableTestDataDomains
-	callBackSendTestInstructionTimeOutTowardsFenix CallBackSendTestInstructionTimeOutTowardsFenix
-	callBackSendTestExecutionLogTowardsFenix       CallBackSendTestExecutionLogTowardsFenix
-	callBackSupportedTestDataDomains               CallBackSupportedTestDataDomains
-	callBackSendTestInstructionResultTowardsFenix  CallBackSendTestInstructionResultTowardsFenix
+	CallBackRegisterAvailbleTestInstructions       CallBackRegisterAvailbleTestInstructions
+	CallBackRegistrateAailableTestContainers       CallBackRegistrateAailableTestContainers
+	CallBackRegistrateAvailableTestDataDomains     CallBackRegistrateAvailableTestDataDomains
+	CallBackSendTestInstructionTimeOutTowardsFenix CallBackSendTestInstructionTimeOutTowardsFenix
+	CallBackSendTestExecutionLogTowardsFenix       CallBackSendTestExecutionLogTowardsFenix
+	CallBackSupportedTestDataDomains               CallBackSupportedTestDataDomains
+	CallBackSendTestInstructionResultTowardsFenix  CallBackSendTestInstructionResultTowardsFenix
 }
 type FunctionReference func()
 type FunctionType int
