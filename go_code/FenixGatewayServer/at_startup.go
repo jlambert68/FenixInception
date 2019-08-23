@@ -53,14 +53,46 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 	// Start all Dispatch- and Transmit-Engines as a Gateway Engine inside Fenix and use function references instead of gRPC-calls
 	TestExecutionGateway.InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
-		FenixOrGatewayTypeOrPlugin:                     common_code.FenixEngine,
-		CallBackRegisterAvailbleTestInstructions:       CallBackRegisterAvailbleTestInstructions,
-		CallBackRegistrateAailableTestContainers:       CallBackRegistrateAailableTestContainers,
-		CallBackRegistrateAvailableTestDataDomains:     CallBackRegistrateAvailableTestDataDomains,
-		CallBackSendTestInstructionTimeOutTowardsFenix: CallBackSendTestInstructionTimeOutTowardsFenix,
-		CallBackSendTestExecutionLogTowardsFenix:       CallBackSendTestExecutionLogTowardsFenix,
-		CallBackSupportedTestDataDomains:               CallBackSupportedTestDataDomains,
-		CallBackSendTestInstructionResultTowardsFenix:  CallBackSendTestInstructionResultTowardsFenix,
+		FenixOrGatewayTypeOrPlugin: common_code.FenixEngine,
+		CallBackTowardsPlugins: {
+			CallBackSendTestInstructionTowardsPlugin:        nil,
+			CallackGetSupportedTestDataDomainsTowardsPlugin: nil},
+		CallBackTowardsFenix: {
+			CallBackRegisterAvailbleTestInstructionsTowardsFenix:   nil,
+			CallBackRegistrateAailableTestContainersTowardsFenix:   nil,
+			CallBackRegistrateAvailableTestDataDomainsTowardsFenix: nil,
+			CallBackSendMessageToFenixTowardsFenix:                 nil,
+			CallBackSendTestInstructionTimeOutTowardsFenix:         nil,
+			CallBackSendTestExecutionLogTowardsFenix:               nil,
+			CallBackSupportedTestDataDomainsTowardsFenix:           nil,
+			CallBackSendTestInstructionResultTowardsFenixType:      nil,
+		},
+		/*
+				CallBackRegisterAvailbleTestInstructions:       CallBackRegisterAvailbleTestInstructions,
+				CallBackRegistrateAailableTestContainers:       CallBackRegistrateAailableTestContainers,
+				CallBackRegistrateAvailableTestDataDomains:     CallBackRegistrateAvailableTestDataDomains,
+				CallBackSendTestInstructionTimeOutTowardsFenix: CallBackSendTestInstructionTimeOutTowardsFenix,
+				CallBackSendTestExecutionLogTowardsFenix:       CallBackSendTestExecutionLogTowardsFenix,
+				CallBackSupportedTestDataDomains:               CallBackSupportedTestDataDomains,
+				CallBackSendTestInstructionResultTowardsFenix:  CallBackSendTestInstructionResultTowardsFenix,
+
+				CallBackTowardsPlugins
+				// Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
+				CallBackSendTestInstructionTowardsPlugin        CallBackSendTestInstructionTowardsPluginType
+				CallackGetSupportedTestDataDomainsTowardsPlugin CallackGetSupportedTestDataDomainsTowardsPluginType
+			}
+				CallBackTowardsFenix struct {
+				// Towards Fenix Used for communicating with functions in Fenix instead of gRPC-call
+				CallBackRegisterAvailbleTestInstructionsTowardsFenix   CallBackRegisterAvailbleTestInstructionsTowardsFenixType
+				CallBackRegistrateAailableTestContainersTowardsFenix   CallBackRegistrateAailableTestContainersTowardsFenixType
+				CallBackRegistrateAvailableTestDataDomainsTowardsFenix CallBackRegistrateAvailableTestDataDomainsTowardsFenixType
+				CallBackSendMessageToFenixTowardsFenix                 CallBackSendMessageToFenixTowardsFenixType
+				CallBackSendTestInstructionTimeOutTowardsFenix         CallBackSendTestInstructionTimeOutTowardsFenixType
+				CallBackSendTestExecutionLogTowardsFenix               CallBackSendTestExecutionLogTowardsFenixType
+				CallBackSupportedTestDataDomainsTowardsFenix           CallBackSupportedTestDataDomainsTowardsFenixType
+				CallBackSendTestInstructionResultTowardsFenixType
+
+		*/
 	})
 
 	// Start all services at the same time

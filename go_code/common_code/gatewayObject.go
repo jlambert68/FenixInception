@@ -229,22 +229,26 @@ type GatewayChannelPackageStruct struct {
 //
 type FunctionsInsteadOfgRPCStruct struct {
 	FenixOrGatewayTypeOrPlugin string
-	CallBackTowardsPlugins     struct {
-		// Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
-		CallBackSendTestInstructionTowardsPlugin        CallBackSendTestInstructionTowardsPluginType
-		CallackGetSupportedTestDataDomainsTowardsPlugin CallackGetSupportedTestDataDomainsTowardsPluginType
-	}
-	CallBackTowardsFenix struct {
-		// Towards Fenix Used for communicating with functions in Fenix instead of gRPC-call
-		CallBackRegisterAvailbleTestInstructionsTowardsFenix   CallBackRegisterAvailbleTestInstructionsTowardsFenixType
-		CallBackRegistrateAailableTestContainersTowardsFenix   CallBackRegistrateAailableTestContainersTowardsFenixType
-		CallBackRegistrateAvailableTestDataDomainsTowardsFenix CallBackRegistrateAvailableTestDataDomainsTowardsFenixType
-		CallBackSendMessageToFenixTowardsFenix                 CallBackSendMessageToFenixTowardsFenixType
-		CallBackSendTestInstructionTimeOutTowardsFenix         CallBackSendTestInstructionTimeOutTowardsFenixType
-		CallBackSendTestExecutionLogTowardsFenix               CallBackSendTestExecutionLogTowardsFenixType
-		CallBackSupportedTestDataDomainsTowardsFenix           CallBackSupportedTestDataDomainsTowardsFenixType
-		CallBackSendTestInstructionResultTowardsFenixType      CallBackSendTestInstructionResultTowardsFenixType
-	}
+	CallBackTowardsPlugins     CallBackTowardsPluginsType
+	CallBackTowardsFenix       CallBackTowardsFenixType
+}
+
+// Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
+type CallBackTowardsPluginsType struct {
+	CallBackSendTestInstructionTowardsPlugin        CallBackSendTestInstructionTowardsPluginType
+	CallackGetSupportedTestDataDomainsTowardsPlugin CallackGetSupportedTestDataDomainsTowardsPluginType
+}
+
+// Towards Fenix Used for communicating with functions in Fenix instead of gRPC-call
+type CallBackTowardsFenixType struct {
+	CallBackRegisterAvailbleTestInstructionsTowardsFenix   CallBackRegisterAvailbleTestInstructionsTowardsFenixType
+	CallBackRegistrateAailableTestContainersTowardsFenix   CallBackRegistrateAailableTestContainersTowardsFenixType
+	CallBackRegistrateAvailableTestDataDomainsTowardsFenix CallBackRegistrateAvailableTestDataDomainsTowardsFenixType
+	CallBackSendMessageToFenixTowardsFenix                 CallBackSendMessageToFenixTowardsFenixType
+	CallBackSendTestInstructionTimeOutTowardsFenix         CallBackSendTestInstructionTimeOutTowardsFenixType
+	CallBackSendTestExecutionLogTowardsFenix               CallBackSendTestExecutionLogTowardsFenixType
+	CallBackSupportedTestDataDomainsTowardsFenix           CallBackSupportedTestDataDomainsTowardsFenixType
+	CallBackSendTestInstructionResultTowardsFenixType      CallBackSendTestInstructionResultTowardsFenixType
 }
 
 // Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
