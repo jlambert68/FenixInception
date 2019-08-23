@@ -295,7 +295,8 @@ func StartAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 		updateMemoryAddressForParentAddressInfo()
 
-		gatewayMustStopProcessing = false
+		// Let Fenix Start processing when everything is up
+		// = false
 
 		// Release all saved messages to channls
 		// TODO Make all Clients ReRegister them self

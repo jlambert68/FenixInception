@@ -228,15 +228,40 @@ type GatewayChannelPackageStruct struct {
 // Used for sending function references to Dispatch/TransmitENgine to be used of sending using gRPC when in Fenix and Plugin
 //
 type FunctionsInsteadOfgRPCStruct struct {
-	FenixOrGatewayTypeOrPlugin                     string
-	CallBackRegisterAvailbleTestInstructions       CallBackRegisterAvailbleTestInstructionsType
-	CallBackRegistrateAailableTestContainers       CallBackRegistrateAailableTestContainersType
-	CallBackRegistrateAvailableTestDataDomains     CallBackRegistrateAvailableTestDataDomainsType
-	CallBackSendTestInstructionTimeOutTowardsFenix CallBackSendTestInstructionTimeOutTowardsFenixType
-	CallBackSendTestExecutionLogTowardsFenix       CallBackSendTestExecutionLogTowardsFenixType
-	CallBackSupportedTestDataDomains               CallBackSupportedTestDataDomainsType
-	CallBackSendTestInstructionResultTowardsFenix  CallBackSendTestInstructionResultTowardsFenixType
+	FenixOrGatewayTypeOrPlugin string
+	CallBackTowardsPlugins     struct {
+		// Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
+		CallBackSendTestInstructionTowardsPlugin        CallBackSendTestInstructionTowardsPluginType
+		CallackGetSupportedTestDataDomainsTowardsPlugin CallackGetSupportedTestDataDomainsTowardsPluginType
+	}
+	CallBackTowardsFenix struct {
+		// Towards Fenix Used for communicating with functions in Fenix instead of gRPC-call
+		CallBackRegisterAvailbleTestInstructionsTowardsFenix   CallBackRegisterAvailbleTestInstructionsTowardsFenixType
+		CallBackRegistrateAailableTestContainersTowardsFenix   CallBackRegistrateAailableTestContainersTowardsFenixType
+		CallBackRegistrateAvailableTestDataDomainsTowardsFenix CallBackRegistrateAvailableTestDataDomainsTowardsFenixType
+		CallBackSendMessageToFenixTowardsFenix                 CallBackSendMessageToFenixTowardsFenixType
+		CallBackSendTestInstructionTimeOutTowardsFenix         CallBackSendTestInstructionTimeOutTowardsFenixType
+		CallBackSendTestExecutionLogTowardsFenix               CallBackSendTestExecutionLogTowardsFenixType
+		CallBackSupportedTestDataDomainsTowardsFenix           CallBackSupportedTestDataDomainsTowardsFenixType
+		CallBackSendTestInstructionResultTowardsFenixType      CallBackSendTestInstructionResultTowardsFenixType
+	}
 }
+
+// Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
+type CallBackSendTestInstructionTowardsPluginType func(testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error)
+type CallackGetSupportedTestDataDomainsTowardsPluginType func(supportedTestDataDomainsRequest *gRPC.SupportedTestDataDomainsRequest)
+
+// Towards Fenix Used for communicating with functions in Fenix instead of gRPC-call
+type CallBackRegisterAvailbleTestInstructionsTowardsFenixType func(availbleTestInstructionAtPluginMessage *gRPC.AvailbleTestInstructionAtPluginMessage) (*gRPC.AckNackResponse, error)
+type CallBackRegistrateAailableTestContainersTowardsFenixType func(availbleTestContainersAtPluginMessage *gRPC.AvailbleTestContainersAtPluginMessage) (*gRPC.AckNackResponse, error)
+type CallBackRegistrateAvailableTestDataDomainsTowardsFenixType func(supportedTestDataDomainsMessage *gRPC.SupportedTestDataDomainsMessage) (*gRPC.AckNackResponse, error)
+type CallBackSendMessageToFenixTowardsFenixType func(informationMessage *gRPC.InformationMessage) (*gRPC.AckNackResponse, error)
+type CallBackSendTestInstructionTimeOutTowardsFenixType func(testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error)
+type CallBackSendTestExecutionLogTowardsFenixType func(testExecutionLogMessage *gRPC.TestExecutionLogMessage) (*gRPC.AckNackResponse, error)
+type CallBackSupportedTestDataDomainsTowardsFenixType func(supportedTestDataDomainsWithHeadersMessage *gRPC.SupportedTestDataDomainsWithHeadersMessage) (*gRPC.AckNackResponse, error)
+type CallBackSendTestInstructionResultTowardsFenixType func(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (*gRPC.AckNackResponse, error)
+
+/*
 type FunctionReference func()
 type FunctionType int
 
@@ -254,12 +279,6 @@ const (
 	ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction
 )
 
-type CallBackRegisterAvailbleTestInstructionsType func(availbleTestInstructionAtPluginMessage *gRPC.AvailbleTestInstructionAtPluginMessage) (*gRPC.AckNackResponse, error)
-type CallBackRegistrateAailableTestContainersType func(availbleTestContainersAtPluginMessage *gRPC.AvailbleTestContainersAtPluginMessage) (*gRPC.AckNackResponse, error)
-type CallBackRegistrateAvailableTestDataDomainsType func(supportedTestDataDomainsMessage *gRPC.SupportedTestDataDomainsMessage) (*gRPC.AckNackResponse, error)
-type CallBackSendTestInstructionTimeOutTowardsFenixType func(testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error)
-type CallBackSendTestExecutionLogTowardsFenixType func(testExecutionLogMessage *gRPC.TestExecutionLogMessage) (*gRPC.AckNackResponse, error)
-type CallBackSupportedTestDataDomainsType func(supportedTestDataDomainsWithHeadersMessage *gRPC.SupportedTestDataDomainsWithHeadersMessage) (*gRPC.AckNackResponse, error)
-type CallBackSendTestInstructionResultTowardsFenixType func(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (*gRPC.AckNackResponse, error)
+*/
 
 // ***********************************************************************************

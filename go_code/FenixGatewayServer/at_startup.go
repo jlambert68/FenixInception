@@ -44,53 +44,28 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 		initLogger(logfileForTest)
 	}
 
-	// Initiate internal gatewau channels
-	TestExecutionGateway.InitiateGatewayChannels()
-
-	//  Initiate the memory structure to hold all client gateway/plugin's address information
-	TestExecutionGateway.InitiateClientAddressMemoryDB()
+	// Initiate connection for Fenix Inceptions Main Database
+	initiateMainDB()
 
 	// Ensure that all services don't start before everything has been started
 	//TODO Change this into a function-call instead
-	TestExecutionGateway.GatewayMustStopProcessing = true
-
-	// Initiate Database
-	TestExecutionGateway.InitiateDB(databaseFile) // If "" then Use default database file name
+	TestExecutionGateway.SetGatewayMustStopProcessingFlag = true
 
 	// Start all Dispatch- and Transmit-Engines as a Gateway Engine inside Fenix and use function references instead of gRPC-calls
 	TestExecutionGateway.InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
-		FenixOrGatewayTypeOrPlugin:                           common_code.GatewayEngine,
-		common_code.CallBackRegisterAvailbleTestInstructions: CallBackRegisterAvailbleTestInstructions,
-		CallBackRegistrateAailableTestContainers:             CallBackRegistrateAailableTestContainers,
-		CallBackRegistrateAvailableTestDataDomains:           CallBackRegistrateAvailableTestDataDomains,
-		CallBackSendTestInstructionTimeOutTowardsFenix:       CallBackSendTestInstructionTimeOutTowardsFenix,
-		CallBackSendTestExecutionLogTowardsFenix:             CallBackSendTestExecutionLogTowardsFenix,
-		CallBackSupportedTestDataDomains:                     CallBackSupportedTestDataDomains,
-		CallBackSendTestInstructionResultTowardsFenix:        CallBackSendTestInstructionResultTowardsFenix,
+		FenixOrGatewayTypeOrPlugin:                     common_code.FenixEngine,
+		CallBackRegisterAvailbleTestInstructions:       CallBackRegisterAvailbleTestInstructions,
+		CallBackRegistrateAailableTestContainers:       CallBackRegistrateAailableTestContainers,
+		CallBackRegistrateAvailableTestDataDomains:     CallBackRegistrateAvailableTestDataDomains,
+		CallBackSendTestInstructionTimeOutTowardsFenix: CallBackSendTestInstructionTimeOutTowardsFenix,
+		CallBackSendTestExecutionLogTowardsFenix:       CallBackSendTestExecutionLogTowardsFenix,
+		CallBackSupportedTestDataDomains:               CallBackSupportedTestDataDomains,
+		CallBackSendTestInstructionResultTowardsFenix:  CallBackSendTestInstructionResultTowardsFenix,
 	})
 
-	// Listen to gRPC-calls from parent gateway/Fenix
-	//startGatewayGRPCServerForMessagesTowardsFenix()
-
-	// Listen to gRPC-calls from parent gateway/Fenix
-	// Not needed in Fenix
-	//startGatewayGRPCServerForMessagesTowardsPlugins()
-
-	// Listen to gRPC-calls from child gateway/plugin
-	TestExecutionGateway.StartGatewayGRPCServerForMessagesTowardsFenix()
-
-	// Update Memory information about parent address and port with that saved in database, database overrule config-file
-	// Not needed for Fenix
-	//updateMemoryAddressForParentAddressInfo()
-
 	// Start all services at the same time
-	TestExecutionGateway.GatewayMustStopProcessing = false
+	TestExecutionGateway.SetGatewayMustStopProcessingFlag = false
 
-	// Ask clients to ReRegister them self to this gateway
-	// TODO Make all Clients ReRegister them self
-
-	// Release all saved messages to channls
-	// TODO Release all massages to channels
 }
 
 // ********************************************************************************************

@@ -515,3 +515,11 @@ func PutGetSupportedTestDataDomainsMessageOnChannelTowardsPlugin(supportedTestDa
 	// Put TestInstruction on channel for further processing
 	gatewayChannelPackage.SupportedTestDataDomainsRequestChannelTowardsPlugin <- supportedTestDataDomainsMessage
 }
+
+// *********************************************************************************
+//  External function to Start and stop Processing for engine
+//
+
+func SetGatewayMustStopProcessingFlag(stopProccesing bool) {
+	gatewayMustStopProcessing = stopProccesing
+}
