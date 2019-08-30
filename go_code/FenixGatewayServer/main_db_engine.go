@@ -856,68 +856,68 @@ func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPlu
 
 						/*
 
-create table testInstructions.AvailbleTestInstructions
-							(
-							    -- Base information
-							    OriginalSenderId                           uuid                     not null, -- 'The Id of the gateway/plugin that created the message'; --1
-							    OriginalSenderName                         varchar default null,              -- 'Then name of the plugin that created the message'; --2
-							    MessageId                                  uuid                     not null, -- 'A unique id generated when sent from Plugin'; --3
-							    OrginalCreateDateTime                      timestamp with time zone not null, -- 'The timestamp when the orignal message was created'; --4
-							    OriginalSystemDomainId                     uuid                     not null, -- 'The Domain/system''s Id where the Sender operates'; --5
-							    OriginalSystemDomainName                   varchar default null,              -- 'The Domain/system''s Name where the Sender operates';--6
+							create table testInstructions.AvailbleTestInstructions
+								(
+								    -- Base information
+								    OriginalSenderId                           uuid                     not null, -- 'The Id of the gateway/plugin that created the message'; --1
+								    OriginalSenderName                         varchar default null,              -- 'Then name of the plugin that created the message'; --2
+								    MessageId                                  uuid                     not null, -- 'A unique id generated when sent from Plugin'; --3
+								    OrginalCreateDateTime                      timestamp with time zone not null, -- 'The timestamp when the orignal message was created'; --4
+								    OriginalSystemDomainId                     uuid                     not null, -- 'The Domain/system''s Id where the Sender operates'; --5
+								    OriginalSystemDomainName                   varchar default null,              -- 'The Domain/system''s Name where the Sender operates';--6
 
-							    -- A specific Test Instruction
-							    PluginGuid                                 uuid                     not null, -- Used as unique id for the plugin'; --7
-							    PluginName                                 varchar default null,              -- 'Used as unique name for the plugin'; --8
-							    SystemDomainId                             uuid                     not null, -- 'The Domain/system''s Id where the Sender operates is'; --9
-							    SystemDomainName                           varchar default null,              --  'The Domain/system''s Name where the Sender operates'; --10
-							    TestInstructionTypeGuid                    uuid                     not null, --  'The unique guid for the Type of TestInstruction. Set by Client system'; --11
-							    TestInstructionTypeName                    varchar default null,              --  'The name for the Type of TestInstruction. Set by Client system'; --12
-							    TestInstructionGuid                        uuid                     not null, --  'The unique guid for the TestInstruction. Set when used in Editor'; --13
-							    TestInstructionName                        varchar default null,              --  'The name of the TestInstruction'; --14
-							    TestInstructionDescription                 varchar default null,              --  'The description of the TestInstruction'; --15
-							    TestInstructionMouseOver                   varchar default null,              --  'The mouse over test for the TestInstruction'; --16
-							    TestInstructionVisible                     boolean                  not null, --  'Should the TestInstruction be visible in GUI or not'; --17
-							    TestInstructionEnable                      boolean                  not null, --  'Should the TestInstruction be enabled or not'; --18
-							    TestInstructionColor                       varchar default null,              --  'The color used for presenting the TestInstructionBlock, e.g. #FAF437'; --19
-							    DropIDs                                    varchar default null,              --  'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
-							    LandingZoneGuid                            varchar default null,              --  'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
-							    ChoosenLandingZone                         varchar default null,              --  'The choosen LandingZone for this TestInstructionBlock'; --22
+								    -- A specific Test Instruction
+								    PluginGuid                                 uuid                     not null, -- Used as unique id for the plugin'; --7
+								    PluginName                                 varchar default null,              -- 'Used as unique name for the plugin'; --8
+								    SystemDomainId                             uuid                     not null, -- 'The Domain/system''s Id where the Sender operates is'; --9
+								    SystemDomainName                           varchar default null,              --  'The Domain/system''s Name where the Sender operates'; --10
+								    TestInstructionTypeGuid                    uuid                     not null, --  'The unique guid for the Type of TestInstruction. Set by Client system'; --11
+								    TestInstructionTypeName                    varchar default null,              --  'The name for the Type of TestInstruction. Set by Client system'; --12
+								    TestInstructionGuid                        uuid                     not null, --  'The unique guid for the TestInstruction. Set when used in Editor'; --13
+								    TestInstructionName                        varchar default null,              --  'The name of the TestInstruction'; --14
+								    TestInstructionDescription                 varchar default null,              --  'The description of the TestInstruction'; --15
+								    TestInstructionMouseOver                   varchar default null,              --  'The mouse over test for the TestInstruction'; --16
+								    TestInstructionVisible                     boolean                  not null, --  'Should the TestInstruction be visible in GUI or not'; --17
+								    TestInstructionEnable                      boolean                  not null, --  'Should the TestInstruction be enabled or not'; --18
+								    TestInstructionColor                       varchar default null,              --  'The color used for presenting the TestInstructionBlock, e.g. #FAF437'; --19
+								    DropIDs                                    varchar default null,              --  'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
+								    LandingZoneGuid                            varchar default null,              --  'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
+								    ChoosenLandingZone                         varchar default null,              --  'The choosen LandingZone for this TestInstructionBlock'; --22
 
-							--A specific Attribute for the Test Instruction
-							    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --23
-							    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
-							    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --25
-							    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --26
-							    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --27
-							    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
-							    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --29
-							    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --30
-							    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
-							    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
-							    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
+								--A specific Attribute for the Test Instruction
+								    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --23
+								    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
+								    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --25
+								    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --26
+								    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --27
+								    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
+								    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --29
+								    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --30
+								    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
+								    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
+								    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
 
-							-- Properties for TextBox attribute
-							    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
-							    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
-							    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --36
-							    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --37
-							    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
-							    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --39
-							    TextBoxAttributeValue                      varchar default null,              -- 'The value for the the TextBox, used for preset values';--40
+								-- Properties for TextBox attribute
+								    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
+								    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
+								    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --36
+								    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --37
+								    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
+								    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --39
+								    TextBoxAttributeValue                      varchar default null,              -- 'The value for the the TextBox, used for preset values';--40
 
-							-- Properties for ComboBox attribute
-							    TestInstructionAttributeComboBoxGuid       uuid    default null,              -- 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
-							    TestInstructionAttributeComboBoxName       varchar default null,              -- 'The name of the TestInstructionAttributeComboBoxProperties'; --42
-							    ComboBoxEditable                           boolean default null,              -- 'Should the the ComboBox be editable or not'; --43
-							    ComboBoxInputMask                          varchar default null,              -- 'Inputmask for the ComboBox'; --44
-							    ComboBoxAttributeTypeGuid                  uuid    default null,              -- 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --45
-							    ComboBoxAttributeTypeName                  varchar default null,              -- 'The Name for the Type of the ComboBox'; --46
-							    ComboBoxAttributeValueGuid                 uuid    default null,              -- 'The guid of the value for the the ComboBox, used for preset values'; --47
-							    ComboBoxAttributeValue                     varchar default null,              -- 'The value for the the ComboBox, used for preset values';--48
-							-- WHen row was create/updated
-							    updatedDateTime                            timestamp with time zone not null  -- The Datetime when the row was created/updates 49
-							);
+								-- Properties for ComboBox attribute
+								    TestInstructionAttributeComboBoxGuid       uuid    default null,              -- 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
+								    TestInstructionAttributeComboBoxName       varchar default null,              -- 'The name of the TestInstructionAttributeComboBoxProperties'; --42
+								    ComboBoxEditable                           boolean default null,              -- 'Should the the ComboBox be editable or not'; --43
+								    ComboBoxInputMask                          varchar default null,              -- 'Inputmask for the ComboBox'; --44
+								    ComboBoxAttributeTypeGuid                  uuid    default null,              -- 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --45
+								    ComboBoxAttributeTypeName                  varchar default null,              -- 'The Name for the Type of the ComboBox'; --46
+								    ComboBoxAttributeValueGuid                 uuid    default null,              -- 'The guid of the value for the the ComboBox, used for preset values'; --47
+								    ComboBoxAttributeValue                     varchar default null,              -- 'The value for the the ComboBox, used for preset values';--48
+								-- WHen row was create/updated
+								    updatedDateTime                            timestamp with time zone not null  -- The Datetime when the row was created/updates 49
+								);
 						*/
 
 						// Values to insert into database
@@ -1001,12 +1001,32 @@ create table testInstructions.AvailbleTestInstructions
 			}
 		}
 	}
-}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
 }
 
-// Return if the messages was saved or not in database
-return messageSavedInDB
-}
+create table testInstructions.TestContainerMessage
+(
+PluginGuid                  uuid                     not null, -- A unique id for the plugin 1
+PluginName                  varchar default null,              -- A name for the plugin 2
+SystemDomainId              uuid                     not null, --  The Domain/system's Id where the Sender operates 3
+SystemDomainName            varchar default null,              -- The Domain/system's Name where the Sender operates 4
+TestContainerGuid           uuid                     not null, -- A unique id for the TestContainer 5
+TestContainerName           varchar default null,              -- A name for the TestContainer 6
+TestContainerIsTopContainer boolean                  not null, -- Telling if the container is a top container, i.e. has no parent container 7
+
+ChildProcessingTypeId       int                      not null, -- The id for child processing type (0 or 1) 8
+ChildProcessingTypeName     varchar                  not null, -- The name for child processing type ('IsSerialProcessedContainer' or 'IsParallellProcessedContainer') 9
+ChildTypeId                 int                      not null, -- The id for the type of child  (0 or 1) 10
+ChildTypeName               varchar                  not null, -- The name for the type of child ('ChildIsTestInstructionContainerMessage' or 'ChildIsTestInstructionMessage') 11
+ParentContainerReference    uuid    default null,              -- A reference to parent container if it exists 12
+ChildContainerReference     uuid    default null,              -- A reference to child container if it exists 13
+TestInstructionsReference   uuid    default null,              -- A reference TestInstruction if it exists 14
+
+updatedDateTime             timestamp with time zone not null  -- The Datetime when the row was created/updates 15
+);
+
 /*
        //TestInstructionResults flows from Plugins towards Fenix Inception
        rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse) {
