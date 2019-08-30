@@ -409,7 +409,7 @@ message TestContainerChildObjectMessage {
         ChildIsTestInstructionMessage = 1;
     }
     TestContainerMessage TestInstructionMessageChild = 2;
-    AvailbleTestInstructionAtPluginMessage AvailbleTestInstructionAtPluginMessageChild = 3;
+    string AvailbleTestInstructionAtPluginMessageChildReferenceGuid = 3;
 }
 
 // **********

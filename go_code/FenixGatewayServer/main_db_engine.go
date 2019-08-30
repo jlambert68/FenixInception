@@ -852,7 +852,7 @@ func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPlu
 				numberOfAttributes := len(availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes)
 				if numberOfAttributes > 0 {
 					// Loop over all  Attributes
-					for currentAttributeCounter := 0; currentAttributeCounter < numberOfTestDataFilterHeaders; currentAttributeCounter++ {
+					for currentAttributeCounter := 0; currentAttributeCounter < numberOfAttributes; currentAttributeCounter++ {
 
 						/*
 
@@ -1032,7 +1032,7 @@ return messageSavedInDB
        }
 
        // Register the different Testdata Domains that is supported
-       rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
+   x    rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
        }
 
        // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
