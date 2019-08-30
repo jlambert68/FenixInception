@@ -386,7 +386,7 @@ message AvailbleTestContainersAtPluginMessage {
 }
 
 
-// A Container that holds block of TestContainerMessages and TestInstructions
+// A Container that holds block of TestContainerMessages and and references to TestInstructions
 message TestContainerMessage {
     string PluginGuid = 1; // Used as unique id for the plugin
     string PluginName = 2; // Used as unique name for the plugin

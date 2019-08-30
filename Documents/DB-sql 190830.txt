@@ -1,0 +1,541 @@
+drop schema testcaseexecutions;
+create schema testcaseexecutions;
+
+drop schema testdatadomains;
+create schema testdatadomains;
+
+drop schema messages;
+create schema messages;
+
+
+-- Hold all testcases that are scheduled for execution
+
+drop table testcaseexecutions.Scheduled_TestCases;
+
+create table testcaseexecutions.Scheduled_TestCases
+(
+    ScheduledId              uuid                     not null,     -- A unique id for the scheduled testcase 1
+    SuiteId                  uuid                     default null, -- If scheduling was done from a suite then this is the suite id 2
+    SuiteVersionId           uuid                     default null, -- If scheduling was done from a suite then this is the suite version id 3
+    TestCaseId               uuid                     not null,     -- The Test case Id 4
+    TestCaseVersionId        uuid                     not null,     -- he Test Case version Id 5
+    CreatedDateTime          timestamp with time zone not null,     -- The timestamp when the test case was put for scheduling 6
+    ScheduledDateTime        timestamp with time zone default null, -- The date time when the test case should start executing 7
+    SentForExecutionDateTime timestamp with time zone default null, -- he date time when the test case was first sent for execution 8
+    updatedDatedTime         timestamp with time zone not null      -- The Datetime when the row was created/updates 9
+
+);
+
+comment on table testcaseexecutions.Scheduled_TestCases is 'Hold all testcases that are scheduled for execution';
+
+comment on column testcaseexecutions.Scheduled_TestCases.ScheduledId is 'A unique id for the scheduled testcase'; --1
+comment on column testcaseexecutions.Scheduled_TestCases.SuiteId is 'If scheduling was done from a suite then this is the suite id'; --2
+comment on column testcaseexecutions.Scheduled_TestCases.SuiteVersionId is 'If scheduling was done from a suite then this is the suite version id'; --3
+comment on column testcaseexecutions.Scheduled_TestCases.TestCaseId is 'The Test case Id'; --4
+comment on column testcaseexecutions.Scheduled_TestCases.TestCaseVersionId is 'The Test Case version Id'; --5
+comment on column testcaseexecutions.Scheduled_TestCases.CreatedDateTime is 'The timestamp when the test case was put for scheduling'; --6
+comment on column testcaseexecutions.Scheduled_TestCases.ScheduledDateTime is 'The date time when the test case should start executing'; --7
+comment on column testcaseexecutions.Scheduled_TestCases.SentForExecutionDateTime is 'The date time when the test case was first sent for execution'; --8
+comment on column testcaseexecutions.Scheduled_TestCases.updatedDatedTime is 'The Datetime when the row was created/updates'; --9
+
+
+drop table testcaseexecutions.Executing_TestInstructions;
+create table testcaseexecutions.Executing_TestInstructions
+(
+    ScheduledId                      uuid                     not null,      -- A unique id for the scheduled testcase 1
+    SuiteId                          uuid                     default null,  -- If scheduling was done from a suite then this is the suite id 2
+    SuiteVersionId                   uuid                     default null,  -- If scheduling was done from a suite then this is the suite version id 3
+    SuiteExecutionId                 uuid                     default null,  -- If scheduling was done from a suite then this is the suite execution id 4
+    SuiteExecutionVersion            int                      not null,      -- If scheduling was done from a suite then this is the suite execution version id 5
+    TestCaseId                       uuid                     not null,      -- The Test case Id 6
+    TestCaseVersionId                uuid                     not null,      -- The Test Case version Id 7
+    TestCaseExecutionId              uuid                     not null,      -- The Test case execution id  8
+    TestCaseExecutionVersion         int                      not null,      -- The Test case execution version id 9
+    TestInstructionSortOrder         int                      not null,      -- The Sort order for the Test Instructions 10
+    TestInstructionId                uuid                     not null,      -- A unique id for each Test Instruction 11
+    TestInstructionVersion           int                      not null,      -- A version number for the Test Instruction, if it has been run again 12
+    PreviousTestInstructionId        uuid                     not null,      -- A reference to the previous Test Instruction if the Test Instruction was rerun  13
+    TestInstructionPeerId            uuid                     default null,  -- An id that is the same for all Test Instructions that can be run in parallell 14
+    PreviousTestInstructionPeerId    uuid                     default null,  -- A reference to previous Test Instructions that were run in parallell 15
+    TestInstructionCreatedDateTime   timestamp with time zone not null,      -- The datetime when the TestInstruction was created 16
+    TestInstructionSentDateTime      timestamp with time zone default null,  -- The datetime when the Test Instruction was sent for execution at plugin 17
+    TestInstructionReceivedDateTime  timestamp with time zone default null,  -- The datetime when the result for the Test Instruction was received from plugin 18
+    TestInstructionTimoutDateTime    timestamp with time zone default null,  -- The timeout time for the Test Instruction that plugin sent back to Fenix 19
+    TestInstructionExecutionFinished boolean                  default false, -- Is the execution of the test case finished or not 20
+    TestInstructionExecutionResult   varchar                  default null,  -- The result of the execution XXXXXXXXXXXXXXX Ändra denna 21
+    MessageId                        uuid                     default null,  -- A unique id for the message sent to plugin 22
+    Payload                          json                     default null,  -- The json payload to be sent to plugin 23
+    ResponsePayload                  json                     default null,  -- The json respons payload that was received from plugin 24
+    updatedDateTime                  timestamp with time zone not null       -- The Datetime when the row was created/updates 25
+);
+
+
+comment on table testcaseexecutions.Executing_TestInstructions is 'Holds all Information Messages used when Gateway or Plugin wants to send information to Fenix';
+
+comment on column testcaseexecutions.Executing_TestInstructions.ScheduledId is 'A unique id for the scheduled testcase'; -- 1
+comment on column testcaseexecutions.Executing_TestInstructions.SuiteId is 'If scheduling was done from a suite then this is the suite id'; -- 2
+comment on column testcaseexecutions.Executing_TestInstructions.SuiteVersionId is 'If scheduling was done from a suite then this is the suite version id'; -- 3
+comment on column testcaseexecutions.Executing_TestInstructions.SuiteExecutionId is 'If scheduling was done from a suite then this is the suite execution id'; -- 4
+comment on column testcaseexecutions.Executing_TestInstructions.SuiteExecutionVersion is 'If scheduling was done from a suite then this is the suite execution id'; -- 5
+comment on column testcaseexecutions.Executing_TestInstructions.TestCaseId is 'The Test case Id'; -- 6
+comment on column testcaseexecutions.Executing_TestInstructions.TestCaseVersionId is 'The Test Case version Id'; -- 7
+comment on column testcaseexecutions.Executing_TestInstructions.TestCaseExecutionId is 'The Test case execution id'; -- 8
+comment on column testcaseexecutions.Executing_TestInstructions.TestCaseExecutionVersion is 'The Test case execution version id'; -- 9
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionSortOrder is 'The Sort order for the Test Instructions'; -- 10
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionId is 'A unique id for each Test Instruction'; -- 11
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionVersion is 'A version number for the Test Instruction, if it has been run again'; -- 12
+comment on column testcaseexecutions.Executing_TestInstructions.PreviousTestInstructionId is 'A reference to the previous Test Instruction if the Test Instruction was rerun'; -- 13
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionPeerId is 'A reference to previous Test Instructions that were run in parallell'; -- 14
+comment on column testcaseexecutions.Executing_TestInstructions.PreviousTestInstructionPeerId is 'A reference to previous Test Instructions that were run in parallell'; -- 15
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionCreatedDateTime is 'The datetime when the TestInstruction was created'; -- 16
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionSentDateTime is 'The datetime when the Test Instruction was sent for execution at plugin'; -- 17
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionReceivedDateTime is 'The datetime when the result for the Test Instruction was received from plugin '; -- 18
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionTimoutDateTime is 'The timeout time for the Test Instruction that plugin sent back to Fenix'; -- 19
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionExecutionFinished is 'Is the execution of the test case finished or not'; -- 20
+comment on column testcaseexecutions.Executing_TestInstructions.TestInstructionExecutionResult is 'The result of the execution XXXXXXXXXXXXXXX Ändra denna'; -- 21
+comment on column testcaseexecutions.Executing_TestInstructions.MessageId is 'A unique id for the message sent to plugin'; -- 22
+comment on column testcaseexecutions.Executing_TestInstructions.Payload is 'The json payload to be sent to plugin'; -- 23
+comment on column testcaseexecutions.Executing_TestInstructions.ResponsePayload is 'The json respons payload that was received from plugin'; -- 24
+comment on column testcaseexecutions.Executing_TestInstructions.updatedDateTime is 'The Datetime when the row was created/updates';
+-- 25
+-- 23
+
+
+--SELECT TestInstructionId
+--FROM testcaseexecutions.Executing_TestInstructions
+--WHERE TestStepExecutionFinished isnull
+--  AND SuiteId =
+--      SuiteVersionId =
+--     SuiteExecutionId =
+--      SuiteExecutionVersion =
+--      TestCaseId uuid =
+--    TestCaseVersionId =
+--    TestCaseExecutionId =
+--    TestCaseExecutionVersion =
+--    TestInstructionSortOrder =
+--    TestInstructionId =
+--    TestInstructionVersion =
+
+-- Holds all Test Data Domains for all systems
+drop table testdatadomains.Supported_TestData_Domains;
+
+create table testdatadomains.Supported_TestData_Domains
+(
+    OriginalSenderId          uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+    OriginalSenderName        varchar default null,              -- he name of the gateway/plugin that created the message 2
+    MessageId                 uuid                     not null, -- A unique id generated when sent from Plugin 3
+    TestDataDomainId          uuid                     not null, -- The unique id of the testdata domain 4
+    TestDataDomainName        varchar default null,              -- The name of the testdata domain 5
+    TestDataDomainDescription varchar default null,              -- A description of the testdata domain 6
+    TestDataDomainMouseOver   varchar default null,              -- A mouse over description of the testdata domain 7
+    OrginalCreateDateTime     timestamp with time zone not null, -- The timestamp when the orignal message was created 8
+    OriginalSystemDomainId    uuid                     not null, -- he Domain/system's Id where the Sender operates 9
+    OriginalSystemDomainName  varchar default null,              -- The Domain/system's Name where the Sender operates 10
+    updatedDateTime           timestamp with time zone not null  -- The Datetime when the row was created/updates 11
+);
+
+comment on table testdatadomains.Supported_TestData_Domains is 'Holds all Information Messages used when Gateway or Plugin wants to send information to Fenix';
+
+comment on column testdatadomains.Supported_TestData_Domains.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column testdatadomains.Supported_TestData_Domains.OriginalSenderName is 'The name of the gateway/plugin that created the message'; --2
+comment on column testdatadomains.Supported_TestData_Domains.MessageId is 'A unique id generated when sent from Plugin'; --3
+comment on column testdatadomains.Supported_TestData_Domains.TestDataDomainId is 'The unique id of the testdata domain'; --4
+comment on column testdatadomains.Supported_TestData_Domains.TestDataDomainName is 'The name of the testdata domain'; --5
+comment on column testdatadomains.Supported_TestData_Domains.TestDataDomainDescription is 'A description of the testdata domain'; --6
+comment on column testdatadomains.Supported_TestData_Domains.TestDataDomainMouseOver is 'A mouse over description of the testdata domain'; --7
+comment on column testdatadomains.Supported_TestData_Domains.OrginalCreateDateTime is 'The timestamp when the orignal message was created'; --8
+comment on column testdatadomains.Supported_TestData_Domains.OriginalSystemDomainId is 'he Domain/system''s Id where the Sender operates'; --9
+comment on column testdatadomains.Supported_TestData_Domains.OriginalSystemDomainName is 'The Domain/system''s Name where the Sender operates'; --10
+comment on column testdatadomains.Supported_TestData_Domains.updatedDateTime is 'The Datetime when the row was created/updates';
+--11
+-- 11
+
+
+-- Holds all Messages Sent from Plugins and Gateways
+drop table messages.InformationMessages;
+
+create table messages.InformationMessages
+(
+    OriginalSenderId           uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+    OriginalSenderName         varchar default null,              -- Thn name of the gateway/plugin that created the message 2
+    OriginalSystemDomainId     uuid                     not null, -- The Domain/system's Id where the Sender operates 3
+    OriginalSystemDomainName   varchar default null,              -- The Domain/system's Name where the Sender operates 4
+    MessageId                  uuid                     not null, -- A unique id generated when sent from Gateway or Plugin 5
+    InformationMessageTypeId   int                      not null, -- The Id of the information message type 6
+    InformationMessageTypeName varchar                  not null, -- The name of the information message type 7
+    Message                    varchar default null,              -- The message from Gateway or Plugin to Fenix 8
+    OrginalCreateDateTime      timestamp with time zone not null, -- The timestamp when the orignal message was created 9
+    updatedDateTime            timestamp with time zone not null  -- The Datetime when the row was created/updates 10
+);
+
+comment on table messages.InformationMessages is 'Holds all Information Messages used when Gateway or Plugin wants to send information to Fenix';
+
+comment on column messages.InformationMessages.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column messages.InformationMessages.OriginalSenderName is 'Thn name of the gateway/plugin that created the message'; --2
+comment on column messages.InformationMessages.OriginalSystemDomainId is 'The Domain/system''s Id where the Sender operates'; --3
+comment on column messages.InformationMessages.OriginalSystemDomainName is 'The Domain/system''s Name where the Sender operates'; --4
+comment on column messages.InformationMessages.MessageId is 'A unique id generated when sent from Gateway or Plugin'; --5
+comment on column messages.InformationMessages.InformationMessageTypeId is 'The Id of the information message type'; --6
+comment on column messages.InformationMessages.InformationMessageTypeName is 'The name of the information message type'; --7
+comment on column messages.InformationMessages.Message is 'The message from Gateway or Plugin to Fenix'; --8
+comment on column messages.InformationMessages.OrginalCreateDateTime is 'The timestamp when the orignal message was created'; --9
+comment on column messages.InformationMessages.updatedDateTime is 'The Datetime when the row was created/updates';
+-- 10
+
+-- Holds all InformationTypes used in Messages from gateway and Plugins
+drop table messages.informationmessage_types;
+
+create table messages.informationmessage_types
+(
+    InformationMessageTypeId   int                      not null, -- The Id of the information message type 1
+    InformationMessageTypeName varchar                  not null, -- The name of the information message type 2
+    updatedDateTime            timestamp with time zone not null  -- The Datetime when the row was created/updates 3
+);
+
+comment on table messages.informationmessage_types is 'Holds all LogMessageTypes used in Log-Messages from Plugins';
+
+comment on column messages.informationmessage_types.InformationMessageTypeId is 'The Id of the information message type'; --1
+comment on column messages.informationmessage_types.InformationMessageTypeName is 'The name of the information message type'; --2
+comment on column messages.informationmessage_types.updatedDateTime is 'The Datetime when the row was created/updates';
+--3
+--3
+
+--
+--    enum InformationType {
+--        DEBUG = 0; // MessageType only used for developing
+--        INFO = 1; // The message is pure information
+--        WARNING = 2; //  The message is of category WARNING
+--        ERROR = 3; // The Plugin wants to inform Fenix of that something is wrong
+--        FATAL = 4; // THe gateway will log problem and then exit
+--    }
+
+-- Holds all Execution Log Messages for all TestInstructions, sent from Plugins
+drop table messages.logmessages;
+
+create table messages.logmessages
+(
+    OriginalSenderId                  uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+    OriginalSenderName                varchar default null,              -- The name of the gateway/plugin that created the message 2
+    OriginalSystemDomainId            uuid                     not null, -- The Domain/system's Id where the Sender operates 3
+    OriginalSystemDomainName          varchar default null,              -- he Domain/system's Name where the Sender operates 4
+    LogMessageId                      uuid                     not null, -- A unique id created by plugin 5
+    TestInstructionGuid               uuid                     not null, -- TestInstructionGuid is a unique id created when TestInstruction is created in TestCase 6
+    TestInstructionLogCreatedDateTime timestamp with time zone not null, -- The DateTime when the message was created 7
+    TestInstructionLogSentDateTime    timestamp with time zone not null, -- he DateTime when the message was sent 8
+    LogMessage                        varchar default null,              -- The log message 9
+    LogMessageTypeId                  int                      not null, -- The Id of the log message type, text or json 10
+    logmessageTypeName                varcha                   not null, -- The name of the log message type, text or json 11
+    updatedDateTime                   timestamp with time zone not null  -- The Datetime when the row was created/updates 12
+);
+
+comment on table messages.logmessages is 'Holds all Execution Log Messages for all TestInstructions, sent from Plugins';
+
+comment on column messages.logmessages.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column messages.logmessages.OriginalSenderName is 'The name of the gateway/plugin that created the message'; --2
+comment on column messages.logmessages.OriginalSystemDomainId is 'The Domain/system''s Id where the Sender operates'; --3
+comment on column messages.logmessages.OriginalSystemDomainName is 'he Domain/system''s Name where the Sender operates'; --4
+comment on column messages.logmessages.LogMessageId is 'A unique id created by plugin'; --5
+comment on column messages.logmessages.TestInstructionGuid is 'TestInstructionGuid is a unique id created when TestInstruction is created in TestCase'; --6
+comment on column messages.logmessages.TestInstructionLogCreatedDateTime is 'The DateTime when the message was created'; --7
+comment on column messages.logmessages.TestInstructionLogSentDateTime is 'The DateTime when the message was sent'; --8
+comment on column messages.logmessages.LogMessage is 'The log message'; --9
+comment on column messages.logmessages.LogMessageTypeId is 'The Id of the log message type, text or json'; --10
+comment on column messages.logmessages.updatedDateTime is 'The Datetime when the row was created/updates';
+--11
+
+-- Holds all LogMessageTypes used in Log-Messages from Plugins
+drop table messages.logmessage_types;
+
+create table messages.logmessage_types
+(
+    logmessageTypeId   int                      not null, -- The Id of the log message type 1
+    logmessageTypeName varchar                  not null, -- The name of the log message type 2
+    updatedDateTime    timestamp with time zone not null  -- The Datetime when the row was created/updates 3
+);
+
+comment on table messages.logmessage_types is 'Holds all LogMessageTypes used in Log-Messages from Plugins';
+
+comment on column messages.logmessage_types.logmessageTypeId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column messages.logmessage_types.logmessageTypeName is 'The Id of the gateway/plugin that created the message'; --2
+comment on column messages.logmessage_types.updatedDateTime is 'The Datetime when the row was created/updates';
+--3
+
+--// Is the log message a json-object or a plain text message
+--enum LogMessageTypeEnum {
+--    JSON = 0;
+--    TEXT = 1;
+--}
+
+-- Holds all messages for telling Fenix when a TestInstruction should time out and by then the complete TestCase
+drop table messages.TestInstructionTimeOutMessage;
+
+create table messages.TestInstructionTimeOutMessage
+(
+    OriginalSenderId         uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+    OriginalSenderName       varchar default null,              -- The name of the gateway/plugin that created the message 2
+    OriginalSystemDomainId   uuid                     not null, -- The Domain/system's Id where the Sender operates 3
+    OriginalSystemDomainName varchar default null,              -- The Domain/system's Name where the Sender operates 4
+    MessageId                uuid                     not null, -- A unique id generated when sent from Plugi 5
+    OriginalMessageId        uuid                     not null, -- A unique id from the TestInstruction request sent from Fenix 6
+    TimeOut                  timestamp with time zone not null, -- The Timeout time when TestInstruction should Timeout if no answer has come back 7
+    OrginalCreateDateTime    timestamp with time zone not null, -- The timestamp when the orignal message was created 8
+    updatedDateTime          timestamp with time zone not null  -- The Datetime when the row was created/updates 9
+);
+
+comment on table messages.TestInstructionTimeOutMessage is 'Holds all messages for telling Fenix when a TestInstruction should time out and by then the complete TestCase';
+
+comment on column messages.TestInstructionTimeOutMessage.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column messages.TestInstructionTimeOutMessage.OriginalSenderName is 'The name of the gateway/plugin that created the message'; --2
+comment on column messages.TestInstructionTimeOutMessage.OriginalSystemDomainId is 'The Domain/system''s Id where the Sender operates'; --3
+comment on column messages.TestInstructionTimeOutMessage.OriginalSystemDomainName is 'The Domain/system''s Name where the Sender operates'; --4
+comment on column messages.TestInstructionTimeOutMessage.MessageId is 'A unique id generated when sent from Plugi'; --5
+comment on column messages.TestInstructionTimeOutMessage.OriginalMessageId is 'A unique id from the TestInstruction request sent from Fenix'; --6
+comment on column messages.TestInstructionTimeOutMessage.TimeOut is 'The Timeout time when TestInstruction should Timeout if no answer has come back'; --7
+comment on column messages.TestInstructionTimeOutMessage.OrginalCreateDateTime is 'The timestamp when the orignal message was created'; --8
+comment on column messages.TestInstructionTimeOutMessage.updatedDateTime is 'The Datetime when the row was created/updates';
+--9
+
+
+-- Holds all supported Testdata domains, with Header values, supported by a specific Plugin for all systems and plugins
+drop table testdatadomains.SupportedTestDataDomainsWithHeaders;
+
+create table testdatadomains.SupportedTestDataDomainsWithHeaders
+(
+    OriginalSenderId                uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+    OriginalSenderName              varchar default null,              -- The name of the gateway/plugin that created the message 2
+    MessageId                       uuid                     not null, -- A unique id generated when sent from Plugin 3
+    OriginalMessageId               uuid                     not null, -- A unique id from the request sent from Fenix 4
+    TestDataDomainId                uuid                     not null, -- he unique id of the testdata domain 5
+    TestDataDomainName              varchar default null,              -- The name of the testdata domain 6
+    TestDataDomainDescription       varchar default null,              -- A description of the testdata domain 7
+    TestDataDomainMouseOver         varchar default null,              -- A mouse over description of the testdata domain 8
+    TestDataFilterHeaderId          uuid                     not null,-- A unique id for the header 9
+    TestDataFilterHeaderName        varchar                  not null, -- A name for the keader 10
+    TestDataFilterHeaderDescription varchar                  not null, -- A description of the header 11
+    TestDataFilterHeaderMouseOver   varchar                  not null, --  A mouse over description of the header 12
+    TestDataFilterHash              varchar                  not null, --  ????????????????????????????????????????????????????? 13
+    AllowMultipleChoices            boolean                  not null, -- Should multiple chocies be allowed for this header 14
+    AllowNoChoice                   boolean                  not null, -- Should no choice be allowed for this header 15
+    TestDataFilterHeaderValueId     uuid                     not null, -- A unique id for the filter value 16
+    TestDataFilterHeaderValueName   varchar                  not null, -- The name for the filter value 17
+    updatedDateTime                 timestamp with time zone not null  -- The Datetime when the row was created/updates 18
+);
+comment on table testdatadomains.SupportedTestDataDomainsWithHeaders is 'Holds all supported Testdata domains, with Header values, supported by a specific Plugin for all systems and plugins';
+
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.OriginalSenderName is 'The name of the gateway/plugin that created the message'; --2
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.MessageId is 'A unique id generated when sent from Plugin'; --3
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.OriginalMessageId is 'A unique id from the request sent from Fenix'; --4
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataDomainId is 'he unique id of the testdata domain'; --5
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataDomainName is 'The name of the testdata domain'; --6
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataDomainDescription is 'A description of the testdata domain'; --7
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataDomainMouseOver is 'A mouse over description of the testdata domain'; --8
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataFilterHeaderId is 'A unique id for the header'; --9
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataFilterHeaderName is 'A name for the keader'; --10
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataFilterHeaderDescription is 'A description of the header'; --11
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataFilterHeaderMouseOver is 'A mouse over description of the header'; --12
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataFilterHash is '???????????????????????????????????'; --13
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.AllowMultipleChoices is 'Should multiple chocies be allowed for this header'; --14
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataFilterHeaderValueId is 'A unique id for the filter value'; --15
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataDomainMouseOver is 'A unique id for the filter value'; --16
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.TestDataFilterHeaderValueName is 'The name for the filter value'; --17
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.updatedDateTime is 'The Datetime when the row was created/updates';
+--18
+
+
+-- Holds all Availble TestInstructions, supported by a specific Plugin for all systems and plugins
+drop table testInstructions.AvailbleTestInstructions;
+
+create table testInstructions.AvailbleTestInstructions
+(
+    -- Base information
+    OriginalSenderId                           uuid                     not null, -- 'The Id of the gateway/plugin that created the message'; --1
+    OriginalSenderName                         varchar default null,              -- 'Then name of the plugin that created the message'; --2
+    MessageId                                  uuid                     not null, -- 'A unique id generated when sent from Plugin'; --3
+    OrginalCreateDateTime                      timestamp with time zone not null, -- 'The timestamp when the orignal message was created'; --4
+    OriginalSystemDomainId                     uuid                     not null, -- 'The Domain/system''s Id where the Sender operates'; --5
+    OriginalSystemDomainName                   varchar default null,              -- 'The Domain/system''s Name where the Sender operates';--6
+    -- A specific Test Instruction
+    PluginGuid                                 uuid                     not null, -- Used as unique id for the plugin'; --7
+    PluginName                                 varchar default null,              -- 'Used as unique name for the plugin'; --8
+    SystemDomainId                             uuid                     not null, -- 'The Domain/system''s Id where the Sender operates is'; --9
+    SystemDomainName                           varchar default null,              --  'The Domain/system''s Name where the Sender operates'; --10
+    TestInstructionTypeGuid                    uuid                     not null, --  'The unique guid for the Type of TestInstruction. Set by Client system'; --11
+    TestInstructionTypeName                    varchar default null,              --  'The name for the Type of TestInstruction. Set by Client system'; --12
+    TestInstructionGuid                        uuid                     not null, --  'The unique guid for the TestInstruction. Set when used in Editor'; --13
+    TestInstructionName                        varchar default null,              --  'The name of the TestInstruction'; --14
+    TestInstructionDescription                 varchar default null,              --  'The description of the TestInstruction'; --15
+    TestInstructionMouseOver                   varchar default null,              --  'The mouse over test for the TestInstruction'; --16
+    TestInstructionVisible                     boolean                  not null, --  'Should the TestInstruction be visible in GUI or not'; --17
+    TestInstructionEnable                      boolean                  not null, --  'Should the TestInstruction be enabled or not'; --18
+    TestInstructionColor                       varchar default null,              --  'The color used for presenting the TestInstructionBlock, e.g. #FAF437'; --19
+    DropIDs                                    varchar default null,              --  'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
+    LandingZoneGuid                            varchar default null,              --  'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
+    ChoosenLandingZone                         varchar default null,              --  'The choosen LandingZone for this TestInstructionBlock'; --22
+--A specific Attribute for the Test Instruction
+    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --23
+    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
+    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --25
+    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --26
+    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --27
+    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
+    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --29
+    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --30
+    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
+    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
+    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
+-- Properties for TextBox attribute
+    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
+    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
+    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --36
+    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --37
+    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
+    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --39
+    TextBoxAttributeValue                      varchar default null,              -- 'The value for the the TextBox, used for preset values';--40
+
+-- Properties for ComboBox attribute
+    TestInstructionAttributeComboBoxGuid       uuid    default null,              -- 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
+    TestInstructionAttributeComboBoxName       varchar default null,              -- 'The name of the TestInstructionAttributeComboBoxProperties'; --42
+    ComboBoxEditable                           boolean default null,              -- 'Should the the ComboBox be editable or not'; --43
+    ComboBoxInputMask                          varchar default null,              -- 'Inputmask for the ComboBox'; --44
+    ComboBoxAttributeTypeGuid                  uuid    default null,              -- 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --45
+    ComboBoxAttributeTypeName                  varchar default null,              -- 'The Name for the Type of the ComboBox'; --46
+    ComboBoxAttributeValueGuid                 uuid    default null,              -- 'The guid of the value for the the ComboBox, used for preset values'; --47
+    ComboBoxAttributeValue                     varchar default null,              -- 'The value for the the ComboBox, used for preset values';--48
+-- WHen row was create/updated
+    updatedDateTime                            timestamp with time zone not null  -- The Datetime when the row was created/updates 49
+);
+comment on table testInstructions.AvailbleTestInstructions is 'Holds all Availble TestInstructions, supported by a specific Plugin for all systems and plugins';
+
+-- Base information
+comment on column testInstructions.AvailbleTestInstructions.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column testInstructions.AvailbleTestInstructions.OriginalSenderName is 'Then name of the plugin that created the message'; --2
+comment on column testInstructions.AvailbleTestInstructions.MessageId is 'A unique id generated when sent from Plugin'; --3
+comment on column testInstructions.AvailbleTestInstructions.OrginalCreateDateTime is 'The timestamp when the orignal message was created'; --4
+comment on column testInstructions.AvailbleTestInstructions.OriginalSystemDomainId is 'The Domain/system''s Id where the Sender operates'; --5
+comment on column testInstructions.AvailbleTestInstructions.OriginalSystemDomainName is 'The Domain/system''s Name where the Sender operates';--6
+
+-- A specific Test Instruction
+comment on column testInstructions.AvailbleTestInstructions.PluginGuid is 'Used as unique id for the plugin'; --7
+comment on column testInstructions.AvailbleTestInstructions.PluginName is 'Used as unique name for the plugin'; --8
+comment on column testInstructions.AvailbleTestInstructions.SystemDomainId is 'The Domain/system''s Id where the Sender operates is'; --9
+comment on column testInstructions.AvailbleTestInstructions.SystemDomainName is 'The Domain/system''s Name where the Sender operates'; --10
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionTypeGuid is 'The unique guid for the Type of TestInstruction. Set by Client system'; --11
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionTypeName is 'The name for the Type of TestInstruction. Set by Client system'; --12
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionGuid is 'The unique guid for the TestInstruction. Set when used in Editor'; --13
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionName is 'The name of the TestInstruction'; --14
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionDescription is 'The description of the TestInstruction'; --15
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionMouseOver is 'The mouse over test for the TestInstruction'; --16
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionVisible is 'Should the TestInstruction be visible in GUI or not'; --17
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionEnable is 'Should the TestInstruction be enabled or not'; --18
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionColor is 'The color used for presenting the TestInstructionBlock, e.g. #FAF437'; --19
+comment on column testInstructions.AvailbleTestInstructions.DropIDs is 'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
+comment on column testInstructions.AvailbleTestInstructions.LandingZoneGuid is 'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
+comment on column testInstructions.AvailbleTestInstructions.ChoosenLandingZone is 'The choosen LandingZone for this TestInstructionBlock';--22
+
+-- A specific Attribute for the Test Instruction
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeGuid is 'The unique guid for the TestInstructionAttribute, set plugin'; --23
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeGuid is 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeName is 'The name of the TestInstructionAttribute'; --25
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeDescription is 'The description of the TestInstructionAttribute'; --26
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeMouseOver is 'The mouse over text for the TestInstructionAttribute'; --27
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeVisible is 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeEnable is 'Should the TestInstructionAttribute be enabled or not'; --29
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeMandatory is 'Should the TestInstructionAttribute be mandatory or not'; --30
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeVisibleInBlockArea is 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeId is 'The Id for what type the instruction attribute is'; --32
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeName is 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"';--33
+
+-- Properties for TextBox attribute
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeInputTextBoxGuid is 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeInputTextBoxName is 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
+comment on column testInstructions.AvailbleTestInstructions.TextBoxEditable is 'Should the the TextBox be editable or not'; --36
+comment on column testInstructions.AvailbleTestInstructions.TextBoxInputMask is 'Inputmask for the TextBox'; --37
+comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeGuid is 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
+comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeName is 'The Name for the Type of the TextBox.'; --39
+comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeValue is 'The value for the the TextBox, used for preset values';--40
+
+-- Properties for ComboBox attribute
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeComboBoxGuid is 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeComboBoxName is 'The name of the TestInstructionAttributeComboBoxProperties'; --42
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxEditable is 'Should the the ComboBox be editable or not'; --43
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxInputMask is 'Inputmask for the ComboBox'; --44
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeTypeGuid is 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --45
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeTypeName is 'The Name for the Type of the ComboBox'; --46
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValueGuid is 'The guid of the value for the the ComboBox, used for preset values'; --47
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValue is 'The value for the the ComboBox, used for preset values';--48
+
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.updatedDateTime is 'The Datetime when the row was created/updates';--49
+-- NOT USED REMOVE FROM GRPC ..........Properties for FileSelector attribute
+--comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeFileSelectorGuid is 'xxxxxxxxxxxxxxxxxxxxxxxxx'; --4
+--comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeFileSelectorName is 'xxxxxxxxxxxxxxxxxxxxxxxxx'; --4
+
+-- Holds all Containers that holds block of TestContainerMessages and references to TestInstructions
+drop table testInstructions.TestContainerMessage;
+
+create table testInstructions.TestContainerMessage
+(
+    PluginGuid       uuid not null,  -- A unique id for the plugin 1
+    PluginName      varchar default null, -- A name for the plugin 2
+    SystemDomainId   uuid not null, --  The Domain/system's Id where the Sender operates 3
+    SystemDomainName  varchar default null, -- The Domain/system's Name where the Sender operates 4
+    TestContainerGuid      uuid not null, -- A unique id for the TestContainer 5
+    TestContainerName        varchar default null, -- A name for the TestContainer 6
+    TestContainerIsTopContainer boolean not null, -- Telling if the container is a top container, i.e. has no parent container 7
+
+    ChildProcessingTypeId int not null, -- The id for child processing type (0 or 1) 8
+        ChildProcessingTypeName varchar not null, -- The name for child processing type ('IsSerialProcessedContainer' or 'IsParallellProcessedContainer') 9
+        ChildTypeId int not null, -- The id for the type of child  (0 or 1) 10
+        ChildTypeName varchar not null, -- The name for the type of child ('ChildIsTestInstructionContainerMessage' or 'ChildIsTestInstructionMessage') 11
+        ParentContainerReference uuid default null, -- A reference to parent container if it exists 12
+        ChildContainerReference uuid default null, -- A reference to child container if it exists 13
+        TestInstructionsReference uuid default null, -- A reference TestInstruction if it exists 14
+
+    updatedDateTime          timestamp with time zone not null  -- The Datetime when the row was created/updates 15
+);
+
+comment on table testInstructions.TestContainerMessage is 'Holds all Containers that holds block of TestContainerMessages and references to TestInstructions';
+
+comment on column testInstructions.TestContainerMessage.PluginGuid is 'A unique id for the plugin'; --1
+comment on column testInstructions.TestContainerMessage.PluginName is 'A name for the plugin'; --2
+comment on column testInstructions.TestContainerMessage.SystemDomainId is 'The Domain/system''s Id where the Sender operates'; --3
+comment on column testInstructions.TestContainerMessage.SystemDomainName is 'he Domain/system''s Name where the Sender operates'; --4
+comment on column testInstructions.TestContainerMessage.TestContainerGuid is 'A unique id for the TestContainer'; --5
+comment on column testInstructions.TestContainerMessage.TestContainerName is 'A name for the TestContainer'; --6
+comment on column testInstructions.TestContainerMessage.TestContainerIsTopContainer is 'Telling if the container is a top container, i.e. has no parent container'; --7
+comment on column testInstructions.TestContainerMessage.ChildProcessingTypeId is 'The id for child processing type (0 or 1)'; --8
+comment on column testInstructions.TestContainerMessage.ChildProcessingTypeName is 'The name for child processing type (''IsSerialProcessedContainer'' or ''IsParallellProcessedContainer'')'; --9
+comment on column testInstructions.TestContainerMessage.ChildTypeId is 'The id for the type of child  (0 or 1)'; --10
+comment on column testInstructions.TestContainerMessage.ChildTypeName is 'he name for the type of child (''ChildIsTestInstructionContainerMessage'' or ''ChildIsTestInstructionMessage'')'; --11
+comment on column testInstructions.TestContainerMessage.ParentContainerReference is 'A reference to parent container if it exists'; --12
+comment on column testInstructions.TestContainerMessage.ChildContainerReference is 'A reference to child container if it exists '; --13
+comment on column testInstructions.TestContainerMessage.TestInstructionsReference is 'A reference TestInstruction if it exists'; --14
+comment on column testInstructions.TestContainerMessage.updatedDateTime is 'The Datetime when the row was created/updates'; --15
+
+// A Container that holds block of TestContainerMessages and references to TestInstructions
+message TestContainerMessage {
+    string PluginGuid = 1; // Used as unique id for the plugin
+    string PluginName = 2; // Used as unique name for the plugin
+    string SystemDomainId = 3; // The Domain/system's Id where the Sender operates
+    string SystemDomainName = 4; // The Domain/system's Name where the Sender operates
+    string TestContainerGuid = 5; // A unique id for the TestContainer
+    string TestContainerName = 6; // A name for the TestContainer
+    TestContainerTypeEnum TestContainerType = 7; // Should container have Serial or Parallell processed children or is it a TestContainer
+    enum TestContainerTypeEnum {
+        IsSerialProcessedContainer = 0; // Container has Serial Processed children
+        IsParallellProcessedContainer = 1; // Container has Parallell Processed children
+    }
+    repeated TestContainerChildObjectMessage TestBlockChildObjectMessages = 8; // An object containing child-TesContainers and TestInstructions
+}
+
+message TestContainerChildObjectMessage {
+    TestInstructionChildTypeEnum ChildType = 1;
+    enum TestInstructionChildTypeEnum {
+        ChildIsTestInstructionContainerMessage = 0;
+        ChildIsTestInstructionMessage = 1;
+    }
+    TestContainerMessage TestInstructionMessageChild = 2;
+    string AvailbleTestInstructionAtPluginMessageChildReferenceGuid = 3;
+}
+
+
