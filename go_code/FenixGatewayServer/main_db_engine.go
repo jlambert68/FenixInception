@@ -854,41 +854,9 @@ func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPlu
 					// Loop over all  Attributes
 					for currentAttributeCounter := 0; currentAttributeCounter < numberOfTestDataFilterHeaders; currentAttributeCounter++ {
 
-
-						availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeGuid,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeTypeGuid,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeName,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeDescription,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeMouseOver,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeVisible,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeEnable,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeMandatory,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeVisibleInBlockArea,
-							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].type
-
 						/*
 
-													--A specific Attribute for the Test Instruction
-							    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --23
-							    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
-							    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --25
-							    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --26
-							    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --27
-							    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
-							    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --29
-							    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --30
-							    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
-							    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
-							    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
-							-- Properties for TextBox attribute
-							    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
-							    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
-							    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --36
-							    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --37
-							    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
-							    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --39
-							    TextBoxAttributeValue
-							create table testInstructions.AvailbleTestInstructions
+create table testInstructions.AvailbleTestInstructions
 							(
 							    -- Base information
 							    OriginalSenderId                           uuid                     not null, -- 'The Id of the gateway/plugin that created the message'; --1
@@ -897,6 +865,7 @@ func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPlu
 							    OrginalCreateDateTime                      timestamp with time zone not null, -- 'The timestamp when the orignal message was created'; --4
 							    OriginalSystemDomainId                     uuid                     not null, -- 'The Domain/system''s Id where the Sender operates'; --5
 							    OriginalSystemDomainName                   varchar default null,              -- 'The Domain/system''s Name where the Sender operates';--6
+
 							    -- A specific Test Instruction
 							    PluginGuid                                 uuid                     not null, -- Used as unique id for the plugin'; --7
 							    PluginName                                 varchar default null,              -- 'Used as unique name for the plugin'; --8
@@ -927,6 +896,7 @@ func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPlu
 							    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
 							    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
 							    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
+
 							-- Properties for TextBox attribute
 							    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
 							    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
@@ -976,7 +946,34 @@ func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPlu
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].LandingZoneGuid,
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].ChoosenLandingZone,
 
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeTypeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeDescription,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeMouseOver,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeVisible,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeEnable,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeMandatory,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeVisibleInBlockArea,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeType,
+							gRPC.TestInstructionAttributeTypeEnum_name[int32(availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeType, )],
 
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputTextBoxProperty.TextBoxAttributeTypeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputTextBoxProperty.TestInstructionAttributeInputTextBoxName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputTextBoxProperty.TextBoxEditable,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputTextBoxProperty.TextBoxInputMask,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputTextBoxProperty.TextBoxAttributeTypeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputTextBoxProperty.TextBoxAttributeTypeName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputTextBoxProperty.TextBoxAttributeValue,
+
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.TestInstructionAttributeComboBoxGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.TestInstructionAttributeComboBoxName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.ComboBoxEditable,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.ComboBoxInputMask,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.ComboBoxAttributeTypeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.ComboBoxAttributeTypeName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.ComboBoxAttributeValueGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].InputComboBoxProperty.ComboBoxAttributeValue,
 
 							common_code.GeneraTimeStampUTC())
 
