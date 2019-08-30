@@ -277,8 +277,8 @@ message RegisterClientAddressResponse {
 
 // Data and Information regarding a specific TestInstruction offered by a specific plugin
 message AvailbleTestInstructionAtPluginMessage {
-    string OriginalSenderId = 1; // Then Id of the plugin that created the message
-    string OriginalSenderName = 2; // Then name of the plugin that created the message
+    string OriginalSenderId = 1; // The Id of the plugin that created the message
+    string OriginalSenderName = 2; // The name of the plugin that created the message
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string MessageId = 5; // A unique id generated when sent from Plugin
@@ -309,11 +309,11 @@ message AvailbleTestInstructionAtPluginMessage {
 
         // A specific Attribute for a Test Instruction
         message TestInstructionAttribute {
-            string TestInstructionAttributeGuid = 1; // The unique guid for the TestInstructionAttribute, set when used in Editor
-            string TestInstructionAttributeTypeGuid = 2; // The unique guid for the TestInstructionAttribute-type, set by client system
+            string TestInstructionAttributeGuid = 1; // The unique guid for the TestInstructionAttribute, set by plugin
+            string TestInstructionAttributeTypeGuid = 2; // The unique guid for the TestInstructionAttribute-type, set by plugin
             string TestInstructionAttributeName = 3; // The name of the TestInstructionAttribute
             string TestInstructionAttributeDescription = 4; // The description of the TestInstructionAttribute
-            string TestInstructionAttributeMouseOver = 5; // The mouse over test for the TestInstructionAttribute
+            string TestInstructionAttributeMouseOver = 5; // The mouse over text for the TestInstructionAttribute
             bool TestInstructionAttributeVisible = 6; // Should the TestInstructionAttribute be visible in attributes list in GUI or not
             bool TestInstructionAttributeEnable = 7; // Should the TestInstructionAttribute be enabled or not
             bool TestInstructionAttributeMandatory = 8; // Should the TestInstructionAttribute be mandatory or not
@@ -330,7 +330,7 @@ message AvailbleTestInstructionAtPluginMessage {
             TestInstructionAttributeInputTextBoxProperty inputTextBoxProperty = 11; // If the attribute is a textbox then all properties can be found in structure
             // Properties for TextBox attribute
             message TestInstructionAttributeInputTextBoxProperty {
-                string TestInstructionAttributeInputTextBoxGuid = 1; // The unique guid for the TestInstructionAttributeInputTextBoxProperties, set when used in Editor
+                string TestInstructionAttributeInputTextBoxGuid = 1; // The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin
                 string TestInstructionAttributeInputTextBoxName = 2; // The name of the TestInstructionAttributeInputTextBoxProperties
                 bool TextBoxEditable = 3; // Should the the TextBox be editable or not
                 string TextBoxInputMask = 4; // Inputmask for the TextBox
@@ -342,20 +342,20 @@ message AvailbleTestInstructionAtPluginMessage {
             TestInstructionAttributeInputComboBoxProperty InputComboBoxProperty = 12; // If the attribute is a combobox then all properties can be found in structure
             // Properties for ComboBox attribute
             message TestInstructionAttributeInputComboBoxProperty {
-                string TestInstructionAttributeComboBoxGuid = 1; // The unique guid for the TestInstructionAttributeComboBoxProperties, set when used in Editor
+                string TestInstructionAttributeComboBoxGuid = 1; // The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin
                 string TestInstructionAttributeComboBoxName = 2; // The name of the TestInstructionAttributeComboBoxProperties
                 bool ComboBoxEditable = 3; // Should the the ComboBox be editable or not
                 string ComboBoxInputMask = 4; // Inputmask for the ComboBox
                 string ComboBoxAttributeTypeGuid = 5; // The unique guid for the Type of the ComboBox Used for datamanupulation
                 string ComboBoxAttributeTypeName = 6; // The Name for the Type of the ComboBox
-                string ComboBoxAttributeValueGuid = 7; // The guid of the value for the the ComboBox
-                string ComboBoxAttributeValue = 8; // The value for the the ComboBox
+                string ComboBoxAttributeValueGuid = 7; // The guid of the value for the the ComboBox, used for preset values
+                string ComboBoxAttributeValue = 8; // The value for the the ComboBox, used for preset values
             }
 
             TestInstructionAttributeInputFileSelectorProperty InputFileSelectorProperty = 13; // If the attribute is a combobox then all properties can be found in structure
             // Properties for FileSelector attribute
             message TestInstructionAttributeInputFileSelectorProperty {
-                string TestInstructionAttributeFileSelectorGuid = 1; // The unique guid for the TestInstructionAttributeFileSelectorProperties, set when used in Editor
+                string TestInstructionAttributeFileSelectorGuid = 1; // The unique guid for the TestInstructionAttributeFileSelectorProperties, set by plugin
                 string TestInstructionAttributeFileSelectorName = 2; // The name of the TestInstructionAttributeFileSelectorProperties
             }
 

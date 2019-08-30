@@ -703,52 +703,53 @@ func saveSupportedTestDataDomainsWithHeadersMessageInDB(supportedTestDataDomains
 		messageSavedInDB = false
 	} else {
 		//SQL prepared OK
-		/*
-
-				create table testdatadomains.SupportedTestDataDomainsWithHeaders
-				(
-				    OriginalSenderId                uuid                     not null, -- The Id of the gateway/plugin that created the message 1
-				    OriginalSenderName              varchar default null,              -- The name of the gateway/plugin that created the message 2
-				    MessageId                       uuid                     not null, -- A unique id generated when sent from Plugin 3
-				    OriginalMessageId               uuid                     not null, -- A unique id from the request sent from Fenix 4
-				    TestDataDomainId                uuid                     not null, -- he unique id of the testdata domain 5
-				    TestDataDomainName              varchar default null,              -- The name of the testdata domain 6
-				    TestDataDomainDescription       varchar default null,              -- A description of the testdata domain 7
-				    TestDataDomainMouseOver         varchar default null,              -- A mouse over description of the testdata domain 8
-				    TestDataFilterHeaderId          uuid                     not null,-- A unique id for the header 9
-				    TestDataFilterHeaderName        varchar                  not null, -- A name for the keader 10
-				    TestDataFilterHeaderDescription varchar                  not null, -- A description of the header 11
-				    TestDataFilterHeaderMouseOver   varchar                  not null, --  A mouse over description of the header 12
-				    TestDataFilterHash              varchar                  not null, --  ????????????????????????????????????????????????????? 13
-				    AllowMultipleChoices            boolean                  not null, -- Should multiple chocies be allowed for this header 14
-				    AllowNoChoice                   boolean                  not null, -- Should no choice be allowed for this header 15
-				    TestDataFilterHeaderValueId     uuid                     not null, -- A unique id for the filter value 16
-				    TestDataFilterHeaderValueName   varchar                  not null, -- The name for the filter value 17
-				    updatedDateTime                 timestamp with time zone not null  -- The Datetime when the row was created/updates 18
-				);
-
-			SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders
-			SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders_TestDataFilterHeader
-			SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders_TestDataFilterHeader_TestDataFilterHeaderValue
-		*/
 
 		// Get number of Test Data Domain-rows
 		numberOfDomains := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains)
 		if numberOfDomains > 0 {
 			// Loop over all  TestData-domains
-			for currentDomain := 0; currentDomain < numberOfDomains; currentDomain++ {
+			for currentDomainCounter := 0; currentDomainCounter < numberOfDomains; currentDomainCounter++ {
 
 				// Get number of TestDataFilterHeader-rows
-				numberOfTestDataFilterHeaders := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomain].TestDataFilterHeaders)
+				numberOfTestDataFilterHeaders := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders)
 				if numberOfTestDataFilterHeaders > 0 {
 					// Loop over all  TestDataFilterHeaders
-					for currentDestDataFilterHeader := 0; currentDestDataFilterHeader < numberOfTestDataFilterHeaders; currentDestDataFilterHeader++ {
-						xxxx
+					for currentDestDataFilterHeaderCounter := 0; currentDestDataFilterHeaderCounter < numberOfTestDataFilterHeaders; currentDestDataFilterHeaderCounter++ {
+
 						// Get number of TestDataFilterHeaderValue-rows
-						numberOfTestDataFilterHeaderValues := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomain].TestDataFilterHeaders[currentDestDataFilterHeader].TestDataFilterHeaderValues[])
+						numberOfTestDataFilterHeaderValues := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHeaderValues)
 						if numberOfTestDataFilterHeaderValues > 0 {
 							// Loop over all TestDataFilterHeaderValues
-							for currentTestDataFilterHeaderValue := 0; currentTestDataFilterHeaderValue < numberOfTestDataFilterHeaderValues; currentTestDataFilterHeaderValue++ {
+							for currentTestDataFilterHeaderValueCounter := 0; currentTestDataFilterHeaderValueCounter < numberOfTestDataFilterHeaderValues; currentTestDataFilterHeaderValueCounter++ {
+
+								/*
+
+										create table testdatadomains.SupportedTestDataDomainsWithHeaders
+										(
+										    OriginalSenderId                uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+										    OriginalSenderName              varchar default null,              -- The name of the gateway/plugin that created the message 2
+										    MessageId                       uuid                     not null, -- A unique id generated when sent from Plugin 3
+										    OriginalMessageId               uuid                     not null, -- A unique id from the request sent from Fenix 4
+										    TestDataDomainId                uuid                     not null, -- he unique id of the testdata domain 5
+										    TestDataDomainName              varchar default null,              -- The name of the testdata domain 6
+										    TestDataDomainDescription       varchar default null,              -- A description of the testdata domain 7
+										    TestDataDomainMouseOver         varchar default null,              -- A mouse over description of the testdata domain 8
+										    TestDataFilterHeaderId          uuid                     not null,-- A unique id for the header 9
+										    TestDataFilterHeaderName        varchar                  not null, -- A name for the keader 10
+										    TestDataFilterHeaderDescription varchar                  not null, -- A description of the header 11
+										    TestDataFilterHeaderMouseOver   varchar                  not null, --  A mouse over description of the header 12
+										    TestDataFilterHash              varchar                  not null, --  ????????????????????????????????????????????????????? 13
+										    AllowMultipleChoices            boolean                  not null, -- Should multiple chocies be allowed for this header 14
+										    AllowNoChoice                   boolean                  not null, -- Should no choice be allowed for this header 15
+										    TestDataFilterHeaderValueId     uuid                     not null, -- A unique id for the filter value 16
+										    TestDataFilterHeaderValueName   varchar                  not null, -- The name for the filter value 17
+										    updatedDateTime                 timestamp with time zone not null  -- The Datetime when the row was created/updates 18
+										);
+
+									SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders
+									SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders_TestDataFilterHeader
+									SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders_TestDataFilterHeader_TestDataFilterHeaderValue
+								*/
 
 								// Values to insert into database
 								sqlResult, err := sqlStatement.Exec(
@@ -756,20 +757,19 @@ func saveSupportedTestDataDomainsWithHeadersMessageInDB(supportedTestDataDomains
 									supportedTestDataDomainsWithHeadersMessage.OriginalSenderName,
 									supportedTestDataDomainsWithHeadersMessage.MessageId,
 									supportedTestDataDomainsWithHeadersMessage.OriginalMessageId,
-									supportedTestDataDomainsWithHeadersMessage.test
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								supportedTestDataDomainsWithHeadersMessage
-								testInstructionTimeOutMessage.OrginalCreateDateTime,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataDomainId,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataDomainName,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataDomainDescription,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataDomainMouseOver,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHeaderId,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHeaderName,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHeaderDescription,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHeaderMouseOver,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHash,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].AllowMultipleChoices,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].AllowNoChoice,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHeaderValues[currentTestDataFilterHeaderValueCounter].TestDataFilterHeaderValueId,
+									supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomainCounter].TestDataFilterHeaders[currentDestDataFilterHeaderCounter].TestDataFilterHeaderValues[currentTestDataFilterHeaderValueCounter].TestDataFilterHeaderValueName,
 									common_code.GeneraTimeStampUTC())
 
 								if err != nil {
@@ -798,104 +798,310 @@ func saveSupportedTestDataDomainsWithHeadersMessageInDB(supportedTestDataDomains
 			}
 		}
 	}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
+}
+
+// **********************************************************************************************************
+// Save incoming 'AvailbleTestInstructionAtPluginMessage' to Main Database for Fenix Inception
+//
+func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPluginMessage *gRPC.AvailbleTestInstructionAtPluginMessage) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	var sqlToBeExecuted = "INSERT INTO testInstructions.AvailbleTestInstructions "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, , MessageId, OrginalCreateDateTime, OriginalSystemDomainId, OriginalSystemDomainName,  "
+	sqlToBeExecuted = sqlToBeExecuted + "PluginGuid, PluginName, SystemDomainId, SystemDomainName, TestInstructionTypeGuid, TestInstructionTypeName, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionGuid, TestInstructionName, TestInstructionDescription, TestInstructionMouseOver, TestInstructionVisible, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionEnable, TestInstructionColor, DropIDs, LandingZoneGuid, ChoosenLandingZone, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionAttributeGuid, TestI, ructionAttributeTypeGuid, TestInstructionAttributeName, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionAttributeDescription, TestInstructionAttributeMouseOver, TestInstructionAttributeVisible, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionAttributeEnable, TestInstructionAttributeMandatory, TestInstructionAttributeVisibleInBlockArea, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionAttributeTypeId, TestInstructionAttributeTypeName, TestInstructionAttributeInputTextBoxGuid, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionAttributeInputTextBoxName, TextBoxEditable, TextBoxInputMask, TextBoxAttributeTypeGuid, "
+	sqlToBeExecuted = sqlToBeExecuted + "TextBoxAttributeTypeName, TextBoxAttributeValue,, TestInstructionAttributeComboBoxGuid, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionAttributeComboBoxName, ComboBoxEditable, ComboBoxInputMask, ComboBoxAttributeTypeGuid, "
+	sqlToBeExecuted = sqlToBeExecuted + "ComboBoxAttributeTypeName, ComboBoxAttributeValueGuid, ComboBoxAttributeValue, updatedDateTime "
+
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20, "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36,$37,38,$39,$40, "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($41,$42,$43,$44,$45,$46,$47,$48,$49);"
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":                                     "ce25ce71-9437-457c-a5d4-d9f67b34db3e",
+			"err":                                    err,
+			"availbleTestInstructionAtPluginMessage": availbleTestInstructionAtPluginMessage,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'availbleTestInstructionAtPluginMessage'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+
+		// Get number of TestInstructions-rows
+		numberOfTestInstructions := len(availbleTestInstructionAtPluginMessage.TestInstructions)
+		if numberOfTestInstructions > 0 {
+			// Loop over all TestInstructions
+			for currentTestInstruction := 0; currentTestInstruction < numberOfTestInstructions; currentTestInstruction++ {
+
+				// Get number of Attribute-rows
+				numberOfAttributes := len(availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes)
+				if numberOfAttributes > 0 {
+					// Loop over all  Attributes
+					for currentAttributeCounter := 0; currentAttributeCounter < numberOfTestDataFilterHeaders; currentAttributeCounter++ {
+
+
+						availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeTypeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeDescription,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeMouseOver,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeVisible,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeEnable,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeMandatory,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeVisibleInBlockArea,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].type
+
+						/*
+
+													--A specific Attribute for the Test Instruction
+							    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --23
+							    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
+							    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --25
+							    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --26
+							    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --27
+							    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
+							    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --29
+							    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --30
+							    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
+							    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
+							    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
+							-- Properties for TextBox attribute
+							    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
+							    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
+							    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --36
+							    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --37
+							    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
+							    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --39
+							    TextBoxAttributeValue
+							create table testInstructions.AvailbleTestInstructions
+							(
+							    -- Base information
+							    OriginalSenderId                           uuid                     not null, -- 'The Id of the gateway/plugin that created the message'; --1
+							    OriginalSenderName                         varchar default null,              -- 'Then name of the plugin that created the message'; --2
+							    MessageId                                  uuid                     not null, -- 'A unique id generated when sent from Plugin'; --3
+							    OrginalCreateDateTime                      timestamp with time zone not null, -- 'The timestamp when the orignal message was created'; --4
+							    OriginalSystemDomainId                     uuid                     not null, -- 'The Domain/system''s Id where the Sender operates'; --5
+							    OriginalSystemDomainName                   varchar default null,              -- 'The Domain/system''s Name where the Sender operates';--6
+							    -- A specific Test Instruction
+							    PluginGuid                                 uuid                     not null, -- Used as unique id for the plugin'; --7
+							    PluginName                                 varchar default null,              -- 'Used as unique name for the plugin'; --8
+							    SystemDomainId                             uuid                     not null, -- 'The Domain/system''s Id where the Sender operates is'; --9
+							    SystemDomainName                           varchar default null,              --  'The Domain/system''s Name where the Sender operates'; --10
+							    TestInstructionTypeGuid                    uuid                     not null, --  'The unique guid for the Type of TestInstruction. Set by Client system'; --11
+							    TestInstructionTypeName                    varchar default null,              --  'The name for the Type of TestInstruction. Set by Client system'; --12
+							    TestInstructionGuid                        uuid                     not null, --  'The unique guid for the TestInstruction. Set when used in Editor'; --13
+							    TestInstructionName                        varchar default null,              --  'The name of the TestInstruction'; --14
+							    TestInstructionDescription                 varchar default null,              --  'The description of the TestInstruction'; --15
+							    TestInstructionMouseOver                   varchar default null,              --  'The mouse over test for the TestInstruction'; --16
+							    TestInstructionVisible                     boolean                  not null, --  'Should the TestInstruction be visible in GUI or not'; --17
+							    TestInstructionEnable                      boolean                  not null, --  'Should the TestInstruction be enabled or not'; --18
+							    TestInstructionColor                       varchar default null,              --  'The color used for presenting the TestInstructionBlock, e.g. #FAF437'; --19
+							    DropIDs                                    varchar default null,              --  'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
+							    LandingZoneGuid                            varchar default null,              --  'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
+							    ChoosenLandingZone                         varchar default null,              --  'The choosen LandingZone for this TestInstructionBlock'; --22
+
+							--A specific Attribute for the Test Instruction
+							    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --23
+							    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
+							    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --25
+							    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --26
+							    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --27
+							    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
+							    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --29
+							    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --30
+							    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
+							    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
+							    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
+							-- Properties for TextBox attribute
+							    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
+							    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
+							    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --36
+							    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --37
+							    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
+							    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --39
+							    TextBoxAttributeValue                      varchar default null,              -- 'The value for the the TextBox, used for preset values';--40
+
+							-- Properties for ComboBox attribute
+							    TestInstructionAttributeComboBoxGuid       uuid    default null,              -- 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
+							    TestInstructionAttributeComboBoxName       varchar default null,              -- 'The name of the TestInstructionAttributeComboBoxProperties'; --42
+							    ComboBoxEditable                           boolean default null,              -- 'Should the the ComboBox be editable or not'; --43
+							    ComboBoxInputMask                          varchar default null,              -- 'Inputmask for the ComboBox'; --44
+							    ComboBoxAttributeTypeGuid                  uuid    default null,              -- 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --45
+							    ComboBoxAttributeTypeName                  varchar default null,              -- 'The Name for the Type of the ComboBox'; --46
+							    ComboBoxAttributeValueGuid                 uuid    default null,              -- 'The guid of the value for the the ComboBox, used for preset values'; --47
+							    ComboBoxAttributeValue                     varchar default null,              -- 'The value for the the ComboBox, used for preset values';--48
+							-- WHen row was create/updated
+							    updatedDateTime                            timestamp with time zone not null  -- The Datetime when the row was created/updates 49
+							);
+						*/
+
+						// Values to insert into database
+						sqlResult, err := sqlStatement.Exec(
+							availbleTestInstructionAtPluginMessage.OriginalSenderId,
+							availbleTestInstructionAtPluginMessage.OriginalSenderName,
+							availbleTestInstructionAtPluginMessage.MessageId,
+							availbleTestInstructionAtPluginMessage.OrginalCreateDateTime,
+							availbleTestInstructionAtPluginMessage.OriginalSystemDomainId,
+							availbleTestInstructionAtPluginMessage.OriginalSenderName,
+
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].PluginGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].PluginName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].SystemDomainId,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].SystemDomainName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionTypeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionTypeName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionTypeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionName,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionDescription,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionMouseOver,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionVisible,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionEnable,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionColor,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].DropIDs,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].LandingZoneGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].ChoosenLandingZone,
+
+
+
+							common_code.GeneraTimeStampUTC())
+
+						if err != nil {
+							// Error while executing
+							logger.WithFields(logrus.Fields{
+								"ID":                                     "6d2edd97-9548-41fd-9cb1-4addffd563ab",
+								"err":                                    err,
+								"sqlResult":                              sqlResult,
+								"availbleTestInstructionAtPluginMessage": availbleTestInstructionAtPluginMessage,
+							}).Error("Error when updating Main Database with data from 'availbleTestInstructionAtPluginMessage'")
+
+							messageSavedInDB = false
+						} else {
+							//SQL executed OK
+							logger.WithFields(logrus.Fields{
+								"ID":                                     "033ab15a-4e3a-4d3d-8e99-43a18b8d557c",
+								"err":                                    err,
+								"sqlResult":                              sqlResult,
+								"availbleTestInstructionAtPluginMessage": availbleTestInstructionAtPluginMessage,
+							}).Debug("Fenix main Database was updated with data from 'availbleTestInstructionAtPluginMessage'")
+						}
+					}
+				}
+			}
+		}
+	}
+}
 }
 
 // Return if the messages was saved or not in database
 return messageSavedInDB
 }
-
 /*
-    //TestInstructionResults flows from Plugins towards Fenix Inception
-    rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse) {
-    }
+       //TestInstructionResults flows from Plugins towards Fenix Inception
+       rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse) {
+       }
 
-    // Log-posts har sent from Plugins towards Fenix Inception
-x    rpc SendTestExecutionLogTowardsFenix (TestExecutionLogMessage) returns (AckNackResponse) {
-    }
+       // Log-posts har sent from Plugins towards Fenix Inception
+   x    rpc SendTestExecutionLogTowardsFenix (TestExecutionLogMessage) returns (AckNackResponse) {
+       }
 
-    // TestInstructions Timeouts flows from Plugins towards Fenix.
-    // Used for telling Fenix when a TestInstruction should be have a timeout and execution for Testcase should be stopped
-x    rpc SendTestInstructionTimeOutTowardsFenix (TestInstructionTimeOutMessage) returns (AckNackResponse) {
-    }
+       // TestInstructions Timeouts flows from Plugins towards Fenix.
+       // Used for telling Fenix when a TestInstruction should be have a timeout and execution for Testcase should be stopped
+   x    rpc SendTestInstructionTimeOutTowardsFenix (TestInstructionTimeOutMessage) returns (AckNackResponse) {
+       }
 
-x    rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse) {
-    }
+   x    rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse) {
+       }
 
-    // This one will probably be deleted
-//    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
+       // This one will probably be deleted
+   //    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
 
-    // Register an avalible TestInstruction
-    rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
-    }
+       // Register an avalible TestInstruction
+   x    rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
+       }
 
-    // Register the different Testdata Domains that is supported
-    rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
-    }
+       // Register the different Testdata Domains that is supported
+       rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
+       }
 
-    // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
-    rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
-    }
+       // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
+       rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
+       }
 
-    // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
-    rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse) {
+       // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
+       rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse) {
 
-    // A Plugin can send a INFO- OR WARNING-message to Fenix by this mwethod
-    rpc SendMessageToFenix (InformationMessage) returns (AckNackResponse){
+       // A Plugin can send a INFO- OR WARNING-message to Fenix by this mwethod
+       rpc SendMessageToFenix (InformationMessage) returns (AckNackResponse){
 */
 '
 
 
 /*
-	fmt.Println("# Inserting values")
+   	fmt.Println("# Inserting values")
 
-	var lastInsertId int
-	err = mainDB.QueryRow("INSERT INTO userinfo(username,departname,created) VALUES($1,$2,$3) returning uid;", "astaxie", "研发部门", "2012-12-09").Scan(&lastInsertId)
-	checkErr(err)
-	fmt.Println("last inserted id =", lastInsertId)
+   	var lastInsertId int
+   	err = mainDB.QueryRow("INSERT INTO userinfo(username,departname,created) VALUES($1,$2,$3) returning uid;", "astaxie", "研发部门", "2012-12-09").Scan(&lastInsertId)
+   	checkErr(err)
+   	fmt.Println("last inserted id =", lastInsertId)
 
-	fmt.Println("# Updating")
-	stmt, err := mainDB.Prepare("update userinfo set username=$1 where uid=$2")
-	checkErr(err)
+   	fmt.Println("# Updating")
+   	stmt, err := mainDB.Prepare("update userinfo set username=$1 where uid=$2")
+   	checkErr(err)
 
-	res, err := stmt.Exec("astaxieupdate", lastInsertId)
-	checkErr(err)
+   	res, err := stmt.Exec("astaxieupdate", lastInsertId)
+   	checkErr(err)
 
-	affect, err := res.RowsAffected()
-	checkErr(err)
+   	affect, err := res.RowsAffected()
+   	checkErr(err)
 
-	fmt.Println(affect, "rows changed")
+   	fmt.Println(affect, "rows changed")
 
-	fmt.Println("# Querying")
-	rows, err := mainDB.Query("SELECT * FROM userinfo")
-	checkErr(err)
+   	fmt.Println("# Querying")
+   	rows, err := mainDB.Query("SELECT * FROM userinfo")
+   	checkErr(err)
 
-	for rows.Next() {
-		var uid int
-		var username string
-		var department string
-		var created time.Time
-		err = rows.Scan(&uid, &username, &department, &created)
-		checkErr(err)
-		fmt.Println("uid | username | department | created ")
-		fmt.Printf("%3v | %8v | %6v | %6v\n", uid, username, department, created)
-	}
+   	for rows.Next() {
+   		var uid int
+   		var username string
+   		var department string
+   		var created time.Time
+   		err = rows.Scan(&uid, &username, &department, &created)
+   		checkErr(err)
+   		fmt.Println("uid | username | department | created ")
+   		fmt.Printf("%3v | %8v | %6v | %6v\n", uid, username, department, created)
+   	}
 
-	fmt.Println("# Deleting")
-	stmt, err = mainDB.Prepare("delete from userinfo where uid=$1")
-	checkErr(err)
+   	fmt.Println("# Deleting")
+   	stmt, err = mainDB.Prepare("delete from userinfo where uid=$1")
+   	checkErr(err)
 
-	res, err = stmt.Exec(lastInsertId)
-	checkErr(err)
+   	res, err = stmt.Exec(lastInsertId)
+   	checkErr(err)
 
-	affect, err = res.RowsAffected()
-	checkErr(err)
+   	affect, err = res.RowsAffected()
+   	checkErr(err)
 
-	fmt.Println(affect, "rows changed")
-}
+   	fmt.Println(affect, "rows changed")
+   }
 
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
+   func checkErr(err error) {
+   	if err != nil {
+   		panic(err)
+   	}
+   }
 */
