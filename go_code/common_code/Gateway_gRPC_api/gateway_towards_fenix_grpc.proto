@@ -68,8 +68,8 @@ message TestExecutionLogMessage {
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
     string LogMessageId = 6; // A unique id created by plugin
-    string TestInstructionResultCreatedDateTime = 7; // The DateTime when the message was created
-    string TestInstructionResultSentDateTime = 8; // The DateTime when the message was sent
+    string TestInstructionLogCreatedDateTime = 7; // The DateTime when the message was created
+    string TestInstructionLogSentDateTime = 8; // The DateTime when the message was sent
     string LogMessage = 9; // The log message
     LogMessageTypeEnum LogMessageType = 10; // The type of the log message, text or json
     string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates

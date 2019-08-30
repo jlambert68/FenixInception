@@ -96,6 +96,35 @@ func CallBackRegistrateAvailableTestDataDomains(supportedTestDataDomainsMessage 
 //TODO MessageToFenix
 
 // ********************************************************************************************
+// Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a SupportedTestDataDomainsMessage toward Fenix
+//
+func CallBackSendMessageToFenix(informationMessage *gRPC.InformationMessage) (*gRPC.AckNackResponse, error) {
+
+	var returnMessage *gRPC.AckNackResponse
+
+	logger.WithFields(logrus.Fields{
+		"ID":                 "cd1c1c36-6677-45de-9b73-e6f7e2238d1f",
+		"informationMessage": informationMessage,
+	}).Debug("Incoming function CallBack: 'CallBackSendMessageToFenix'")
+
+	// Put InformationMessage on queue for further processing
+	gatewayChannelPackage.InformationMessageChannelTowardsFenix <- informationMessage
+	logger.WithFields(logrus.Fields{
+		"ID": "90ff0ed4-3c63-48bb-9d4d-c39d40ca37a6",
+	}).Debug("'InformationMessage' was saved in Fenix database")
+
+	logger.WithFields(logrus.Fields{
+		"ID": "db50efb9-5520-48c1-8364-4d9be8c721c5",
+	}).Debug("Leaving function CallBack: 'CallBackSendMessageToFenix'")
+
+	// Create message back to parent Gateway/Plugin
+	returnMessage.Comments = "'InformationMessage' was saved in Fenix database"
+	returnMessage.Acknack = true
+
+	return returnMessage, nil
+}
+
+// ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a InfoMessage toward Fenix
 //
 func CallBackSendTestInstructionTimeOutTowardsFenix(testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (*gRPC.AckNackResponse, error) {

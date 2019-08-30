@@ -49,93 +49,27 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 	// Ensure that all services don't start before everything has been started
 	//TODO Change this into a function-call instead
-	TestExecutionGateway.SetGatewayMustStopProcessingFlag = true
+	TestExecutionGateway.SetGatewayMustStopProcessingFlag(true)
 
 	// Start all Dispatch- and Transmit-Engines as a Gateway Engine inside Fenix and use function references instead of gRPC-calls
 	TestExecutionGateway.InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
 		FenixOrGatewayTypeOrPlugin: common_code.FenixEngine,
-		CallBackTowardsPlugins: {
+		CallBackTowardsPlugins: common_code.CallBackTowardsPluginsType{
 			CallBackSendTestInstructionTowardsPlugin:        nil,
 			CallackGetSupportedTestDataDomainsTowardsPlugin: nil},
-		CallBackTowardsFenix: {
-			CallBackRegisterAvailbleTestInstructionsTowardsFenix:   nil,
-			CallBackRegistrateAailableTestContainersTowardsFenix:   nil,
-			CallBackRegistrateAvailableTestDataDomainsTowardsFenix: nil,
-			CallBackSendMessageToFenixTowardsFenix:                 nil,
-			CallBackSendTestInstructionTimeOutTowardsFenix:         nil,
-			CallBackSendTestExecutionLogTowardsFenix:               nil,
-			CallBackSupportedTestDataDomainsTowardsFenix:           nil,
-			CallBackSendTestInstructionResultTowardsFenixType:      nil,
+		CallBackTowardsFenix: common_code.CallBackTowardsFenixType{
+			CallBackRegisterAvailbleTestInstructionsTowardsFenix:   CallBackRegisterAvailbleTestInstructions,
+			CallBackRegistrateAailableTestContainersTowardsFenix:   CallBackRegistrateAailableTestContainers,
+			CallBackRegistrateAvailableTestDataDomainsTowardsFenix: CallBackRegistrateAvailableTestDataDomains,
+			CallBackSendMessageToFenixTowardsFenix:                 CallBackSendMessageToFenix,
+			CallBackSendTestInstructionTimeOutTowardsFenix:         CallBackSendTestInstructionTimeOutTowardsFenix,
+			CallBackSendTestExecutionLogTowardsFenix:               CallBackSendTestExecutionLogTowardsFenix,
+			CallBackSupportedTestDataDomainsTowardsFenix:           CallBackSupportedTestDataDomains,
+			CallBackSendTestInstructionResultTowardsFenixType:      CallBackSendTestInstructionResultTowardsFenix,
 		},
-		/*
-				CallBackRegisterAvailbleTestInstructions:       CallBackRegisterAvailbleTestInstructions,
-				CallBackRegistrateAailableTestContainers:       CallBackRegistrateAailableTestContainers,
-				CallBackRegistrateAvailableTestDataDomains:     CallBackRegistrateAvailableTestDataDomains,
-				CallBackSendTestInstructionTimeOutTowardsFenix: CallBackSendTestInstructionTimeOutTowardsFenix,
-				CallBackSendTestExecutionLogTowardsFenix:       CallBackSendTestExecutionLogTowardsFenix,
-				CallBackSupportedTestDataDomains:               CallBackSupportedTestDataDomains,
-				CallBackSendTestInstructionResultTowardsFenix:  CallBackSendTestInstructionResultTowardsFenix,
-
-				CallBackTowardsPlugins
-				// Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
-				CallBackSendTestInstructionTowardsPlugin        CallBackSendTestInstructionTowardsPluginType
-				CallackGetSupportedTestDataDomainsTowardsPlugin CallackGetSupportedTestDataDomainsTowardsPluginType
-			}
-				CallBackTowardsFenix struct {
-				// Towards Fenix Used for communicating with functions in Fenix instead of gRPC-call
-				CallBackRegisterAvailbleTestInstructionsTowardsFenix   CallBackRegisterAvailbleTestInstructionsTowardsFenixType
-				CallBackRegistrateAailableTestContainersTowardsFenix   CallBackRegistrateAailableTestContainersTowardsFenixType
-				CallBackRegistrateAvailableTestDataDomainsTowardsFenix CallBackRegistrateAvailableTestDataDomainsTowardsFenixType
-				CallBackSendMessageToFenixTowardsFenix                 CallBackSendMessageToFenixTowardsFenixType
-				CallBackSendTestInstructionTimeOutTowardsFenix         CallBackSendTestInstructionTimeOutTowardsFenixType
-				CallBackSendTestExecutionLogTowardsFenix               CallBackSendTestExecutionLogTowardsFenixType
-				CallBackSupportedTestDataDomainsTowardsFenix           CallBackSupportedTestDataDomainsTowardsFenixType
-				CallBackSendTestInstructionResultTowardsFenixType
-
-		*/
 	})
 
 	// Start all services at the same time
-	TestExecutionGateway.SetGatewayMustStopProcessingFlag = false
-
-}
-
-// ********************************************************************************************
-// Initiate Transmit Engines for incoming messages towards Fenix and Dispatch Engines for outgoing messages towards Plugins
-//
-
-func initiateAllTransmitAndDispatchEngines() {
-
-	// *** Towards Plugin ***
-	// Start a Dispatch Engine, for 'TestInstructionMessageTowardsPlugin' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, common_code.FenixEngine, nil)
-
-	// Start a Dispatch Engine, for 'SupportedTestDataDomainsRequestMessageTowardsPlugin,' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin, dispatchEngineTowardsPlugin, common_code.FenixEngine, nil)
-
-	// *** Towards Fenix ***
-	// Start a Transmit Engine, for 'informationMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeInformationMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
-
-	// Start a Transmit Engine, for 'timeOutMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
-
-	// Start a Transmit Engine, for 'spportedTestDataDomainsMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeTestExecutionLogMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
-
-	// Start a Transmit Engine, for 'availbleTestInstructionAtPluginMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
-
-	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
-
-	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
-
-	// Start a Transmit Engine, for 'testInstructionExecutionResultMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
-
-	// Start a Transmit Engine, for 'supportedTestDataDomainsWithHeadersMessageToBeForwarded' as a go-routine
-	go TestExecutionGateway.TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, transmitEngineTowardsFenix, common_code.FenixEngine, nil)
+	TestExecutionGateway.SetGatewayMustStopProcessingFlag(false)
 
 }

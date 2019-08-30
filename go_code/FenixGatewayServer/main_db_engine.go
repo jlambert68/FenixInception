@@ -51,8 +51,8 @@ func saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResul
 	messageSavedInDB = true
 
 	// Prepare SQL
-	var sqlToBeExecuted = "UPDATE testcaseexecutions.executing_testcasesteps "
-	sqlToBeExecuted = sqlToBeExecuted + "SET TestStepExecutionFinished=$1, TestStepExecutionResult=$2, updatedDateTime=$3, ResponsePayload=$4 "
+	var sqlToBeExecuted = "UPDATE testcaseexecutions.Executing_TestInstructions "
+	sqlToBeExecuted = sqlToBeExecuted + "SET TestInstructionExecutionFinished=$1, TestInstructionExecutionResult=$2, updatedDateTime=$3, ResponsePayload=$4 "
 	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionId=$5"
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 
@@ -102,7 +102,7 @@ func listPeerTestInstructionPeersWhichIsExecuting(testInstructionPeerGuid string
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT TestInstructionId "
 	sqlToBeExecuted = sqlToBeExecuted + "FROM testcaseexecutions.Executing_TestInstructions "
-	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestStepExecutionFinished isnull AND "
+	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionExecutionFinished isnull AND "
 	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionPeerId = $1 "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
@@ -165,7 +165,7 @@ func listNextPeersToBeExecuted(testInstructionPeerGuid string) (testInstructionP
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT TestInstructionId "
 	sqlToBeExecuted = sqlToBeExecuted + "FROM testcaseexecutions.Executing_TestInstructions "
-	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestStepExecutionFinished isnull AND "
+	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionExecutionFinished isnull AND "
 	sqlToBeExecuted = sqlToBeExecuted + "PreviousTestInstructionPeerId = $1 "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
@@ -231,7 +231,7 @@ func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (m
 
 	// Prepare SQL
 	var sqlToBeExecuted = "UPDATE testcaseexecutions.executing_testcasesteps "
-	sqlToBeExecuted = sqlToBeExecuted + "SET TestStepSentDateTime=$1, updatedDateTime=$2 "
+	sqlToBeExecuted = sqlToBeExecuted + "SET TestInstructionSentDateTime=$1, updatedDateTime=$2 "
 	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionId=$3"
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 
@@ -281,8 +281,8 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT Payload "
 	sqlToBeExecuted = sqlToBeExecuted + "FROM testcaseexecutions.Executing_TestInstructions "
-	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestStepExecutionFinished isnull AND "
-	sqlToBeExecuted = sqlToBeExecuted + "testInstructionGuid = $1 "
+	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionExecutionFinished isnull AND "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionId = $1 "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 
@@ -348,6 +348,502 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 	// Return if the messages was saved or not
 	return testInstructionPayloadToPlugin, err
 }
+
+// **********************************************************************************************************
+// Save incoming 'SupportedTestDataDomainsMessage' to Main Database for Fenix Inception
+//
+func saveSupportedTestDataDomainsMessageInDB(supportedTestDataDomains *gRPC.SupportedTestDataDomainsMessage) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	/*
+	   create table testdatadomains.Supported_TestData_Domains
+	   (
+	       OriginalSenderId          uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+	       OriginalSenderName        varchar default null,              -- he name of the gateway/plugin that created the message 2
+	       MessageId                 uuid                     not null, -- A unique id generated when sent from Plugin 3
+	       TestDataDomainId          uuid                     not null, -- The unique id of the testdata domain 4
+	       TestDataDomainName        varchar default null,              -- The name of the testdata domain 5
+	       TestDataDomainDescription varchar default null,              -- A description of the testdata domain 6
+	       TestDataDomainMouseOver   varchar default null,              -- A mouse over description of the testdata domain 7
+	       OrginalCreateDateTime     timestamp with time zone not null, -- The timestamp when the orignal message was created 8
+	       OriginalSystemDomainId    uuid                     not null, -- he Domain/system's Id where the Sender operates 9
+	       OriginalSystemDomainName  varchar default null,              -- The Domain/system's Name where the Sender operates 10
+	       updatedDateTime           timestamp with time zone not null  -- The Datetime when the row was created/updates 11
+	   );
+	*/
+
+	var sqlToBeExecuted = "INSERT INTO testdatadomains.Supported_TestData_Domains "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, MessageId, TestDataDomainId, TestDataDomainName, TestDataDomainDescription, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestDataDomainMouseOver, OrginalCreateDateTime, OriginalSystemDomainName, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":                       "7056bde2-a796-4dab-baa4-1b93dcc4c261",
+			"err":                      err,
+			"supportedTestDataDomains": supportedTestDataDomains,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'supportedTestDataDomains'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+
+		// Get number of Test Data Domain-rows
+		numberOfDomains := len(supportedTestDataDomains.TestDataDomains)
+		if numberOfDomains > 0 {
+			// Loop over all  TestData-domains
+			for currentDomain := 0; currentDomain < numberOfDomains; currentDomain++ {
+
+				// Values to insert into database
+				sqlResult, err := sqlStatement.Exec(
+					supportedTestDataDomains.OriginalSenderId,
+					supportedTestDataDomains.OriginalSenderName,
+					supportedTestDataDomains.MessageId,
+					supportedTestDataDomains.TestDataDomains[currentDomain].TestDataDomainId,
+					supportedTestDataDomains.TestDataDomains[currentDomain].TestDataDomainName,
+					supportedTestDataDomains.TestDataDomains[currentDomain].TestDataDomainDescription,
+					supportedTestDataDomains.TestDataDomains[currentDomain].TestDataDomainMouseOver,
+					supportedTestDataDomains.OrginalCreateDateTime,
+					supportedTestDataDomains.OriginalSystemDomainId,
+					supportedTestDataDomains.OriginalSystemDomainName,
+					common_code.GeneraTimeStampUTC())
+
+				if err != nil {
+					// Error while executing
+					logger.WithFields(logrus.Fields{
+						"ID":                       "8047c4c3-461f-42d8-87c6-5c2cb5f8e75b",
+						"err":                      err,
+						"sqlResult":                sqlResult,
+						"supportedTestDataDomains": supportedTestDataDomains,
+					}).Error("Error when updating Main Database with data from 'supportedTestDataDomains'")
+
+					messageSavedInDB = false
+				} else {
+					//SQL executed OK
+					logger.WithFields(logrus.Fields{
+						"ID":                       "d456499c-2ad1-4677-8e1d-909a7ecab560",
+						"err":                      err,
+						"sqlResult":                sqlResult,
+						"supportedTestDataDomains": supportedTestDataDomains,
+					}).Debug("Fenix main Database was updated with data from 'supportedTestDataDomains'")
+				}
+			}
+		}
+	}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
+}
+
+// **********************************************************************************************************
+// Save incoming 'InformationMessage' to Main Database for Fenix Inception
+//
+func saveInformationMessageInDB(informationMessage *gRPC.InformationMessage) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	var sqlToBeExecuted = "INSERT INTO messages.InformationMessages "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, OriginalSystemDomainId, OriginalSystemDomainName, MessageId, "
+	sqlToBeExecuted = sqlToBeExecuted + "InformationMessageTypeId, InformationMessageTypeName, Message, OrginalCreateDateTime, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":                 "626d1aae-2193-4aae-ae58-7df83b2aac3f",
+			"err":                err,
+			"informationMessage": informationMessage,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'informationMessage'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+		/*
+			create table messages.InformationMessages
+			(
+			    OriginalSenderId           uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+			    OriginalSenderName         varchar default null,              -- Thn name of the gateway/plugin that created the message 2
+			    OriginalSystemDomainId     uuid                     not null, -- The Domain/system's Id where the Sender operates 3
+			    OriginalSystemDomainName   varchar default null,              -- The Domain/system's Name where the Sender operates 4
+			    MessageId                  uuid                     not null, -- A unique id generated when sent from Gateway or Plugin 5
+			    InformationMessageTypeId   int                      not null, -- The Id of the information message type 6
+			    InformationMessageTypeName varchar                  not null, -- The name of the information message type 7
+			    Message                    varchar default null,              -- The message from Gateway or Plugin to Fenix 8
+			    OrginalCreateDateTime      timestamp with time zone not null, -- The timestamp when the orignal message was created 9
+			    updatedDateTime            timestamp with time zone not null  -- The Datetime when the row was created/updates 10
+			);
+		*/
+		// Values to insert into database
+		sqlResult, err := sqlStatement.Exec(
+			informationMessage.OriginalSenderId,
+			informationMessage.OriginalSenderName,
+			informationMessage.OriginalSystemDomainId,
+			informationMessage.OriginalSystemDomainName,
+			informationMessage.MessageId,
+			informationMessage.MessageType,
+			gRPC.InformationMessage_InformationType_name[int32(informationMessage.MessageType)],
+			informationMessage.Message,
+			informationMessage.OrginalCreateDateTime,
+			common_code.GeneraTimeStampUTC())
+
+		if err != nil {
+			// Error while executing
+			logger.WithFields(logrus.Fields{
+				"ID":                 "a1aa006d-599d-4e23-97a0-5cf33ca79e52",
+				"err":                err,
+				"sqlResult":          sqlResult,
+				"informationMessage": informationMessage,
+			}).Error("Error when updating Main Database with data from 'informationMessage'")
+
+			messageSavedInDB = false
+		} else {
+			//SQL executed OK
+			logger.WithFields(logrus.Fields{
+				"ID":                 "6321f830-e9d3-4185-b80f-501ec053de99",
+				"err":                err,
+				"sqlResult":          sqlResult,
+				"informationMessage": informationMessage,
+			}).Debug("Fenix main Database was updated with data from 'informationMessage'")
+		}
+	}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
+}
+
+// **********************************************************************************************************
+// Save incoming 'TestExecutionLogMessage' to Main Database for Fenix Inception
+//
+func saveTestExecutionLogMessageInDB(testExecutionLogMessage *gRPC.TestExecutionLogMessage) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	var sqlToBeExecuted = "INSERT INTO messages.TestExecutionLogMessage "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, OriginalSystemDomainId, OriginalSystemDomainName, LogMessageId, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionGuid, TestInstructionLogCreatedDateTime, TestInstructionLogCreatedDateTime, TestInstructionLogSentDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "LogMessage, LogMessageTypeId, logmessageTypeName, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":                      "9c711fac-20a4-4694-92c1-7d75591e11d2",
+			"err":                     err,
+			"testExecutionLogMessage": testExecutionLogMessage,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'testExecutionLogMessage'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+		/*
+			create table messages.logmessages
+			(
+			    OriginalSenderId                  uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+			    OriginalSenderName                varchar default null,              -- The name of the gateway/plugin that created the message 2
+			    OriginalSystemDomainId            uuid                     not null, -- The Domain/system's Id where the Sender operates 3
+			    OriginalSystemDomainName          varchar default null,              -- he Domain/system's Name where the Sender operates 4
+			    LogMessageId                      uuid                     not null, -- A unique id created by plugin 5
+			    TestInstructionGuid               uuid                     not null, -- TestInstructionGuid is a unique id created when TestInstruction is created in TestCase 6
+			    TestInstructionLogCreatedDateTime timestamp with time zone not null, -- The DateTime when the message was created 7
+			    TestInstructionLogSentDateTime    timestamp with time zone not null, -- he DateTime when the message was sent 8
+			    LogMessage                        varchar default null,              -- The log message 9
+			    LogMessageTypeId                  int                      not null, -- The Id of the log message type, text or json 10
+			    logmessageTypeName                varcha                   not null, -- The name of the log message type, text or json 11
+			    updatedDateTime                   timestamp with time zone not null  -- The Datetime when the row was created/updates 12
+			);
+		*/
+		// Values to insert into database
+		sqlResult, err := sqlStatement.Exec(
+			testExecutionLogMessage.OriginalSenderId,
+			testExecutionLogMessage.OriginalSenderName,
+			testExecutionLogMessage.OriginalSystemDomainId,
+			testExecutionLogMessage.OriginalSystemDomainName,
+			testExecutionLogMessage.LogMessageId,
+			testExecutionLogMessage.TestInstructionGuid,
+			testExecutionLogMessage.TestInstructionResultCreatedDateTime,
+			testExecutionLogMessage.TestInstructionResultSentDateTime,
+			testExecutionLogMessage.LogMessage,
+			testExecutionLogMessage.LogMessageType,
+			gRPC.LogMessageTypeEnum_name[int32(testExecutionLogMessage.LogMessageType)],
+			common_code.GeneraTimeStampUTC())
+
+		if err != nil {
+			// Error while executing
+			logger.WithFields(logrus.Fields{
+				"ID":                      "6d56d36d-e953-4894-bb22-b82a0bca96cd",
+				"err":                     err,
+				"sqlResult":               sqlResult,
+				"testExecutionLogMessage": testExecutionLogMessage,
+			}).Error("Error when updating Main Database with data from 'testExecutionLogMessage'")
+
+			messageSavedInDB = false
+		} else {
+			//SQL executed OK
+			logger.WithFields(logrus.Fields{
+				"ID":                      "d0621424-33ce-4e97-8519-80e7847a929c",
+				"err":                     err,
+				"sqlResult":               sqlResult,
+				"testExecutionLogMessage": testExecutionLogMessage,
+			}).Debug("Fenix main Database was updated with data from 'testExecutionLogMessage'")
+		}
+	}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
+}
+
+// **********************************************************************************************************
+// Save incoming 'TestInstructionTimeOutMessage' to Main Database for Fenix Inception
+//
+func saveTestInstructionTimeOutMessageInDB(testInstructionTimeOutMessage *gRPC.TestInstructionTimeOutMessage) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	var sqlToBeExecuted = "INSERT INTO messages.TestExecutionLogMessage "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, OriginalSystemDomainId, OriginalSystemDomainName, MessageId, "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalMessageId, TimeOut, OrginalCreateDateTime, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":                            "fbe9433f-6875-4a0b-9e34-495425c60242",
+			"err":                           err,
+			"testInstructionTimeOutMessage": testInstructionTimeOutMessage,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'testInstructionTimeOutMessage'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+		/*
+			create table messages.TestInstructionTimeOutMessage
+			(
+			    OriginalSenderId         uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+			    OriginalSenderName       varchar default null,              -- The name of the gateway/plugin that created the message 2
+			    OriginalSystemDomainId   uuid                     not null, -- The Domain/system's Id where the Sender operates 3
+			    OriginalSystemDomainName varchar default null,              -- The Domain/system's Name where the Sender operates 4
+			    MessageId                uuid                     not null, -- A unique id generated when sent from Plugi 5
+			    OriginalMessageId        uuid                     not null, -- A unique id from the TestInstruction request sent from Fenix 6
+			    TimeOut                  timestamp with time zone not null, -- The Timeout time when TestInstruction should Timeout if no answer has come back 7
+			    OrginalCreateDateTime    timestamp with time zone not null, -- The timestamp when the orignal message was created 8
+			    updatedDateTime          timestamp with time zone not null  -- The Datetime when the row was created/updates 9
+			);
+		*/
+		// Values to insert into database
+		sqlResult, err := sqlStatement.Exec(
+			testInstructionTimeOutMessage.OriginalSenderId,
+			testInstructionTimeOutMessage.OriginalSenderName,
+			testInstructionTimeOutMessage.OriginalSystemDomainId,
+			testInstructionTimeOutMessage.OriginalSystemDomainName,
+			testInstructionTimeOutMessage.MessageId,
+			testInstructionTimeOutMessage.OriginalMessageId,
+			testInstructionTimeOutMessage.OrginalCreateDateTime,
+			common_code.GeneraTimeStampUTC())
+
+		if err != nil {
+			// Error while executing
+			logger.WithFields(logrus.Fields{
+				"ID":                            "53ce7ec9-8278-4fb9-99df-b04499552893",
+				"err":                           err,
+				"sqlResult":                     sqlResult,
+				"testInstructionTimeOutMessage": testInstructionTimeOutMessage,
+			}).Error("Error when updating Main Database with data from 'testInstructionTimeOutMessage'")
+
+			messageSavedInDB = false
+		} else {
+			//SQL executed OK
+			logger.WithFields(logrus.Fields{
+				"ID":                            "37dac8d8-5942-4727-8412-ed3582c28653",
+				"err":                           err,
+				"sqlResult":                     sqlResult,
+				"testInstructionTimeOutMessage": testInstructionTimeOutMessage,
+			}).Debug("Fenix main Database was updated with data from 'testInstructionTimeOutMessage'")
+		}
+	}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
+}
+
+// **********************************************************************************************************
+// Save incoming 'SupportedTestDataDomainsWithHeadersMessage' to Main Database for Fenix Inception
+//
+func saveSupportedTestDataDomainsWithHeadersMessageInDB(supportedTestDataDomainsWithHeadersMessage *gRPC.SupportedTestDataDomainsWithHeadersMessage) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	var sqlToBeExecuted = "INSERT INTO messages.TestExecutionLogMessage "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, MessageId, OriginalMessageId, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestDataDomainId, TestDataDomainName, TestDataDomainDescription, TestDataDomainMouseOver "
+	sqlToBeExecuted = sqlToBeExecuted + "TestDataFilterHeaderId, TestDataFilterHeaderName, TestDataFilterHeaderDescription, TestDataFilterHeaderMouseOver "
+	sqlToBeExecuted = sqlToBeExecuted + "TestDataFilterHash, AllowMultipleChoices, AllowNoChoice, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestDataFilterHeaderValueId, TestDataFilterHeaderValueName, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":  "bed75c92-d92c-4f66-915b-863f10140436",
+			"err": err,
+			"supportedTestDataDomainsWithHeadersMessage": supportedTestDataDomainsWithHeadersMessage,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'supportedTestDataDomainsWithHeadersMessage'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+		/*
+
+				create table testdatadomains.SupportedTestDataDomainsWithHeaders
+				(
+				    OriginalSenderId                uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+				    OriginalSenderName              varchar default null,              -- The name of the gateway/plugin that created the message 2
+				    MessageId                       uuid                     not null, -- A unique id generated when sent from Plugin 3
+				    OriginalMessageId               uuid                     not null, -- A unique id from the request sent from Fenix 4
+				    TestDataDomainId                uuid                     not null, -- he unique id of the testdata domain 5
+				    TestDataDomainName              varchar default null,              -- The name of the testdata domain 6
+				    TestDataDomainDescription       varchar default null,              -- A description of the testdata domain 7
+				    TestDataDomainMouseOver         varchar default null,              -- A mouse over description of the testdata domain 8
+				    TestDataFilterHeaderId          uuid                     not null,-- A unique id for the header 9
+				    TestDataFilterHeaderName        varchar                  not null, -- A name for the keader 10
+				    TestDataFilterHeaderDescription varchar                  not null, -- A description of the header 11
+				    TestDataFilterHeaderMouseOver   varchar                  not null, --  A mouse over description of the header 12
+				    TestDataFilterHash              varchar                  not null, --  ????????????????????????????????????????????????????? 13
+				    AllowMultipleChoices            boolean                  not null, -- Should multiple chocies be allowed for this header 14
+				    AllowNoChoice                   boolean                  not null, -- Should no choice be allowed for this header 15
+				    TestDataFilterHeaderValueId     uuid                     not null, -- A unique id for the filter value 16
+				    TestDataFilterHeaderValueName   varchar                  not null, -- The name for the filter value 17
+				    updatedDateTime                 timestamp with time zone not null  -- The Datetime when the row was created/updates 18
+				);
+
+			SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders
+			SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders_TestDataFilterHeader
+			SupportedTestDataDomainsWithHeadersMessage_TestDataDomainWithHeaders_TestDataFilterHeader_TestDataFilterHeaderValue
+		*/
+
+		// Get number of Test Data Domain-rows
+		numberOfDomains := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains)
+		if numberOfDomains > 0 {
+			// Loop over all  TestData-domains
+			for currentDomain := 0; currentDomain < numberOfDomains; currentDomain++ {
+
+				// Get number of TestDataFilterHeader-rows
+				numberOfTestDataFilterHeaders := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomain].TestDataFilterHeaders)
+				if numberOfTestDataFilterHeaders > 0 {
+					// Loop over all  TestDataFilterHeaders
+					for currentDestDataFilterHeader := 0; currentDestDataFilterHeader < numberOfTestDataFilterHeaders; currentDestDataFilterHeader++ {
+						xxxx
+						// Get number of TestDataFilterHeaderValue-rows
+						numberOfTestDataFilterHeaderValues := len(supportedTestDataDomainsWithHeadersMessage.TestDataDomains[currentDomain].TestDataFilterHeaders[currentDestDataFilterHeader].TestDataFilterHeaderValues[])
+						if numberOfTestDataFilterHeaderValues > 0 {
+							// Loop over all TestDataFilterHeaderValues
+							for currentTestDataFilterHeaderValue := 0; currentTestDataFilterHeaderValue < numberOfTestDataFilterHeaderValues; currentTestDataFilterHeaderValue++ {
+
+								// Values to insert into database
+								sqlResult, err := sqlStatement.Exec(
+									supportedTestDataDomainsWithHeadersMessage.OriginalSenderId,
+									supportedTestDataDomainsWithHeadersMessage.OriginalSenderName,
+									supportedTestDataDomainsWithHeadersMessage.MessageId,
+									supportedTestDataDomainsWithHeadersMessage.OriginalMessageId,
+									supportedTestDataDomainsWithHeadersMessage.test
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								supportedTestDataDomainsWithHeadersMessage
+								testInstructionTimeOutMessage.OrginalCreateDateTime,
+									common_code.GeneraTimeStampUTC())
+
+								if err != nil {
+									// Error while executing
+									logger.WithFields(logrus.Fields{
+										"ID":        "b5852c95-a717-4fc6-8d06-0b80e8ca4868",
+										"err":       err,
+										"sqlResult": sqlResult,
+										"supportedTestDataDomainsWithHeadersMessage": supportedTestDataDomainsWithHeadersMessage,
+									}).Error("Error when updating Main Database with data from 'supportedTestDataDomainsWithHeadersMessage'")
+
+									messageSavedInDB = false
+								} else {
+									//SQL executed OK
+									logger.WithFields(logrus.Fields{
+										"ID":        "fe45a965-0e03-4d03-be2e-3b9eefffd5fb",
+										"err":       err,
+										"sqlResult": sqlResult,
+										"supportedTestDataDomainsWithHeadersMessage": supportedTestDataDomainsWithHeadersMessage,
+									}).Debug("Fenix main Database was updated with data from 'supportedTestDataDomainsWithHeadersMessage'")
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// Return if the messages was saved or not in database
+return messageSavedInDB
+}
+
+/*
+    //TestInstructionResults flows from Plugins towards Fenix Inception
+    rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse) {
+    }
+
+    // Log-posts har sent from Plugins towards Fenix Inception
+x    rpc SendTestExecutionLogTowardsFenix (TestExecutionLogMessage) returns (AckNackResponse) {
+    }
+
+    // TestInstructions Timeouts flows from Plugins towards Fenix.
+    // Used for telling Fenix when a TestInstruction should be have a timeout and execution for Testcase should be stopped
+x    rpc SendTestInstructionTimeOutTowardsFenix (TestInstructionTimeOutMessage) returns (AckNackResponse) {
+    }
+
+x    rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse) {
+    }
+
+    // This one will probably be deleted
+//    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
+
+    // Register an avalible TestInstruction
+    rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
+    }
+
+    // Register the different Testdata Domains that is supported
+    rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
+    }
+
+    // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
+    rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
+    }
+
+    // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
+    rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse) {
+
+    // A Plugin can send a INFO- OR WARNING-message to Fenix by this mwethod
+    rpc SendMessageToFenix (InformationMessage) returns (AckNackResponse){
+*/
+'
+
 
 /*
 	fmt.Println("# Inserting values")
