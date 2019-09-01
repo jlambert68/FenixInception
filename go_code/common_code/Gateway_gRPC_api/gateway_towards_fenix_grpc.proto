@@ -402,9 +402,10 @@ message TestContainerMessage {
         IsParallellProcessedContainer = 1; // Container has Parallell Processed children
     }
     repeated TestContainerChildObjectMessage TestBlockChildObjectMessages = 10; // An object containing child-TesContainers and TestInstructions
-}
+    string OrginalCreateDateTime = 11; // The timestamp when the container was created
+    }
 
-message TestContainerChildObjectMessage {
+    message TestContainerChildObjectMessage {
     TestInstructionChildTypeEnum ChildType = 1;
     enum TestInstructionChildTypeEnum {
         ChildIsTestInstructionContainerMessage = 0;
