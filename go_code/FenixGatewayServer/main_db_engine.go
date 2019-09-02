@@ -1017,7 +1017,7 @@ func saveavailbleTestContainersAtPluginMessageInDB(availbleTestContainersAtPlugi
 	// Prepare SQL
 	var sqlToBeExecuted = "INSERT INTO testInstructions.TestContainerMessage "
 	sqlToBeExecuted = sqlToBeExecuted + "PluginGuid, PluginName, SystemDomainId, SystemDomainName, "
-	sqlToBeExecuted = sqlToBeExecuted + "MessageId, TestContainerGuid, TestContainerName, TestContainerIsTopContainer, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestContainerGuid, TestContainerName, MessageId, TestContainerIsTopContainer, "
 	sqlToBeExecuted = sqlToBeExecuted + "ChildProcessingTypeId, ChildProcessingTypeName, ChildTypeId, ChildTypeName, "
 	sqlToBeExecuted = sqlToBeExecuted + " ParentContainerReference, ChildContainerReference, TestInstructionsReference, "
 	sqlToBeExecuted = sqlToBeExecuted + "OrginalCreateDateTime, updatedDateTime "
@@ -1035,64 +1035,183 @@ func saveavailbleTestContainersAtPluginMessageInDB(availbleTestContainersAtPlugi
 		messageSavedInDB = false
 	} else {
 		//SQL prepared OK
-		/*
-		create table testInstructions.TestContainerMessage
-		(
-		    PluginGuid                  uuid                     not null, -- A unique id for the plugin 1
-		    PluginName                  varchar default null,              -- A name for the plugin 2
-		    SystemDomainId              uuid                     not null, --  The Domain/system's Id where the Sender operates 3
-		    SystemDomainName            varchar default null,              -- The Domain/system's Name where the Sender operates 4
-		    TestContainerGuid           uuid                     not null, -- A unique id for the TestContainer 5
-		    TestContainerName           varchar default null,              -- A name for the TestContainer 6
-		    MessageId                   uuid                     not null, -- A unique id for the message 7
-		    TestContainerIsTopContainer boolean                  not null, -- Telling if the container is a top container, i.e. has no parent container 8
 
-		    ChildProcessingTypeId       int                      not null, -- The id for child processing type (0 or 1) 9
-		    ChildProcessingTypeName     varchar                  not null, -- The name for child processing type ('IsSerialProcessedContainer' or 'IsParallellProcessedContainer') 10
-		    ChildTypeId                 int                      not null, -- The id for the type of child  (0 or 1) 11
-		    ChildTypeName               varchar                  not null, -- The name for the type of child ('ChildIsTestInstructionContainerMessage' or 'ChildIsTestInstructionMessage') 12
-		    ParentContainerReference    uuid    default null,              -- A reference to parent container if it exists 13
-		    ChildContainerReference     uuid    default null,              -- A reference to child container if it exists 14
-		    TestInstructionsReference   uuid    default null,              -- A reference TestInstruction if it exists 15
+		// Get number of Container-rows
+		numberOfContainers := len(availbleTestContainersAtPluginMessage.TestContainerChildObjectMessages)
+		if numberOfContainers > 0 {
+			// Loop over all Containers
+			for currentContainerCounter:= 0; currentContainerCounter < numberOfContainers; currentContainerCounter++ {
 
-		    updatedDateTime             timestamp with time zone not null  -- The Datetime when the row was created/updates 16
-		);
-		*/
-		// Values to insert into database
-		sqlResult, err := sqlStatement.Exec(
-			availbleTestContainersAtPluginMessage.SenderId,
-			availbleTestContainersAtPluginMessage.OriginalSenderName,
-			availbleTestContainersAtPluginMessage.OriginalSystemDomainId,
-			availbleTestContainersAtPluginMessage.OriginalSystemDomainName,
-			availbleTestContainersAtPluginMessage.MessageId,
-			availbleTestContainersAtPluginMessage.TestContainerGuid,
-			availbleTestContainersAtPluginMessage.TestContainerName,
-			availbleTestContainersAtPluginMessage.TestContainerIsTopContainer,
-			availbleTestContainersAtPluginMessage.ChildProcessingTypeId,
-			availbleTestContainersAtPluginMessage.ChildProcessingTypeName,
-			availbleTestContainersAtPluginMessage.ChildTypeId,
-			availbleTestContainersAtPluginMessage.ChildTypeName,
-			availbleTestContainersAtPluginMessage.updatedDateTime,
-			common_code.GeneraTimeStampUTC())
+				/*
+					create table testInstructions.TestContainerMessage
+					(
+						PluginGuid                  uuid                     not null, -- A unique id for the plugin 1
+						PluginName                  varchar default null,              -- A name for the plugin 2
+						SystemDomainId              uuid                     not null, --  The Domain/system's Id where the Sender operates 3
+						SystemDomainName            varchar default null,              -- The Domain/system's Name where the Sender operates 4
+						TestContainerGuid           uuid                     not null, -- A unique id for the TestContainer 5
+						TestContainerName           varchar default null,              -- A name for the TestContainer 6
+						MessageId                   uuid                     not null, -- A unique id for the message 7
+						TestContainerIsTopContainer boolean                  not null, -- Telling if the container is a top container, i.e. has no parent container 8
 
-		if err != nil {
-			// Error while executing
-			logger.WithFields(logrus.Fields{
-				"ID":                                    "af9d5ff3-6552-4e3a-92b2-c11113087a85",
-				"err":                                   err,
-				"sqlResult":                             sqlResult,
-				"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
-			}).Error("Error when updating Main Database with data from 'availbleTestContainersAtPluginMessage'")
+						ChildProcessingTypeId       int                      not null, -- The id for child processing type (0 or 1) 9
+						ChildProcessingTypeName     varchar                  not null, -- The name for child processing type ('IsSerialProcessedContainer' or 'IsParallellProcessedContainer') 10
+						ChildTypeId                 int                      not null, -- The id for the type of child  (0 or 1) 11
+						ChildTypeName               varchar                  not null, -- The name for the type of child ('ChildIsTestInstructionContainerMessage' or 'ChildIsTestInstructionMessage') 12
+						ParentContainerReference    uuid    default null,              -- A reference to parent container if it exists 13
+						ChildContainerReference     uuid    default null,              -- A reference to child container if it exists 14
+						TestInstructionsReference   uuid    default null,              -- A reference TestInstruction if it exists 15
 
-			messageSavedInDB = false
-		} else {
-			//SQL executed OK
-			logger.WithFields(logrus.Fields{
-				"ID":                                    "bbbef665-d1f1-4267-b034-960d34c6d101",
-				"err":                                   err,
-				"sqlResult":                             sqlResult,
-				"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
-			}).Debug("Fenix main Database was updated with data from 'availbleTestContainersAtPluginMessage'")
+						OrginalCreateDateTime       timestamp with time zone not null, -- 'The timestamp when the orignal container was created'; --16
+						updatedDateTime             timestamp with time zone not null  -- The Datetime when the row was created/updates 17
+					);
+				*/
+				// Values to insert into database
+				sqlResult, err := sqlStatement.Exec(
+					availbleTestContainersAtPluginMessage.TestContainerChildObjectMessages[currentContainerCounter].
+				[],
+					availbleTestContainersAtPluginMessage.,
+					availbleTestContainersAtPluginMessage.OriginalSystemDomainId,
+					availbleTestContainersAtPluginMessage.OriginalSystemDomainName,
+					availbleTestContainersAtPluginMessage.MessageId,
+					availbleTestContainersAtPluginMessage.
+						availbleTestContainersAtPluginMessage.TestContainerGuid,
+					availbleTestContainersAtPluginMessage.TestContainerName,
+					availbleTestContainersAtPluginMessage.TestContainerIsTopContainer,
+					availbleTestContainersAtPluginMessage.ChildProcessingTypeId,
+					availbleTestContainersAtPluginMessage.ChildProcessingTypeName,
+					availbleTestContainersAtPluginMessage.ChildTypeId,
+					availbleTestContainersAtPluginMessage.ChildTypeName,
+					availbleTestContainersAtPluginMessage.updatedDateTime,
+					common_code.GeneraTimeStampUTC())
+
+				if err != nil {
+					// Error while executing
+					logger.WithFields(logrus.Fields{
+						"ID":                                    "af9d5ff3-6552-4e3a-92b2-c11113087a85",
+						"err":                                   err,
+						"sqlResult":                             sqlResult,
+						"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
+					}).Error("Error when updating Main Database with data from 'availbleTestContainersAtPluginMessage'")
+
+					messageSavedInDB = false
+				} else {
+					//SQL executed OK
+					logger.WithFields(logrus.Fields{
+						"ID":                                    "bbbef665-d1f1-4267-b034-960d34c6d101",
+						"err":                                   err,
+						"sqlResult":                             sqlResult,
+						"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
+					}).Debug("Fenix main Database was updated with data from 'availbleTestContainersAtPluginMessage'")
+				}
+			}
+		}
+	}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
+}
+
+
+// **********************************************************************************************************
+// Save incoming 'AvailbleTestContainersAtPluginMessage' to Main Database for Fenix Inception
+// If a Container contains a child-container then this function is called in recursion
+//
+func saveTestContainerMessageInDB(availbleTestContainersAtPluginMessage *gRPC.con) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	var sqlToBeExecuted = "INSERT INTO testInstructions.TestContainerMessage "
+	sqlToBeExecuted = sqlToBeExecuted + "PluginGuid, PluginName, SystemDomainId, SystemDomainName, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestContainerGuid, TestContainerName, MessageId, TestContainerIsTopContainer, "
+	sqlToBeExecuted = sqlToBeExecuted + "ChildProcessingTypeId, ChildProcessingTypeName, ChildTypeId, ChildTypeName, "
+	sqlToBeExecuted = sqlToBeExecuted + " ParentContainerReference, ChildContainerReference, TestInstructionsReference, "
+	sqlToBeExecuted = sqlToBeExecuted + "OrginalCreateDateTime, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":                                    "9056ea34-bdfc-47cd-8ef7-974afc5a9bbe",
+			"err":                                   err,
+			"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'availbleTestContainersAtPluginMessage'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+
+		// Get number of Container-rows
+		numberOfContainers := len(availbleTestContainersAtPluginMessage.TestContainerChildObjectMessages)
+		if numberOfContainers > 0 {
+			// Loop over all Containers
+			for currentContainerCounter:= 0; currentContainerCounter < numberOfContainers; currentContainerCounter++ {
+
+				/*
+					create table testInstructions.TestContainerMessage
+					(
+						PluginGuid                  uuid                     not null, -- A unique id for the plugin 1
+						PluginName                  varchar default null,              -- A name for the plugin 2
+						SystemDomainId              uuid                     not null, --  The Domain/system's Id where the Sender operates 3
+						SystemDomainName            varchar default null,              -- The Domain/system's Name where the Sender operates 4
+						TestContainerGuid           uuid                     not null, -- A unique id for the TestContainer 5
+						TestContainerName           varchar default null,              -- A name for the TestContainer 6
+						MessageId                   uuid                     not null, -- A unique id for the message 7
+						TestContainerIsTopContainer boolean                  not null, -- Telling if the container is a top container, i.e. has no parent container 8
+
+						ChildProcessingTypeId       int                      not null, -- The id for child processing type (0 or 1) 9
+						ChildProcessingTypeName     varchar                  not null, -- The name for child processing type ('IsSerialProcessedContainer' or 'IsParallellProcessedContainer') 10
+						ChildTypeId                 int                      not null, -- The id for the type of child  (0 or 1) 11
+						ChildTypeName               varchar                  not null, -- The name for the type of child ('ChildIsTestInstructionContainerMessage' or 'ChildIsTestInstructionMessage') 12
+						ParentContainerReference    uuid    default null,              -- A reference to parent container if it exists 13
+						ChildContainerReference     uuid    default null,              -- A reference to child container if it exists 14
+						TestInstructionsReference   uuid    default null,              -- A reference TestInstruction if it exists 15
+
+						OrginalCreateDateTime       timestamp with time zone not null, -- 'The timestamp when the orignal container was created'; --16
+						updatedDateTime             timestamp with time zone not null  -- The Datetime when the row was created/updates 17
+					);
+				*/
+				// Values to insert into database
+				sqlResult, err := sqlStatement.Exec(
+					availbleTestContainersAtPluginMessage.TestContainerChildObjectMessages[currentContainerCounter].
+				[],
+					availbleTestContainersAtPluginMessage.,
+					availbleTestContainersAtPluginMessage.OriginalSystemDomainId,
+					availbleTestContainersAtPluginMessage.OriginalSystemDomainName,
+					availbleTestContainersAtPluginMessage.MessageId,
+					availbleTestContainersAtPluginMessage.
+						availbleTestContainersAtPluginMessage.TestContainerGuid,
+					availbleTestContainersAtPluginMessage.TestContainerName,
+					availbleTestContainersAtPluginMessage.TestContainerIsTopContainer,
+					availbleTestContainersAtPluginMessage.ChildProcessingTypeId,
+					availbleTestContainersAtPluginMessage.ChildProcessingTypeName,
+					availbleTestContainersAtPluginMessage.ChildTypeId,
+					availbleTestContainersAtPluginMessage.ChildTypeName,
+					availbleTestContainersAtPluginMessage.updatedDateTime,
+					common_code.GeneraTimeStampUTC())
+
+				if err != nil {
+					// Error while executing
+					logger.WithFields(logrus.Fields{
+						"ID":                                    "af9d5ff3-6552-4e3a-92b2-c11113087a85",
+						"err":                                   err,
+						"sqlResult":                             sqlResult,
+						"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
+					}).Error("Error when updating Main Database with data from 'availbleTestContainersAtPluginMessage'")
+
+					messageSavedInDB = false
+				} else {
+					//SQL executed OK
+					logger.WithFields(logrus.Fields{
+						"ID":                                    "bbbef665-d1f1-4267-b034-960d34c6d101",
+						"err":                                   err,
+						"sqlResult":                             sqlResult,
+						"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
+					}).Debug("Fenix main Database was updated with data from 'availbleTestContainersAtPluginMessage'")
+				}
+			}
 		}
 	}
 

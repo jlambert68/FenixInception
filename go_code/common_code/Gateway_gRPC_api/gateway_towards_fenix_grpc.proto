@@ -1,7 +1,6 @@
 syntax = "proto3";
 package Gateway_gRPC_api;
 
-
 // version 3.6.0
 //~/protobuf/bin/protoc -I Gateway_Towards_Fenix_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Fenix_gRPC_api Gateway_Towards_Fenix_gRPC_api/gateway_towards_fenix_grpc.proto
 //~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
@@ -16,8 +15,6 @@ import "gateway_common_grpc.proto";
 // Runtime messages
 // ***********************************************************************************
 
-
-
 // *********************************************************
 //  rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse)
 //
@@ -26,8 +23,8 @@ import "gateway_common_grpc.proto";
 
 // The result of the TestInstructionExecution sent towards Fenix Inception
 message TestInstructionExecutionResultMessage {
-    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
-    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string OriginalSenderId = 1; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2; // Then name of the gateway/plugin that created the message
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
@@ -62,8 +59,8 @@ enum AvailableTestExecutionResultsEnum {
 
 // A log post that sent back to Fenix Inception from plugin during test execution
 message TestExecutionLogMessage {
-    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
-    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string OriginalSenderId = 1; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2; // Then name of the gateway/plugin that created the message
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
@@ -86,7 +83,6 @@ enum LogMessageTypeEnum {
 // END
 // *********************************************************
 
-
 // *********************************************************
 //  rpc SendTestInstructionTimeOutTowardsFenix(TestInstructionTimeOutMessage) returns (AckNackResponse)
 //
@@ -95,8 +91,8 @@ enum LogMessageTypeEnum {
 
 // A message telling Fenix when a TestInstruction should time out and by then the complete TestCase
 message TestInstructionTimeOutMessage {
-    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
-    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string OriginalSenderId = 1; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2; // Then name of the gateway/plugin that created the message
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string OriginalMessageId = 5; // A unique id from the TestInstruction request sent from Fenix
@@ -116,7 +112,6 @@ message TestInstructionTimeOutMessage {
 // Test Data messages
 // *****
 
-
 // *********************************************************
 //  rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse)
 //
@@ -125,8 +120,8 @@ message TestInstructionTimeOutMessage {
 
 // All supported Testdata domains supported by a specific Plugin
 message SupportedTestDataDomainsWithHeadersMessage {
-    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
-    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string OriginalSenderId = 1; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2; // Then name of the gateway/plugin that created the message
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string OriginalMessageId = 5; // A unique id from the request sent from Fenix
@@ -142,7 +137,7 @@ message SupportedTestDataDomainsWithHeadersMessage {
         // Message holding one header, key, that is used for filtering testdata
         message TestDataFilterHeader {
             string TestDataFilterHeaderId = 1; //  A unique id for the header
-            string TestDataFilterHeaderName = 2;// A name for the keader
+            string TestDataFilterHeaderName = 2; // A name for the keader
             string TestDataFilterHeaderDescription = 3; // A description of the header
             string TestDataFilterHeaderMouseOver = 4; // A mouse over description of the header
             string TestDataFilterHash = 5; // ??????????????????????????????????????????????????????????????????????????
@@ -167,7 +162,6 @@ message SupportedTestDataDomainsWithHeadersMessage {
 // **********
 // END
 // *********************************************************
-
 
 // *********************************************************
 //  rpc TestDataFromFilterValues (TestDataListFromFilterValuesMessage) returns (AckNackResponse)
@@ -198,7 +192,6 @@ message TestDataFromFilterValuesMessage {
     string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
 }
-
 
 // Testdata in listform
 message ListObject {
@@ -238,7 +231,6 @@ message OtherFileObject {
 // **********
 // END
 // *********************************************************
-
 
 // ***********************************************************************************
 // Registration messages
@@ -382,38 +374,33 @@ message AvailbleTestContainersAtPluginMessage {
     string OrginalCreateDateTime = 6; // The timestamp when the orignal message was created
     string OriginalSystemDomainId = 7; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 8; // The Domain/system's Name where the Sender operates
-    repeated TestContainerChildObjectMessage TestContainerChildObjectMessages = 9;
+    repeated TestContainerMessage TestContainerMessages = 9;
 }
-
 
 // A Container that holds block of TestContainerMessages and and references to TestInstructions
 message TestContainerMessage {
-    string PluginGuid = 1; // Used as unique id for the plugin
-    string PluginName = 2; // Used as unique name for the plugin
-    string SystemDomainId = 3; // The Domain/system's Id where the Sender operates
-    string SystemDomainName = 4; // The Domain/system's Name where the Sender operates
-    string MessageId = 5; // A unique id for the the message
     string TestContainerGuid = 6; // A unique id for the TestContainer
     string TestContainerName = 7; // A name for the TestContainer
     bool TestContainerIsTopContainer = 8; // Telling if the container is a top container, i.e. has no parent container
     TestContainerTypeEnum TestContainerType = 9; // Should container have Serial or Parallell processed children or is it a TestContainer
     enum TestContainerTypeEnum {
-        IsSerialProcessedContainer = 0; // Container has Serial Processed children
-        IsParallellProcessedContainer = 1; // Container has Parallell Processed children
-    }
-    repeated TestContainerChildObjectMessage TestBlockChildObjectMessages = 10; // An object containing child-TesContainers and TestInstructions
-    string OrginalCreateDateTime = 11; // The timestamp when the container was created
+        ChildrenWillBESerialProcessed = 0; // Container has Serial Processed children
+        ChildenWillBeParallellProcessed = 1; // Container has Parallell Processed children
     }
 
-    message TestContainerChildObjectMessage {
-    TestInstructionChildTypeEnum ChildType = 1;
-    enum TestInstructionChildTypeEnum {
-        ChildIsTestInstructionContainerMessage = 0;
-        ChildIsTestInstructionMessage = 1;
+    repeated TestContainerChildMessage TestContainerChildMessages = 10; // An object containing child-TesContainers and TestInstructions
+    string OrginalCreateDateTime = 11; // The timestamp when the container was created
+
+    message TestContainerChildMessage {
+        TestInstructionChildTypeEnum ChildType = 1;
+        enum TestInstructionChildTypeEnum {
+            ChildIsTestInstructionContainerMessage = 0;
+            ChildIsTestInstructionMessage = 1;
+        }
+        string ParentContainerReference = 2;
+        TestContainerMessage TestInstructionMessageChild = 3;
+        string AvailbleTestInstructionAtPluginMessageChildReferenceGuid = 4;
     }
-    string ParentContainerReference = 2;
-    TestContainerMessage TestInstructionMessageChild = 3;
-    string AvailbleTestInstructionAtPluginMessageChildReferenceGuid = 4;
 }
 
 // **********
@@ -427,8 +414,8 @@ message TestContainerMessage {
 
 // All supported Testdata domains supported by a specific Plugin
 message SupportedTestDataDomainsMessage {
-    string OriginalSenderId = 1 ; // Then Id of the plugin that created the message
-    string OriginalSenderName = 2 ; // Then name of the plugin that created the message
+    string OriginalSenderId = 1; // Then Id of the plugin that created the message
+    string OriginalSenderName = 2; // Then name of the plugin that created the message
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string MessageId = 5; // A unique id generated when sent from Plugin
@@ -455,8 +442,8 @@ message SupportedTestDataDomainsMessage {
 
 // A message used when Gateway or Plugin wants to send information to Fenix
 message InformationMessage {
-    string OriginalSenderId = 1 ; // Then Id of the gateway/plugin that created the message
-    string OriginalSenderName = 2 ; // Then name of the gateway/plugin that created the message
+    string OriginalSenderId = 1; // Then Id of the gateway/plugin that created the message
+    string OriginalSenderName = 2; // Then name of the gateway/plugin that created the message
     string OriginalSystemDomainId = 3; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 4; // The Domain/system's Name where the Sender operates
     string SenderId = 5; // Then Id of the gateway/plugin that was the last forwarder
@@ -469,7 +456,7 @@ message InformationMessage {
         ERROR = 3; // The Plugin wants to inform Fenix of that something is wrong
         FATAL = 4; // THe gateway will log problem and then exit
     }
-    InformationType MessageType = 8;// The type of information message
+    InformationType MessageType = 8; // The type of information message
     string message = 9; // The message from Gateway or Plugin to Fenix
     string OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
 }
@@ -492,14 +479,12 @@ message AckNackResponse {
 }
 */
 
-
 // The Gateservice definition.
 service GatewayTowardsFenix {
 
     // ***********************************************************************************
     // Runtime methods
     // ***********************************************************************************
-
 
     //TestInstructionResults flows from Plugins towards Fenix Inception
     rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse) {
@@ -522,23 +507,23 @@ service GatewayTowardsFenix {
     }
 
     // This one will probably be deleted
-//    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
-//
-//    }
+    //    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
+    //
+    //    }
     // ***********************************************************************************
     // Registration methods
     // ***********************************************************************************
 
     // Register an avalible TestInstruction
-    rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
+    rpc RegisterAvailbleTestInstructions (AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse) {
     }
 
     // Register the different Testdata Domains that is supported
-    rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
+    rpc RegistrateAvailableTestDataDomains (SupportedTestDataDomainsMessage) returns (AckNackResponse) {
     }
 
     // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
-    rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
+    rpc RegistrateAailableTestContainers (AvailbleTestContainersAtPluginMessage) returns (AckNackResponse) {
     }
 
     // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
@@ -550,7 +535,7 @@ service GatewayTowardsFenix {
     // ***********************************************************************************
 
     // A Plugin can send a INFO- OR WARNING-message to Fenix by this mwethod
-    rpc SendMessageToFenix (InformationMessage) returns (AckNackResponse){
+    rpc SendMessageToFenix (InformationMessage) returns (AckNackResponse) {
     }
 
 
