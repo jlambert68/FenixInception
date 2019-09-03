@@ -413,7 +413,8 @@ comment on column testInstructions.AvailbleTestInstructions.OriginalSenderName i
 comment on column testInstructions.AvailbleTestInstructions.MessageId is 'A unique id generated when sent from Plugin'; --3
 comment on column testInstructions.AvailbleTestInstructions.OrginalCreateDateTime is 'The timestamp when the orignal message was created'; --4
 comment on column testInstructions.AvailbleTestInstructions.OriginalSystemDomainId is 'The Domain/system''s Id where the Sender operates'; --5
-comment on column testInstructions.AvailbleTestInstructions.OriginalSystemDomainName is 'The Domain/system''s Name where the Sender operates';--6
+comment on column testInstructions.AvailbleTestInstructions.OriginalSystemDomainName is 'The Domain/system''s Name where the Sender operates';
+--6
 
 -- A specific Test Instruction
 comment on column testInstructions.AvailbleTestInstructions.PluginGuid is 'Used as unique id for the plugin'; --7
@@ -431,7 +432,8 @@ comment on column testInstructions.AvailbleTestInstructions.TestInstructionEnabl
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionColor is 'The color used for presenting the TestInstructionBlock, e.g. #FAF437'; --19
 comment on column testInstructions.AvailbleTestInstructions.DropIDs is 'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
 comment on column testInstructions.AvailbleTestInstructions.LandingZoneGuid is 'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
-comment on column testInstructions.AvailbleTestInstructions.ChoosenLandingZone is 'The choosen LandingZone for this TestInstructionBlock';--22
+comment on column testInstructions.AvailbleTestInstructions.ChoosenLandingZone is 'The choosen LandingZone for this TestInstructionBlock';
+--22
 
 -- A specific Attribute for the Test Instruction
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeGuid is 'The unique guid for the TestInstructionAttribute, set plugin'; --23
@@ -444,7 +446,8 @@ comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttri
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeMandatory is 'Should the TestInstructionAttribute be mandatory or not'; --30
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeVisibleInBlockArea is 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeId is 'The Id for what type the instruction attribute is'; --32
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeName is 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"';--33
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeName is 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"';
+--33
 
 -- Properties for TextBox attribute
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeInputTextBoxGuid is 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
@@ -453,7 +456,8 @@ comment on column testInstructions.AvailbleTestInstructions.TextBoxEditable is '
 comment on column testInstructions.AvailbleTestInstructions.TextBoxInputMask is 'Inputmask for the TextBox'; --37
 comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeGuid is 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
 comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeName is 'The Name for the Type of the TextBox.'; --39
-comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeValue is 'The value for the the TextBox, used for preset values';--40
+comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeValue is 'The value for the the TextBox, used for preset values';
+--40
 
 -- Properties for ComboBox attribute
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeComboBoxGuid is 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
@@ -465,7 +469,8 @@ comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeTyp
 comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValueGuid is 'The guid of the value for the the ComboBox, used for preset values'; --47
 comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValue is 'The value for the the ComboBox, used for preset values';--48
 
-comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.updatedDateTime is 'The Datetime when the row was created/updates';--49
+comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.updatedDateTime is 'The Datetime when the row was created/updates';
+--49
 -- NOT USED REMOVE FROM GRPC ..........Properties for FileSelector attribute
 --comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeFileSelectorGuid is 'xxxxxxxxxxxxxxxxxxxxxxxxx'; --4
 --comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeFileSelectorName is 'xxxxxxxxxxxxxxxxxxxxxxxxx'; --4
@@ -475,67 +480,80 @@ drop table testInstructions.TestContainerMessage;
 
 create table testInstructions.TestContainerMessage
 (
-    PluginGuid       uuid not null,  -- A unique id for the plugin 1
-    PluginName      varchar default null, -- A name for the plugin 2
-    SystemDomainId   uuid not null, --  The Domain/system's Id where the Sender operates 3
-    SystemDomainName  varchar default null, -- The Domain/system's Name where the Sender operates 4
-    TestContainerGuid      uuid not null, -- A unique id for the TestContainer 5
-    TestContainerName        varchar default null, -- A name for the TestContainer 6
-    TestContainerIsTopContainer boolean not null, -- Telling if the container is a top container, i.e. has no parent container 7
+    OriginalSenderId            uuid                     not null, -- The Id of the gateway/plugin that created the message 1
+    OriginalSenderName          varchar default null,              -- The name of the gateway/plugin that created the message 2
+    SystemDomainId              uuid                     not null, --  The Domain/system's Id where the Sender operates 3
+    SystemDomainName            varchar default null,              -- The Domain/system's Name where the Sender operates 4
+    TestContainerGuid           uuid                     not null, -- A unique id for the TestContainer 5
+    TestContainerName           varchar default null,              -- A name for the TestContainer 6
+    MessageId                   uuid                     not null, -- A unique id for the message 7
+    TestContainerIsTopContainer boolean                  not null, -- Telling if the container is a top container, i.e. has no parent container 8
 
-    ChildProcessingTypeId int not null, -- The id for child processing type (0 or 1) 8
-        ChildProcessingTypeName varchar not null, -- The name for child processing type ('IsSerialProcessedContainer' or 'IsParallellProcessedContainer') 9
-        ChildTypeId int not null, -- The id for the type of child  (0 or 1) 10
-        ChildTypeName varchar not null, -- The name for the type of child ('ChildIsTestInstructionContainerMessage' or 'ChildIsTestInstructionMessage') 11
-        ParentContainerReference uuid default null, -- A reference to parent container if it exists 12
-        ChildContainerReference uuid default null, -- A reference to child container if it exists 13
-        TestInstructionsReference uuid default null, -- A reference TestInstruction if it exists 14
+    ChildProcessingTypeId       int                      not null, -- The id for child processing type (0 or 1) 9
+    ChildProcessingTypeName     varchar                  not null, -- The name for child processing type ('IsSerialProcessedContainer' or 'IsParallellProcessedContainer') 10
+    ChildTypeId                 int                      not null, -- The id for the type of child  (0 or 1) 11
+    ChildTypeName               varchar                  not null, -- The name for the type of child ('ChildIsTestInstructionContainerMessage' or 'ChildIsTestInstructionMessage') 12
+    ParentContainerReference    uuid    default null,              -- A reference to parent container if it exists 13
+    ChildContainerReference     uuid    default null,              -- A reference to child container if it exists 14
+    TestInstructionsReference   uuid    default null,              -- A reference TestInstruction if it exists 15
 
-    updatedDateTime          timestamp with time zone not null  -- The Datetime when the row was created/updates 15
+    OrginalCreateDateTime       timestamp with time zone not null, -- 'The timestamp when the orignal container was created'; --16
+    updatedDateTime             timestamp with time zone not null  -- The Datetime when the row was created/updates 17
 );
 
 comment on table testInstructions.TestContainerMessage is 'Holds all Containers that holds block of TestContainerMessages and references to TestInstructions';
 
-comment on column testInstructions.TestContainerMessage.PluginGuid is 'A unique id for the plugin'; --1
-comment on column testInstructions.TestContainerMessage.PluginName is 'A name for the plugin'; --2
+comment on column testInstructions.TestContainerMessage.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; --1
+comment on column testInstructions.TestContainerMessage.OriginalSenderName is ' The name of the gateway/plugin that created the message'; --2
 comment on column testInstructions.TestContainerMessage.SystemDomainId is 'The Domain/system''s Id where the Sender operates'; --3
-comment on column testInstructions.TestContainerMessage.SystemDomainName is 'he Domain/system''s Name where the Sender operates'; --4
+comment on column testInstructions.TestContainerMessage.SystemDomainName is 'The Domain/system''s Name where the Sender operates'; --4
 comment on column testInstructions.TestContainerMessage.TestContainerGuid is 'A unique id for the TestContainer'; --5
 comment on column testInstructions.TestContainerMessage.TestContainerName is 'A name for the TestContainer'; --6
-comment on column testInstructions.TestContainerMessage.TestContainerIsTopContainer is 'Telling if the container is a top container, i.e. has no parent container'; --7
-comment on column testInstructions.TestContainerMessage.ChildProcessingTypeId is 'The id for child processing type (0 or 1)'; --8
-comment on column testInstructions.TestContainerMessage.ChildProcessingTypeName is 'The name for child processing type (''IsSerialProcessedContainer'' or ''IsParallellProcessedContainer'')'; --9
-comment on column testInstructions.TestContainerMessage.ChildTypeId is 'The id for the type of child  (0 or 1)'; --10
-comment on column testInstructions.TestContainerMessage.ChildTypeName is 'he name for the type of child (''ChildIsTestInstructionContainerMessage'' or ''ChildIsTestInstructionMessage'')'; --11
-comment on column testInstructions.TestContainerMessage.ParentContainerReference is 'A reference to parent container if it exists'; --12
-comment on column testInstructions.TestContainerMessage.ChildContainerReference is 'A reference to child container if it exists '; --13
-comment on column testInstructions.TestContainerMessage.TestInstructionsReference is 'A reference TestInstruction if it exists'; --14
-comment on column testInstructions.TestContainerMessage.updatedDateTime is 'The Datetime when the row was created/updates'; --15
+comment on column testInstructions.TestContainerMessage.MessageId is 'A unique id for the message'; --7
+comment on column testInstructions.TestContainerMessage.TestContainerIsTopContainer is 'Telling if the container is a top container, i.e. has no parent container'; --8
+comment on column testInstructions.TestContainerMessage.ChildProcessingTypeId is 'The id for child processing type (0 or 1)'; --9
+comment on column testInstructions.TestContainerMessage.ChildProcessingTypeName is 'The name for child processing type (''IsSerialProcessedContainer'' or ''IsParallellProcessedContainer'')'; --10
+comment on column testInstructions.TestContainerMessage.ChildTypeId is 'The id for the type of child  (0 or 1)'; --11
+comment on column testInstructions.TestContainerMessage.ChildTypeName is 'he name for the type of child (''ChildIsTestInstructionContainerMessage'' or ''ChildIsTestInstructionMessage'')'; --12
+comment on column testInstructions.TestContainerMessage.ParentContainerReference is 'A reference to parent container if it exists'; --13
+comment on column testInstructions.TestContainerMessage.ChildContainerReference is 'A reference to child container if it exists '; --14
+comment on column testInstructions.TestContainerMessage.TestInstructionsReference is 'A reference TestInstruction if it exists'; --15
+comment on column testInstructions.TestContainerMessage.OrginalCreateDateTime is 'The timestamp when the orignal container was created'; --16
+comment on column testInstructions.TestContainerMessage.updatedDateTime is 'The Datetime when the row was created/updates'; --17
 
 // A Container that holds block of TestContainerMessages and references to TestInstructions
 message TestContainerMessage {
-    string PluginGuid = 1; // Used as unique id for the plugin
-    string PluginName = 2; // Used as unique name for the plugin
-    string SystemDomainId = 3; // The Domain/system's Id where the Sender operates
+    string PluginGuid = 1;
+// Used as unique id for the plugin
+    string PluginName = 2;
+// Used as unique name for the plugin
+    string SystemDomainId = 3;
+// The Domain/system's Id where the Sender operates
     string SystemDomainName = 4; // The Domain/system's Name where the Sender operates
-    string TestContainerGuid = 5; // A unique id for the TestContainer
-    string TestContainerName = 6; // A name for the TestContainer
-    TestContainerTypeEnum TestContainerType = 7; // Should container have Serial or Parallell processed children or is it a TestContainer
+    string TestContainerGuid = 5;
+// A unique id for the TestContainer
+    string TestContainerName = 6;
+// A name for the TestContainer
+    TestContainerTypeEnum TestContainerType = 7;
+// Should container have Serial or Parallell processed children or is it a TestContainer
     enum TestContainerTypeEnum {
-        IsSerialProcessedContainer = 0; // Container has Serial Processed children
-        IsParallellProcessedContainer = 1; // Container has Parallell Processed children
+        IsSerialProcessedContainer = 0;
+// Container has Serial Processed children
+        IsParallellProcessedContainer = 1;
+// Container has Parallell Processed children
     }
-    repeated TestContainerChildObjectMessage TestBlockChildObjectMessages = 8; // An object containing child-TesContainers and TestInstructions
+    repeated TestContainerChildObjectMessage TestBlockChildObjectMessages = 8;
+// An object containing child-TesContainers and TestInstructions
 }
 
 message TestContainerChildObjectMessage {
     TestInstructionChildTypeEnum ChildType = 1;
-    enum TestInstructionChildTypeEnum {
+enum TestInstructionChildTypeEnum {
         ChildIsTestInstructionContainerMessage = 0;
-        ChildIsTestInstructionMessage = 1;
-    }
+ChildIsTestInstructionMessage = 1;
+}
     TestContainerMessage TestInstructionMessageChild = 2;
-    string AvailbleTestInstructionAtPluginMessageChildReferenceGuid = 3;
+string AvailbleTestInstructionAtPluginMessageChildReferenceGuid = 3;
 }
 
 
