@@ -43,9 +43,9 @@ func initiateMainDB() {
 }
 
 // **********************************************************************************************************
-// Save 'testInstructionExecutionResultMessage' to Main Database for Fenix Inception
+// Update 'testInstructionExecutionResultMessage' in, TestInstructions Outgoing message, to Main Database for Fenix Inception
 //
-func saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (messageSavedInDB bool) {
+func updateTestInstructionWithExecutionResultMessageInDB(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (messageSavedInDB bool) {
 	// TODO change from Update to Insert new copy row
 
 	messageSavedInDB = true
@@ -222,7 +222,7 @@ func listNextPeersToBeExecuted(testInstructionPeerGuid string) (testInstructionP
 }
 
 // **********************************************************************************************************
-// Save 'testInstructionExecutionResultMessage' to Main Database for Fenix Inception
+// Update DB that TestInstruction has been sent to Plugin
 //
 func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (messageSavedInDB bool) {
 	// TODO change from Update to Insert new copy row
@@ -568,8 +568,8 @@ func saveTestExecutionLogMessageInDB(testExecutionLogMessage *gRPC.TestExecution
 			testExecutionLogMessage.OriginalSystemDomainName,
 			testExecutionLogMessage.LogMessageId,
 			testExecutionLogMessage.TestInstructionGuid,
-			testExecutionLogMessage.TestInstructionResultCreatedDateTime,
-			testExecutionLogMessage.TestInstructionResultSentDateTime,
+			testExecutionLogMessage.TestInstructionLogCreatedDateTime,
+			testExecutionLogMessage.TestInstructionLogSentDateTime,
 			testExecutionLogMessage.LogMessage,
 			testExecutionLogMessage.LogMessageType,
 			gRPC.LogMessageTypeEnum_name[int32(testExecutionLogMessage.LogMessageType)],
@@ -1191,6 +1191,93 @@ func saveTestContainerMessageInDB(messageBaseInformation containerMessageBaseInf
 	return messageSavedInDB
 }
 
+// **********************************************************************************************************
+// Save incoming 'TestInstructionExecutionResultMessage' to Main Database for Fenix Inception
+//
+func saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (messageSavedInDB bool) {
+
+	messageSavedInDB = true
+
+	// Prepare SQL
+	var sqlToBeExecuted = "INSERT INTO testInstructions.TestExecutionResult "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, TestInstructionGuid, ResultId, "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionResultCreatedDateTime, TestInstructionResultSentDateTime, "
+	sqlToBeExecuted = sqlToBeExecuted + "AvailableTestExecutionResultTypeId, AvailableTestExecutionResultTypeName, "
+	sqlToBeExecuted = sqlToBeExecuted + "OriginalSystemDomainId, OriginalSystemDomainName, MessageId, PeerId, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) "
+
+	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	if err != nil {
+		// Execute SQL in DB
+		logger.WithFields(logrus.Fields{
+			"ID":                                    "ac69559d-9b20-482e-b9eb-5c28865d0b29",
+			"err":                                   err,
+			"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
+		}).Error("Error when Praparing SQL for updating Main Database with data from 'testInstructionExecutionResultMessage'")
+
+		messageSavedInDB = false
+	} else {
+		//SQL prepared OK
+		/*
+			create table testInstructions.TestExecutionResult
+			(
+			    OriginalSenderId                     uuid                     not null, -- The Id of the gateway/plugin that created the message -- 1
+			    OriginalSenderName                   varchar default null,              -- The name of the gateway/plugin that created the message -- 2
+			    TestInstructionGuid                  uuid                     not null, --  TestInstructionGuid is a unique id for identifying the TestInstruction at Plugin; --3
+			    ResultId                             uuid                     not null, -- A unique id created by plugin'; -- 4
+			    TestInstructionResultCreatedDateTime timestamp with time zone not null, -- The DateTime when the message was created'; -- 5
+			    TestInstructionResultSentDateTime    timestamp with time zone not null, -- The DateTime when the message was sent''; -- 6
+			    AvailableTestExecutionResultTypeId   uuid                     not null, -- The Domain/system''''s Id where the Sender operates''; -- 7
+			    AvailableTestExecutionResultTypeName varchar                  not null, -- The Domain/system''''s Name where the Sender operates''; -- 8
+			    OriginalSystemDomainId               uuid                     not null, -- A unique id for the message created by plugin''; -- 9
+			    OriginalSystemDomainName             varchar default null,              -- 'The Domain/system''s name where the Sender operates''; -- 10
+			    MessageId                            uuid                     not null, -- A unique id for the message created by plugin''; -- 11
+			    PeerId                               uuid                     not null, --A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction''; -- 12
+			    updatedDateTime                      timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 13
+			);
+
+		*/
+		// Values to insert into database
+		sqlResult, err := sqlStatement.Exec(
+			testInstructionExecutionResultMessage.OriginalSenderId,
+			testInstructionExecutionResultMessage.OriginalSenderName,
+			testInstructionExecutionResultMessage.TestInstructionGuid,
+			testInstructionExecutionResultMessage.ResultId,
+			testInstructionExecutionResultMessage.TestInstructionResultCreatedDateTime,
+			testInstructionExecutionResultMessage.TestInstructionResultSentDateTime,
+			testInstructionExecutionResultMessage.TestExecutionResult,
+			gRPC.AvailableTestExecutionResultsEnum_name[int32(testInstructionExecutionResultMessage.TestExecutionResult)],
+			testInstructionExecutionResultMessage.OriginalSystemDomainId,
+			testInstructionExecutionResultMessage.OriginalSystemDomainName,
+			testInstructionExecutionResultMessage.MessageId,
+			testInstructionExecutionResultMessage.PeerId,
+			common_code.GeneraTimeStampUTC())
+
+		if err != nil {
+			// Error while executing
+			logger.WithFields(logrus.Fields{
+				"ID":                                    "5007c17f-eddb-4f45-9fda-24368f670850",
+				"err":                                   err,
+				"sqlResult":                             sqlResult,
+				"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
+			}).Error("Error when updating Main Database with data from 'testInstructionExecutionResultMessage'")
+
+			messageSavedInDB = false
+		} else {
+			//SQL executed OK
+			logger.WithFields(logrus.Fields{
+				"ID":                                    "e0ea8ad4-0b78-4de5-b1d2-60a63a3b6df2",
+				"err":                                   err,
+				"sqlResult":                             sqlResult,
+				"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
+			}).Debug("Fenix main Database was updated with data from 'testInstructionExecutionResultMessage'")
+		}
+	}
+
+	// Return if the messages was saved or not in database
+	return messageSavedInDB
+}
+
 /*
        //TestInstructionResults flows from Plugins towards Fenix Inception
        rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse) {
@@ -1220,7 +1307,7 @@ func saveTestContainerMessageInDB(messageBaseInformation containerMessageBaseInf
        }
 
        // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
-       rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
+   x    rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
        }
 
        // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway

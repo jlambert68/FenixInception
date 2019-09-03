@@ -27,16 +27,15 @@ message TestInstructionExecutionResultMessage {
     string OriginalSenderName = 2; // Then name of the gateway/plugin that created the message
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
-    string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
+    string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id for identifying the TestInstruction at Plugin
     string ResultId = 6; // A unique id created by plugin
-    string TimeOut = 7; // The Plugin sends back information about when the TestInstruction, Test Case, can be seen as Ended if no final result has sent been back for TestInstruction
-    string TestInstructionResultCreatedDateTime = 8; // The DateTime when the message was created
-    string TestInstructionResultSentDateTime = 9; // The DateTime when the message was sent
-    AvailableTestExecutionResultsEnum TestExecutionResult = 10; // THe current execution status
-    string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
-    string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
-    string MessageId = 13; // A unique id for the message created by plugin
-    string PeerId = 14; // A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction
+     string TestInstructionResultCreatedDateTime = 7; // The DateTime when the message was created
+    string TestInstructionResultSentDateTime = 8; // The DateTime when the message was sent
+    AvailableTestExecutionResultsEnum TestExecutionResult = 9; // THe current execution status
+    string OriginalSystemDomainId = 10; // The Domain/system's Id where the Sender operates
+    string OriginalSystemDomainName = 11; // The Domain/system's Name where the Sender operates
+    string MessageId = 12; // A unique id for the message created by plugin
+    string PeerId = 13; // A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction
 }
 
 // Status for an ongoing TestExecution of a TestInstruction
@@ -45,6 +44,7 @@ enum AvailableTestExecutionResultsEnum {
     Execution_Failed = 1; // The execution failed compared to expected result
     Execution_Aborted = 2; // The Plugin Aborted the execution of the TestInstruction
     Execution_Running = 3; // Status for when TestInstruction is executing and TimeOut-time is sent back
+    Execution_TestInstructionDoesntExist = 4; // Status for when TestInstruction wasn't found at Plugin
 }
 
 // **********

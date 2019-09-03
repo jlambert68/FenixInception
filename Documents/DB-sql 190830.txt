@@ -519,41 +519,43 @@ comment on column testInstructions.TestContainerMessage.ParentContainerReference
 comment on column testInstructions.TestContainerMessage.ChildContainerReference is 'A reference to child container if it exists '; --14
 comment on column testInstructions.TestContainerMessage.TestInstructionsReference is 'A reference TestInstruction if it exists'; --15
 comment on column testInstructions.TestContainerMessage.OrginalCreateDateTime is 'The timestamp when the orignal container was created'; --16
-comment on column testInstructions.TestContainerMessage.updatedDateTime is 'The Datetime when the row was created/updates'; --17
+comment on column testInstructions.TestContainerMessage.updatedDateTime is 'The Datetime when the row was created/updates';
+--17
 
-// A Container that holds block of TestContainerMessages and references to TestInstructions
-message TestContainerMessage {
-    string PluginGuid = 1;
-// Used as unique id for the plugin
-    string PluginName = 2;
-// Used as unique name for the plugin
-    string SystemDomainId = 3;
-// The Domain/system's Id where the Sender operates
-    string SystemDomainName = 4; // The Domain/system's Name where the Sender operates
-    string TestContainerGuid = 5;
-// A unique id for the TestContainer
-    string TestContainerName = 6;
-// A name for the TestContainer
-    TestContainerTypeEnum TestContainerType = 7;
-// Should container have Serial or Parallell processed children or is it a TestContainer
-    enum TestContainerTypeEnum {
-        IsSerialProcessedContainer = 0;
-// Container has Serial Processed children
-        IsParallellProcessedContainer = 1;
-// Container has Parallell Processed children
-    }
-    repeated TestContainerChildObjectMessage TestBlockChildObjectMessages = 8;
-// An object containing child-TesContainers and TestInstructions
-}
 
-message TestContainerChildObjectMessage {
-    TestInstructionChildTypeEnum ChildType = 1;
-enum TestInstructionChildTypeEnum {
-        ChildIsTestInstructionContainerMessage = 0;
-ChildIsTestInstructionMessage = 1;
-}
-    TestContainerMessage TestInstructionMessageChild = 2;
-string AvailbleTestInstructionAtPluginMessageChildReferenceGuid = 3;
-}
+-- Holds all TestExecution-ResultMessages
+drop table testInstructions.TestExecutionResult;
 
+create table testInstructions.TestExecutionResult
+(
+    OriginalSenderId                     uuid                     not null, -- The Id of the gateway/plugin that created the message -- 1
+    OriginalSenderName                   varchar default null,              -- The name of the gateway/plugin that created the message -- 2
+    TestInstructionGuid                  uuid                     not null, --  TestInstructionGuid is a unique id for identifying the TestInstruction at Plugin; --3
+    ResultId                             uuid                     not null, -- A unique id created by plugin'; -- 4
+    TestInstructionResultCreatedDateTime timestamp with time zone not null, -- The DateTime when the message was created'; -- 5
+    TestInstructionResultSentDateTime    timestamp with time zone not null, -- The DateTime when the message was sent''; -- 6
+    AvailableTestExecutionResultTypeId   uuid                     not null, -- The Domain/system''''s Id where the Sender operates''; -- 7
+    AvailableTestExecutionResultTypeName varchar                  not null, -- The Domain/system''''s Name where the Sender operates''; -- 8
+    OriginalSystemDomainId               uuid                     not null, -- A unique id for the message created by plugin''; -- 9
+    OriginalSystemDomainName             varchar default null,              -- 'The Domain/system''s name where the Sender operates''; -- 10
+    MessageId                            uuid                     not null, -- A unique id for the message created by plugin''; -- 11
+    PeerId                               uuid                     not null, --A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction''; -- 12
+    updatedDateTime                      timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 13
+);
+
+comment on table testInstructions.TestExecutionResult is 'Holds all TestExecution-ResultMessages';
+
+comment on column testInstructions.TestExecutionResult.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; -- 1
+comment on column testInstructions.TestExecutionResult.OriginalSenderName is 'The name of the gateway/plugin that created the message'; -- 2
+comment on column testInstructions.TestExecutionResult.TestInstructionGuid is 'TestInstructionGuid is a unique id for identifying the TestInstruction at Plugin'; --3
+comment on column testInstructions.TestExecutionResult.ResultId is 'A unique id created by plugin'; -- 4
+comment on column testInstructions.TestExecutionResult.TestInstructionResultCreatedDateTime is 'The DateTime when the message was created'; -- 5
+comment on column testInstructions.TestExecutionResult.TestInstructionResultSentDateTime is 'The DateTime when the message was sent'; -- 6
+comment on column testInstructions.TestExecutionResult.AvailableTestExecutionResultTypeId is 'The Domain/system''s Id where the Sender operates'; -- 7
+comment on column testInstructions.TestExecutionResult.AvailableTestExecutionResultTypeName is 'The Domain/system''s Name where the Sender operates'; -- 8
+comment on column testInstructions.TestExecutionResult.OriginalSystemDomainId is 'The Domain/system's Id where the Sender operates'; -- 9
+comment on column testInstructions.TestExecutionResult.OriginalSystemDomainName is 'The Domain/system's name where the Sender operates'; -- 10
+comment on column testInstructions.TestExecutionResult.MessageId is 'A unique id for the message created by plugin'; -- 11
+comment on column testInstructions.TestExecutionResult.PeerId is 'A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction'; -- 12
+comment on column testInstructions.TestExecutionResult.updatedDateTime is 'The Datetime when the row was created/updates'; -- 13
 
