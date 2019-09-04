@@ -284,7 +284,7 @@ func CallBackSupportedTestDataDomains(supportedTestDataDomainsWithHeadersMessage
 	}).Debug("Incoming function CallBack: 'CallBackSupportedTestDataDomains'")
 
 	// Save testInstructionExecutionResultMessage in SQL-DB for further processing
-	messageSavedWithoutProblem := saveSupportedTestDataDomainsWithHeadersMessageInDB(testInstructionExecutionResultMessage)
+	messageSavedWithoutProblem := saveSupportedTestDataDomainsWithHeadersMessageInDB(supportedTestDataDomainsWithHeadersMessage)
 	if messageSavedWithoutProblem == true {
 
 		// Message saved OK
@@ -337,65 +337,6 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 	// Save testInstructionExecutionResultMessage in SQL-DB for further processing
 	messageSavedWithoutProblem := saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage)
 	if messageSavedWithoutProblem == true {
-		// ********************************************************************************************
-		// Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a testInstructionExecutionResultMessage toward Fenix
-		//
-		func
-		CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResultMessage * gRPC.TestInstructionExecutionResultMessage)(*gRPC.AckNackResponse, error)
-		{
-
-			var returnMessage *gRPC.AckNackResponse
-			var positivReturnMesage = "'testInstructionExecutionResultMessage' was saved in Fenix database"
-			var negativReturnMesage = "'testInstructionExecutionResultMessage' could not be saved in Fenix database"
-			var strangeErrorMessage = "When processing 'testInstructionExecutionResultMessage' an unknown error occured"
-
-			var testInstructionsThatAreStillExecuting []string
-			var err error
-
-			// Initiate returnMessage, should never be sent though
-			returnMessage.Comments = strangeErrorMessage
-			returnMessage.Acknack = false
-
-			logger.WithFields(logrus.Fields{
-				"ID":                                    "76aef74f-4d2f-4f15-abb8-c179bcc55351",
-				"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
-			}).Debug("Incoming function CallBack: 'CallBackSendTestInstructionResultTowardsFenix'")
-
-			// Save testInstructionExecutionResultMessage to Fenix database and trigger Fenix for further processing
-			messageSavedInFenixDatabase := saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage)
-			if messageSavedInFenixDatabase == true {
-				logger.WithFields(logrus.Fields{
-					"ID": "56fe8fb4-05c3-4889-91bb-9fcb9d478276",
-				}).Debug("'testInstructionExecutionResultMessage' was saved in Fenix Database")
-
-				// Set gRPC returnMessage back to gateway
-				returnMessage.Comments = positivReturnMesage
-				returnMessage.Acknack = true
-
-				// Get all Testinstructions that are a peer to this TestInstruction, and can be run in parallell, and are still executing
-				testInstructionsThatAreStillExecuting, err = listPeerTestInstructionPeersWhichIsExecuting(testInstructionExecutionResultMessage.PeerId)
-
-				// Trigger next TestInstructions that is waiting to be executed if all current peers are finished
-				if err == nil && len(testInstructionsThatAreStillExecuting) == 0 {
-					testInstructionPeersThatShouldBeExecutedNext, err := listNextPeersToBeExecuted(testInstructionExecutionResultMessage.PeerId)
-					if err == nil && len(testInstructionsThatAreStillExecuting) > 0 {
-						err = triggerSendNextPeersForExecution(testInstructionPeersThatShouldBeExecutedNext)
-					}
-				}
-
-			} else {
-
-				// Set gRPC returnMessage back to gateway
-				returnMessage.Comments = negativReturnMesage
-				returnMessage.Acknack = false
-			}
-
-			logger.WithFields(logrus.Fields{
-				"ID": "ab5efe48-54e4-43c0-975b-ef186aeb7140",
-			}).Debug("Leaving function CallBack: 'CallBackSendTestInstructionResultTowardsFenix'")
-
-			return returnMessage, nil
-		}
 
 		// Message saved OK
 		logger.WithFields(logrus.Fields{
