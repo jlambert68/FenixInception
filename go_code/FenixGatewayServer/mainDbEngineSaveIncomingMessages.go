@@ -606,8 +606,10 @@ func saveAvailbleTestInstructionAtPluginMessageInDB(availbleTestInstructionAtPlu
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].DropIDs,
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].LandingZoneGuid,
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].ChoosenLandingZone,
-							availbleTestInstructionAtPluginMessage.
-								availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeGuid,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].MajorVersion,
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].MinorVersion,
+
+							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeGuid,
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeTypeGuid,
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeName,
 							availbleTestInstructionAtPluginMessage.TestInstructions[currentTestInstruction].TestInstructionAttributes[currentAttributeCounter].TestInstructionAttributeDescription,
