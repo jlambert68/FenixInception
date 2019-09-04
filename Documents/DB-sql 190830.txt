@@ -224,7 +224,7 @@ create table messages.logmessages
     TestInstructionLogSentDateTime    timestamp with time zone not null, -- he DateTime when the message was sent 8
     LogMessage                        varchar default null,              -- The log message 9
     LogMessageTypeId                  int                      not null, -- The Id of the log message type, text or json 10
-    logmessageTypeName                varcha                   not null, -- The name of the log message type, text or json 11
+    logmessageTypeName                varchar                  not null, -- The name of the log message type, text or json 11
     updatedDateTime                   timestamp with time zone not null  -- The Datetime when the row was created/updates 12
 );
 
@@ -355,6 +355,7 @@ create table testInstructions.AvailbleTestInstructions
     OrginalCreateDateTime                      timestamp with time zone not null, -- 'The timestamp when the orignal message was created'; --4
     OriginalSystemDomainId                     uuid                     not null, -- 'The Domain/system''s Id where the Sender operates'; --5
     OriginalSystemDomainName                   varchar default null,              -- 'The Domain/system''s Name where the Sender operates';--6
+
     -- A specific Test Instruction
     PluginGuid                                 uuid                     not null, -- Used as unique id for the plugin'; --7
     PluginName                                 varchar default null,              -- 'Used as unique name for the plugin'; --8
@@ -372,38 +373,42 @@ create table testInstructions.AvailbleTestInstructions
     DropIDs                                    varchar default null,              --  'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
     LandingZoneGuid                            varchar default null,              --  'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
     ChoosenLandingZone                         varchar default null,              --  'The choosen LandingZone for this TestInstructionBlock'; --22
+    MajorVersion                               int                      not null, --  The version numbering system consists of major and minor. A change in major version forces the user to upgrade the TestInstruction --23
+    MinorVersion                               int                      not null, -- The version numbering system consists of major and minor. A change in minor version makes it optional for  the user to upgrade the TestInstruction --24
+
 --A specific Attribute for the Test Instruction
-    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --23
-    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
-    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --25
-    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --26
-    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --27
-    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
-    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --29
-    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --30
-    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
-    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --32
-    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --33
+    TestInstructionAttributeGuid               uuid                     not null, -- 'The unique guid for the TestInstructionAttribute, set plugin'; --25
+    TestInstructionAttributeTypeGuid           uuid                     not null, -- 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --26
+    TestInstructionAttributeName               varchar default null,              -- 'The name of the TestInstructionAttribute'; --27
+    TestInstructionAttributeDescription        varchar default null,              -- 'The description of the TestInstructionAttribute'; --28
+    TestInstructionAttributeMouseOver          varchar default null,              -- 'The mouse over text for the TestInstructionAttribute'; --29
+    TestInstructionAttributeVisible            boolean                  not null, -- 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --30
+    TestInstructionAttributeEnable             boolean                  not null, -- 'Should the TestInstructionAttribute be enabled or not'; --31
+    TestInstructionAttributeMandatory          boolean                  not null, -- 'Should the TestInstructionAttribute be mandatory or not'; --32
+    TestInstructionAttributeVisibleInBlockArea boolean                  not null, -- 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --33
+    TestInstructionAttributeTypeId             uuid                     not null, -- 'The Id for what type the instruction attribute is'; --34
+    TestInstructionAttributeTypeName           varchar default null,              -- 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"'; --35
+
 -- Properties for TextBox attribute
-    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
-    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
-    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --36
-    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --37
-    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
-    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --39
-    TextBoxAttributeValue                      varchar default null,              -- 'The value for the the TextBox, used for preset values';--40
+    TestInstructionAttributeInputTextBoxGuid   uuid    default null,              -- 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --36
+    TestInstructionAttributeInputTextBoxName   varchar default null,              -- 'The name of the TestInstructionAttributeInputTextBoxProperties'; --37
+    TextBoxEditable                            boolean default null,              -- 'Should the the TextBox be editable or not'; --38
+    TextBoxInputMask                           varchar default null,              -- 'Inputmask for the TextBox'; --39
+    TextBoxAttributeTypeGuid                   uuid    default null,              -- 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --40
+    TextBoxAttributeTypeName                   varchar default null,              -- 'The Name for the Type of the TextBox.'; --41
+    TextBoxAttributeValue                      varchar default null,              -- 'The value for the the TextBox, used for preset values';--42
 
 -- Properties for ComboBox attribute
-    TestInstructionAttributeComboBoxGuid       uuid    default null,              -- 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
-    TestInstructionAttributeComboBoxName       varchar default null,              -- 'The name of the TestInstructionAttributeComboBoxProperties'; --42
-    ComboBoxEditable                           boolean default null,              -- 'Should the the ComboBox be editable or not'; --43
-    ComboBoxInputMask                          varchar default null,              -- 'Inputmask for the ComboBox'; --44
-    ComboBoxAttributeTypeGuid                  uuid    default null,              -- 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --45
-    ComboBoxAttributeTypeName                  varchar default null,              -- 'The Name for the Type of the ComboBox'; --46
-    ComboBoxAttributeValueGuid                 uuid    default null,              -- 'The guid of the value for the the ComboBox, used for preset values'; --47
-    ComboBoxAttributeValue                     varchar default null,              -- 'The value for the the ComboBox, used for preset values';--48
+    TestInstructionAttributeComboBoxGuid       uuid    default null,              -- 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --43
+    TestInstructionAttributeComboBoxName       varchar default null,              -- 'The name of the TestInstructionAttributeComboBoxProperties'; --44
+    ComboBoxEditable                           boolean default null,              -- 'Should the the ComboBox be editable or not'; --45
+    ComboBoxInputMask                          varchar default null,              -- 'Inputmask for the ComboBox'; --46
+    ComboBoxAttributeTypeGuid                  uuid    default null,              -- 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --47
+    ComboBoxAttributeTypeName                  varchar default null,              -- 'The Name for the Type of the ComboBox'; --48
+    ComboBoxAttributeValueGuid                 uuid    default null,              -- 'The guid of the value for the the ComboBox, used for preset values'; --49
+    ComboBoxAttributeValue                     varchar default null,              -- 'The value for the the ComboBox, used for preset values';--50
 -- WHen row was create/updated
-    updatedDateTime                            timestamp with time zone not null  -- The Datetime when the row was created/updates 49
+    updatedDateTime                            timestamp with time zone not null  -- The Datetime when the row was created/updates 51
 );
 comment on table testInstructions.AvailbleTestInstructions is 'Holds all Availble TestInstructions, supported by a specific Plugin for all systems and plugins';
 
@@ -432,44 +437,49 @@ comment on column testInstructions.AvailbleTestInstructions.TestInstructionEnabl
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionColor is 'The color used for presenting the TestInstructionBlock, e.g. #FAF437'; --19
 comment on column testInstructions.AvailbleTestInstructions.DropIDs is 'A Drop-IDs deciding if receiver accepts obejct when drag n drop. Can have many Drop-IDs. ***For now saved in same column ***'; --20
 comment on column testInstructions.AvailbleTestInstructions.LandingZoneGuid is 'List with IDs of all available LandingZones for TestInstruction Can have many LandingZone-IDs. ***For now saved in same column ***'; --21
-comment on column testInstructions.AvailbleTestInstructions.ChoosenLandingZone is 'The choosen LandingZone for this TestInstructionBlock';
---22
+comment on column testInstructions.AvailbleTestInstructions.ChoosenLandingZone is 'The choosen LandingZone for this TestInstructionBlock'; --22
+comment on column testInstructions.AvailbleTestInstructions.MajorVersion is 'The version numbering system consists of major and minor. A change in major version forces the user to upgrade the TestInstruction'; -- 23
+comment on column testInstructions.AvailbleTestInstructions.MinorVersionint is 'The version numbering system consists of major and minor. A change in minor version makes it optional for  the user to upgrade the TestInstruction';
+--24
 
 -- A specific Attribute for the Test Instruction
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeGuid is 'The unique guid for the TestInstructionAttribute, set plugin'; --23
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeGuid is 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --24
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeName is 'The name of the TestInstructionAttribute'; --25
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeDescription is 'The description of the TestInstructionAttribute'; --26
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeMouseOver is 'The mouse over text for the TestInstructionAttribute'; --27
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeVisible is 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --29
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeEnable is 'Should the TestInstructionAttribute be enabled or not'; --29
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeMandatory is 'Should the TestInstructionAttribute be mandatory or not'; --30
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeVisibleInBlockArea is 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --31
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeId is 'The Id for what type the instruction attribute is'; --32
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeGuid is 'The unique guid for the TestInstructionAttribute, set plugin'; --25
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeGuid is 'The unique guid for the TestInstructionAttribute-type, set by plugin'; --26
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeName is 'The name of the TestInstructionAttribute'; --27
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeDescription is 'The description of the TestInstructionAttribute'; --28
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeMouseOver is 'The mouse over text for the TestInstructionAttribute'; --29
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeVisible is 'Should the TestInstructionAttribute be visible in attributes list in GUI or not'; --30
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeEnable is 'Should the TestInstructionAttribute be enabled or not'; --31
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeMandatory is 'Should the TestInstructionAttribute be mandatory or not'; --32
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeVisibleInBlockArea is 'Should the TestInstructionAttribute be visible in TestInstructionBlockAreain GUI or not'; --33
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeId is 'The Id for what type the instruction attribute is'; --34
 comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeTypeName is 'The Name for what type the instruction attribute is. Can one of the folowing types "TextBox", "ComboBox", "FileSelector", "FunctionSelector"';
+-- 35
 --33
 
 -- Properties for TextBox attribute
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeInputTextBoxGuid is 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --34
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeInputTextBoxName is 'The name of the TestInstructionAttributeInputTextBoxProperties'; --35
-comment on column testInstructions.AvailbleTestInstructions.TextBoxEditable is 'Should the the TextBox be editable or not'; --36
-comment on column testInstructions.AvailbleTestInstructions.TextBoxInputMask is 'Inputmask for the TextBox'; --37
-comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeGuid is 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --38
-comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeName is 'The Name for the Type of the TextBox.'; --39
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeInputTextBoxGuid is 'The unique guid for the TestInstructionAttributeInputTextBoxProperties, set by plugin'; --36
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeInputTextBoxName is 'The name of the TestInstructionAttributeInputTextBoxProperties'; --37
+comment on column testInstructions.AvailbleTestInstructions.TextBoxEditable is 'Should the the TextBox be editable or not'; --38
+comment on column testInstructions.AvailbleTestInstructions.TextBoxInputMask is 'Inputmask for the TextBox'; --39
+comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeGuid is 'The unique guid for the Type of the TextBox. Used for datamanupulation'; --40
+comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeTypeName is 'The Name for the Type of the TextBox.'; --41
 comment on column testInstructions.AvailbleTestInstructions.TextBoxAttributeValue is 'The value for the the TextBox, used for preset values';
+-- 42
 --40
 
 -- Properties for ComboBox attribute
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeComboBoxGuid is 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --41
-comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeComboBoxName is 'The name of the TestInstructionAttributeComboBoxProperties'; --42
-comment on column testInstructions.AvailbleTestInstructions.ComboBoxEditable is 'Should the the ComboBox be editable or not'; --43
-comment on column testInstructions.AvailbleTestInstructions.ComboBoxInputMask is 'Inputmask for the ComboBox'; --44
-comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeTypeGuid is 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --45
-comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeTypeName is 'The Name for the Type of the ComboBox'; --46
-comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValueGuid is 'The guid of the value for the the ComboBox, used for preset values'; --47
-comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValue is 'The value for the the ComboBox, used for preset values';--48
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeComboBoxGuid is 'The unique guid for the TestInstructionAttributeComboBoxProperties, set by plugin'; --43
+comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeComboBoxName is 'The name of the TestInstructionAttributeComboBoxProperties'; --44
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxEditable is 'Should the the ComboBox be editable or not'; --45
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxInputMask is 'Inputmask for the ComboBox'; --46
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeTypeGuid is 'The unique guid for the Type of the ComboBox Used for datamanupulation'; --47
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeTypeName is 'The Name for the Type of the ComboBox'; --48
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValueGuid is 'The guid of the value for the the ComboBox, used for preset values'; --49
+comment on column testInstructions.AvailbleTestInstructions.ComboBoxAttributeValue is 'The value for the the ComboBox, used for preset values';--50
 
 comment on column testdatadomains.SupportedTestDataDomainsWithHeaders.updatedDateTime is 'The Datetime when the row was created/updates';
+-- 51
 --49
 -- NOT USED REMOVE FROM GRPC ..........Properties for FileSelector attribute
 --comment on column testInstructions.AvailbleTestInstructions.TestInstructionAttributeFileSelectorGuid is 'xxxxxxxxxxxxxxxxxxxxxxxxx'; --4

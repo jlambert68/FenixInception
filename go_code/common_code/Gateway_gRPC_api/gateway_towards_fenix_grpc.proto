@@ -298,6 +298,8 @@ message AvailbleTestInstructionAtPluginMessage {
         repeated string LandingZoneGuid = 16; //  List with IDs of all available LandingZones for TestInstruction
         string ChoosenLandingZone = 17; // The choosen LandingZone for this TestInstructionBlock
         repeated TestInstructionAttribute TestInstructionAttributes = 15; // List with IDs of all attributes for the TestInstruction
+        int32 MajorVersion = 18; // The version numbering system consists of major and minor. A change in major version forces the user to upgrade the TestInstruction
+        int32 MinorVersion = 19; // The version numbering system consists of major and minor. A change in minor version makes it optional for  the user to upgrade the TestInstruction
 
         // A specific Attribute for a Test Instruction
         message TestInstructionAttribute {
