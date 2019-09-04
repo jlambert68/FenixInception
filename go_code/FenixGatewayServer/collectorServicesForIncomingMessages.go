@@ -278,6 +278,12 @@ func CallBackSupportedTestDataDomains(supportedTestDataDomainsWithHeadersMessage
 
 	var returnMessage *gRPC.AckNackResponse
 
+	var positivReturnMesage = "'supportedTestDataDomainsWithHeadersMessage' was saved in Fenix database"
+	var negativReturnMesage = "'supportedTestDataDomainsWithHeadersMessage' could not be saved in Fenix database"
+	var strangeErrorMessage = "When processing 'supportedTestDataDomainsWithHeadersMessage' an unknown error occured"
+
+	var err error
+
 	logger.WithFields(logrus.Fields{
 		"ID": "218c8382-a6df-4b0e-8bf4-13c2ce327dc0",
 		"supportedTestDataDomainsWithHeadersMessage": supportedTestDataDomainsWithHeadersMessage,
@@ -292,9 +298,21 @@ func CallBackSupportedTestDataDomains(supportedTestDataDomainsWithHeadersMessage
 			"ID": "d5b46485-cfab-42f7-96da-2a90bf1532c3",
 		}).Debug("'testInstructionExecutionResultMessage' was saved in Fenix database")
 
-		// Create message back to parent Gateway/Plugin
-		returnMessage.Comments = "'testInstructionExecutionResultMessage' was saved in Fenix database"
-		returnMessage.Acknack = true
+		// Triggers what to do when messages have been saved
+		// In this case check if next peers of TestInstructions should be executed
+		err = newIncomingTestInstructionExecutionResultMessage(testInstructionExecutionResultMessage.PeerId)
+
+		if err == nil {
+			// OK when triggering more functions
+			// Create message back to parent Gateway/Plugin
+			returnMessage.Comments = positivReturnMesage
+			returnMessage.Acknack = true
+		} else {
+			//Not OK when triggering more functions
+			returnMessage.Comments = strangeErrorMessage
+			returnMessage.Acknack = true
+		}
+
 	} else {
 
 		// Message not saved OK
@@ -303,8 +321,8 @@ func CallBackSupportedTestDataDomains(supportedTestDataDomainsWithHeadersMessage
 		}).Error("'testInstructionExecutionResultMessage' was Not saved in Fenix database")
 
 		// Create message back to parent Gateway/Plugin
-		returnMessage.Comments = "'testInstructionExecutionResultMessage' was Not saved in Fenix database"
-		returnMessage.Acknack = true
+		returnMessage.Comments = negativReturnMesage
+		returnMessage.Acknack = false
 	}
 
 	logger.WithFields(logrus.Fields{
@@ -326,7 +344,6 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 	var negativReturnMesage = "'testInstructionExecutionResultMessage' could not be saved in Fenix database"
 	var strangeErrorMessage = "When processing 'testInstructionExecutionResultMessage' an unknown error occured"
 
-	var testInstructionsThatAreStillExecuting []string
 	var err error
 
 	logger.WithFields(logrus.Fields{
@@ -343,23 +360,17 @@ func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResul
 			"ID": "d4a595c4-9622-4bc5-82f9-9711a94ba055",
 		}).Debug("'testInstructionExecutionResultMessage' was saved in Fenix database")
 
-		// Get all Testinstructions that are a peer to this TestInstruction, and can be run in parallell, and are still executing
-		testInstructionsThatAreStillExecuting, err = listPeerTestInstructionPeersWhichIsExecuting(testInstructionExecutionResultMessage.PeerId)
+		// Triggers what to do when messages have been saved
+		// In this case check if next peers of TestInstructions should be executed
+		err = newIncomingTestInstructionExecutionResultMessage(testInstructionExecutionResultMessage.PeerId)
 
-		// Trigger next TestInstructions that is waiting to be executed if all current peers are finished
-		if err == nil && len(testInstructionsThatAreStillExecuting) == 0 {
-			testInstructionPeersThatShouldBeExecutedNext, err := listNextPeersToBeExecuted(testInstructionExecutionResultMessage.PeerId)
-			if err == nil && len(testInstructionsThatAreStillExecuting) > 0 {
-				err = triggerSendNextPeersForExecution(testInstructionPeersThatShouldBeExecutedNext)
-			}
-		}
 		if err == nil {
-			// OK
+			// OK when triggering more functions
 			// Create message back to parent Gateway/Plugin
 			returnMessage.Comments = positivReturnMesage
 			returnMessage.Acknack = true
 		} else {
-			//Not OK
+			//Not OK when triggering more functions
 			returnMessage.Comments = strangeErrorMessage
 			returnMessage.Acknack = true
 		}
