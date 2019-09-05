@@ -19,43 +19,73 @@ func InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint common_code.Functio
 
 	// *** Towards Plugin ***
 	// Start a Dispatch Engine, for 'TestInstructionMessageTowardsPlugin' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestInstructionMessageTowardsPluginFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeTestInstructionMessageTowardsPlugin,
+		common_code.DispatchEngineTowardsPlugin,
+		gatewayOrEndpoint)
 
 	// Start a Dispatch Engine, for 'SupportedTestDataDomainsRequestMessageTowardsPlugin,' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin, common_code.DispatchEngineTowardsPlugin, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin,
+		common_code.DispatchEngineTowardsPlugin,
+		gatewayOrEndpoint)
 
 	// *** Towards Fenix ***
 	// Start a Transmit Engine, for 'informationMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeInformationMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeInformationMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeInformationMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 
 	// Start a Transmit Engine, for 'timeOutMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 
 	// Start a Transmit Engine, for 'spportedTestDataDomainsMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestExecutionLogMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestExecutionLogMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeTestExecutionLogMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 
 	// Start a Transmit Engine, for 'availbleTestInstructionAtPluginMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeSupportedTestDataDomainsMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 
 	// Start a Transmit Engine, for 'availbleTestContainersAtPluginMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 
 	// Start a Transmit Engine, for 'testInstructionExecutionResultMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 
 	// Start a Transmit Engine, for 'supportedTestDataDomainsWithHeadersMessageToBeForwarded' as a go-routine
-	go TransmitAndDispatchEngine(common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix, common_code.TransmitEngineTowardsFenix, gatewayOrEndpoint.fenixOrGatewayType, gatewayOrEndpoint.fenixAndPluginFunctionMap[ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction])
+	go TransmitAndDispatchEngine(
+		common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenix,
+		common_code.TransmitEngineTowardsFenix,
+		gatewayOrEndpoint)
 }
 
 // ********************************************************************************************
 // Forward X-message from channel towards Fenix
 //
 
-func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType string, fenixOrGatewayType string, fenixFunctionToCall func()) {
-
+func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType string, gatewayOrEndpoint common_code.FunctionsInsteadOfgRPCStruct) {
+	// gamla ska bort när alla fel är rättade ----fenixOrGatewayType string, fenixFunctionToCall func()
 	// Messages towards Plugin
 	var (
 		testInstructionMessageToBeForwardedTowardsPlugin                 *gRPC.TestInstruction_RT
@@ -435,12 +465,223 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 				//TODO kopier **switch transmitOrDispatchEngineType {** to första Switchen
 
 				// Decide if "we" are Fenix, then save message to SQL-DB otherwise send message forward to parent/child
-				switch fenixOrGatewayType {
+				switch gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin {
 
 				case common_code.FenixEngine:
 					// Save incoming mesage to SQL-DB and trigger Fenix by calling the function that was sent when initializing
 					fenixFunctionToCall()
 					// TODO FORSÄTT HÄR, genom att göra en switch och skicka rätt object precis som vid gRPC-anropen
+					switch channelType {
+					case common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackRegistrateAailableTestContainersTowardsFenix(availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"03166ccb-8551-47bd-ba86-bc46c0c867ff",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"7757345a-6732-463a-961a-c50e1a6b2201",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenix:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackRegisterAvailbleTestInstructionsTowardsFenix(availbleTestInstructionAtPluginMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"56d7473b-d19d-49ab-85c5-53dc8b8f713c",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackRegisterAvailbleTestInstructionsTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackRegisterAvailbleTestInstructionsTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"4fcd919e-d215-44c2-b791-a01358f44970",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackRegisterAvailbleTestInstructionsTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackRegisterAvailbleTestInstructionsTowardsFenix'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeInformationMessageTowardsFenix:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackSendMessageToFenixTowardsFenix(informationMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"c366153f-76c1-44bf-be0f-cb1692e9fbba",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackSendMessageToFenixTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackSendMessageToFenixTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"66889b87-80dd-44eb-ac34-e46fe9134ddb",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackSendMessageToFenixTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackSendMessageToFenixTowardsFenix'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeSupportedTestDataDomainsMessageTowardsFenix:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackSupportedTestDataDomainsTowardsFenix(supportedTestDataDomainsWithHeadersMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"0c82490c-2493-4e7e-91f7-f453ec014822",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackSupportedTestDataDomainsTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackSupportedTestDataDomainsTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"7fa24e5a-935c-4ff6-b6b1-6a0145b556c9",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackSupportedTestDataDomainsTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackSupportedTestDataDomainsTowardsFenix'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackRegistrateAvailableTestDataDomainsTowardsFenix(spportedTestDataDomainsMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"b94ab110-6e15-4c78-9cbd-bef35cf73e71",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackRegistrateAvailableTestDataDomainsTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackRegistrateAvailableTestDataDomainsTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"f9b79b81-d2c2-4fa7-a2ce-a4b4b83e49d9",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAvailableTestDataDomainsTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAvailableTestDataDomainsTowardsFenix'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeTestExecutionLogMessageTowardsFenix:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackSendTestExecutionLogTowardsFenix(testExecutionLogMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"401b49bf-dfcf-4ef0-8dda-aec465150229",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackSendTestExecutionLogTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackSendTestExecutionLogTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"3552c5d9-004c-460b-a689-c1430eb422e3",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackSendTestExecutionLogTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackSendTestExecutionLogTowardsFenix'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenix:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackSendTestInstructionResultTowardsFenixType(testInstructionExecutionResultMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"d98ffde3-1492-40fe-acbe-ac33336aa5b9",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackSendTestInstructionResultTowardsFenixType'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackSendTestInstructionResultTowardsFenixType'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"ac80cfbb-bed8-44ff-a9f7-4018c0ddb04f",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackSendTestInstructionResultTowardsFenixType'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackSendTestInstructionResultTowardsFenixType'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenix:
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallBackSendTestInstructionTimeOutTowardsFenix(timeOutMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"83c2393e-a721-4b41-8d4a-ccefc963d6a9",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackSendTestInstructionTimeOutTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackSendTestInstructionTimeOutTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"57422f69-21e9-49df-badf-70eb5de5ec7d",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackSendTestInstructionTimeOutTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackSendTestInstructionTimeOutTowardsFenix'",
+								)
+							}
+						}
+
+					default:
+						LogErrorAndSendInfoToFenix(
+							"734dcf59-9bc8-4300-8994-a1f8abc5a26a",
+							gRPC.InformationMessage_FATAL,
+							"No know 'channelType'",
+							channelType,
+							err.Error(),
+							"No know 'channelType' in DispatchEngine",
+						)
+					}
 
 				case common_code.GatewayEngine:
 					// Do the gRPC-call to parent gateway/Fenix or child gatway/plugin
@@ -534,13 +775,13 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						"721a5122-192d-492f-9882-ab40157b651d",
 						gRPC.InformationMessage_FATAL,
 						"No know 'fenixOrGatewayType'",
-						fenixOrGatewayType,
+						gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin,
 						err.Error(),
 						"No know 'fenixOrGatewayType' in TransmitEngine/Fenix",
 					)
 				}
 
-				switch fenixOrGatewayType {
+				switch gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin {
 				// Are "we" at Fenix or at a gateway
 				case common_code.FenixEngine:
 					// At Fenix
@@ -597,7 +838,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						"af30d945-42c1-4fdf-868f-d8a7d857399b",
 						gRPC.InformationMessage_FATAL,
 						"No know 'fenixOrGatewayType'",
-						fenixOrGatewayType,
+						gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin,
 						err.Error(),
 						"No know 'fenixOrGatewayType' in TransmitEngine/Fenix",
 					)
