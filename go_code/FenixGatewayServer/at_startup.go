@@ -49,10 +49,10 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 	// Ensure that all services don't start before everything has been started
 	//TODO Change this into a function-call instead
-	TestExecutionGateway.SetGatewayMustStopProcessingFlag(true)
+	//TestExecutionGateway.SetGatewayMustStopProcessingFlag(true)
 
 	// Start all Dispatch- and Transmit-Engines as a Gateway Engine inside Fenix and use function references instead of gRPC-calls
-	TestExecutionGateway.InitiateAllTransmitAndDispatchEngines(common_code.FunctionsInsteadOfgRPCStruct{
+	gatewayOrEndpoint := common_code.FunctionsInsteadOfgRPCStruct{
 		FenixOrGatewayTypeOrPlugin: common_code.FenixEngine,
 		CallBackTowardsPlugins: common_code.CallBackTowardsPluginsType{
 			CallBackSendTestInstructionTowardsPlugin:        nil,
@@ -67,9 +67,10 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 			CallBackSupportedTestDataDomainsTowardsFenix:           CallBackSupportedTestDataDomains,
 			CallBackSendTestInstructionResultTowardsFenixType:      CallBackSendTestInstructionResultTowardsFenix,
 		},
-	})
+	}
+	TestExecutionGateway.StartAllServices(configFileAndPath, logfileForTest, databaseFile, gatewayOrEndpoint)
 
 	// Start all services at the same time
-	TestExecutionGateway.SetGatewayMustStopProcessingFlag(false)
+	//TestExecutionGateway.SetGatewayMustStopProcessingFlag(false)
 
 }

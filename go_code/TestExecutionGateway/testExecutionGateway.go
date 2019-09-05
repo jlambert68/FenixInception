@@ -15,20 +15,23 @@ func TestExecutionMain(configFileAndPath string, logfileForTest string, database
 	defer cleanup()
 
 	// Start all Services as a Gateway Engine and no function references, use nil as function reference
-	StartAllServices(configFileAndPath, logfileForTest, databaseFile, common_code.FunctionsInsteadOfgRPCStruct{
+	gatewayOrEndpoint := common_code.FunctionsInsteadOfgRPCStruct{
 		FenixOrGatewayTypeOrPlugin: common_code.GatewayEngine,
-		FenixAndPluginFunctionMap: map[common_code.FunctionType]common_code.FunctionReference{
-			common_code.ChannelTypeTestInstructionMessageTowardsPluginFunction:                    nil,
-			common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPluginFunction:    nil,
-			common_code.ChannelTypeInformationMessageTowardsFenixFunction:                         nil,
-			common_code.ChannelTypeTestInstructionTimeOutMessageTowardsFenixFunction:              nil,
-			common_code.ChannelTypeTestExecutionLogMessageTowardsFenixFunction:                    nil,
-			common_code.ChannelTypeAvailbleTestInstructionsAtPluginMessageTowardsFenixFunction:    nil,
-			common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenixFunction:      nil,
-			common_code.ChannelTypeTestInstructionExecutionResultMessageTowardsFenixFunction:      nil,
-			common_code.ChannelTypeSupportedTestDataDomainsWithHeadersMessageTowardsFenixFunction: nil,
+		CallBackTowardsPlugins: common_code.CallBackTowardsPluginsType{
+			CallBackSendTestInstructionTowardsPlugin:        nil,
+			CallackGetSupportedTestDataDomainsTowardsPlugin: nil},
+		CallBackTowardsFenix: common_code.CallBackTowardsFenixType{
+			CallBackRegisterAvailbleTestInstructionsTowardsFenix:   nil,
+			CallBackRegistrateAailableTestContainersTowardsFenix:   nil,
+			CallBackRegistrateAvailableTestDataDomainsTowardsFenix: nil,
+			CallBackSendMessageToFenixTowardsFenix:                 nil,
+			CallBackSendTestInstructionTimeOutTowardsFenix:         nil,
+			CallBackSendTestExecutionLogTowardsFenix:               nil,
+			CallBackSupportedTestDataDomainsTowardsFenix:           nil,
+			CallBackSendTestInstructionResultTowardsFenixType:      nil,
 		},
-	})
+	}
+	StartAllServices(configFileAndPath, logfileForTest, databaseFile, gatewayOrEndpoint)
 
 	// Just waiting to quit
 	c := make(chan os.Signal, 2)

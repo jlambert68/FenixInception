@@ -187,7 +187,7 @@ func registerThisGatewayAtParentGateway() (bool, error) {
 // Loop all stored clients in DB and ask them to reRegister themself to this Gateway
 //
 
-func askClientsToReRegisterTHemSelf() {
+func askClientsToReRegisterThemSelf() {
 	// Initiate map used for handle Clients address and port info
 	// tabort detta här clientsAddressAndPort = make(map[string]ClientsAddressAndPortStruct)
 }
