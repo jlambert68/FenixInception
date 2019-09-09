@@ -141,6 +141,10 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 		)
 	*/
 
+	// *** LEVEL 1 *** Take care of incoming message the message from channels and set some base variables *************
+	// *** LEVEL 2 *** Send message to next gateway or function if "we" are at Fenix or Plugin *************************
+	// *** LEVEL 3 *** Check response from gateway/function that got the message****************************************
+
 	var err error
 	var messageId string
 	var bucket string
@@ -209,9 +213,12 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 			// Set variables depending on messageType
 
 			// Decide if it's TransmitEngine or a DispatchEngine
+			// *** LEVEL 1 *** Take care of incoming message from channels and set some base variables *****
+			// Level 1 takes care of retreive the message from channels and set some valiables
 			switch transmitOrDispatchEngineType {
 
 			// Choose DispatchEngine
+			// *** LEVEL 1.1 *** This is a DispatchEngineTowardsPlugin, get message from channel************************
 			case common_code.DispatchEngineTowardsPlugin:
 				//  Decide the correct DispatchEngine to use
 				switch channelType {
@@ -264,7 +271,8 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					)
 				}
 
-				// Choose TransmitEngine
+			// Choose TransmitEngine
+			// *** LEVEL 1.2 *** This is a TransmitEngineTowardsFenix, get message from channel*************************
 			case common_code.TransmitEngineTowardsFenix:
 				//  Deside the correct TransmitEngine to use
 				switch channelType {
@@ -426,8 +434,8 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					)
 				}
 
+				// *** LEVEL 1.3 *** No known 'transmitOrDispatchEngineType'********************************************
 			default:
-				// No known 'transmitOrDispatchEngineType'
 				LogErrorAndSendInfoToFenix(
 					"79ccdec0-803e-4133-99cb-f0da3a55de7c",
 					gRPC.InformationMessage_FATAL,
@@ -438,7 +446,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 				)
 			}
 
-			// Handle error from marshaling []byte
+			// Handle error from marshaling []byte done above
 			if err != nil {
 				LogErrorAndSendInfoToFenix(
 					id,
@@ -462,15 +470,15 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					infoHeader,
 					"db1bd71e-4ad4-40df-aba5-e80f69899e08")
 
-				//TODO kopier **switch transmitOrDispatchEngineType {** to första Switchen
-
+				// *** LEVEL 2 *** Send message to next gateway or function if "we" are at Fenix or Plugin *************
 				// Decide if "we" are Fenix, then save message to SQL-DB otherwise send message forward to parent/child
+				// If "we" are at plugin then send message to function that were sent into this function when initializing
 				switch gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin {
 
 				case common_code.FenixEngine:
+					// *** LEVEL 2.1 *** This Is Fenix *****************************************************************
 					// Save incoming mesage to SQL-DB and trigger Fenix by calling the function that was sent when initializing
-					fenixFunctionToCall()
-					// TODO FORSÄTT HÄR, genom att göra en switch och skicka rätt object precis som vid gRPC-anropen
+
 					switch channelType {
 					case common_code.ChannelTypeAvailbleTestContainersAtPluginMessageTowardsFenix:
 						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
@@ -684,11 +692,14 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					}
 
 				case common_code.GatewayEngine:
+					// *** LEVEL 2.2 *** This Is Gateway ***************************************************************
 					// Do the gRPC-call to parent gateway/Fenix or child gatway/plugin
+
 					// Decide if it's TransmitEngine or a DispatchEngine
 					switch transmitOrDispatchEngineType {
 
 					// Choose DispatchEngine
+					// *** LEVEL 2.2.1 *** This Is Gateway & DispatchEngineTowardsPlugin *******************************
 					case common_code.DispatchEngineTowardsPlugin:
 						//  Decide the correct DispatchEngine to use
 						switch channelType {
@@ -712,6 +723,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						}
 
 						// Choose TransmitEngine
+						// *** LEVEL 2.2.2 *** This Is Gateway & TransmitEngine ****************************************
 					case common_code.TransmitEngineTowardsFenix:
 						//  Deside the correct TransmitEngine to use
 						switch channelType {
@@ -759,6 +771,7 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						}
 
 					default:
+						// *** LEVEL 2.2.3 *** This Is Gateway &  No known 'transmitOrDispatchEngineType' **************
 						// No known 'transmitOrDispatchEngineType'
 						LogErrorAndSendInfoToFenix(
 							"2c976770-ef52-4bd1-8a52-aaf1f64ebc69",
@@ -770,7 +783,81 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						)
 					}
 
+				case common_code.PluginEngine:
+					// *** LEVEL 2.3 *** This is  Plugin ***************************************************************
+					// TODO Save incoming mesage to DB and trigger Plugin by calling the function that was sent when initializing
+
+					//  Decide the correct DispatchEngine to use
+					switch channelType {
+					case common_code.ChannelTypeTestInstructionMessageTowardsPlugin:
+						returnMessageAckNackResponse, gRPCerr = gRpcClientTowardPlugin.SendTestInstructionTowardsPlugin(gRpcContexType, testInstructionMessageToBeForwardedTowardsPlugin)
+						returnMessageString = returnMessageAckNackResponse.String()
+
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsPlugins.
+							CallBackSendTestInstructionTowardsPlugin.(testInstructionMessageToBeForwardedTowardsPlugin)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"0158e8f2-ec0a-496b-bbe3-4c45f4c7fd6d",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"1549d0e3-1d2a-4f18-b8bb-dff89e807f4d",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								)
+							}
+						}
+
+					case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
+						returnMessageAckNackResponse, gRPCerr = gRpcClientTowardPlugin.GetSupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin)
+						returnMessageString = returnMessageAckNackResponse.String()
+
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
+							CallackGetSupportedTestDataDomainsTowardsPlugin(availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
+						if err != nil {
+							LogErrorAndSendInfoToFenix(
+								"0158e8f2-ec0a-496b-bbe3-4c45f4c7fd6d",
+								gRPC.InformationMessage_ERROR,
+								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								channelType,
+								err.Error(),
+								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+							)
+						} else {
+							if returnMessage.Acknack == false {
+								LogErrorAndSendInfoToFenix(
+									"1549d0e3-1d2a-4f18-b8bb-dff89e807f4d",
+									gRPC.InformationMessage_ERROR,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+									channelType,
+									returnMessage.Comments,
+									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								)
+							}
+						}
+
+					default:
+						LogErrorAndSendInfoToFenix(
+							"03a585ed-3bc9-46a8-b1b9-55426c4ecc84",
+							gRPC.InformationMessage_FATAL,
+							"No know 'channelType'",
+							channelType,
+							err.Error(),
+							"No know 'channelType' in DispatchEngine",
+						)
+					}
+
 				default:
+					// *** LEVEL 2.4 *** No known 'gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin'************************
 					LogErrorAndSendInfoToFenix(
 						"721a5122-192d-492f-9882-ab40157b651d",
 						gRPC.InformationMessage_FATAL,
@@ -781,13 +868,16 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					)
 				}
 
+				// *** LEVEL 3 *** Check response from gateway/function that got the message****************************
 				switch gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin {
 				// Are "we" at Fenix or at a gateway
 				case common_code.FenixEngine:
+					// *** LEVEL 3.1 *** Check that return message from function call seems OK or not ******************
 					// At Fenix
 					// Do nothing
 
 				case common_code.GatewayEngine:
+					// *** LEVEL 3.2 *** Check the response from the gRPC-call to parent or child gateway****************
 					// At Gateway
 
 					if gRPCerr != nil {
@@ -833,7 +923,15 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 						}
 					}
 
+				case common_code.PluginEngine:
+					// *** LEVEL 3.3 *** Check the response from the function call at plugin****************************
+					// At Plugin
+					// Do nothing
+
 				default:
+					// *** LEVEL 3.4 *** No known gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin**************************
+					// Unknown 'gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin'
+
 					LogErrorAndSendInfoToFenix(
 						"af30d945-42c1-4fdf-868f-d8a7d857399b",
 						gRPC.InformationMessage_FATAL,
@@ -1453,4 +1551,39 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 
 	//  Return info that one object was found
 	return true
+}
+
+// *********************************************************************************************************************
+//
+//
+func getMessageFromChannelDispatchEngineTowardsPlugin() {
+
+}
+
+// *********************************************************************************************************************
+//
+//
+func getMessageFromChannelTransmitEngineTowardsFenix() {
+
+}
+
+// *********************************************************************************************************************
+//
+//
+func sendMessageToReceiverFenix() {
+
+}
+
+// *********************************************************************************************************************
+//
+//
+func sendMessageToReceiverGateway() {
+
+}
+
+// *********************************************************************************************************************
+//
+//
+func sendMessageToReceiverPlugin() {
+
 }

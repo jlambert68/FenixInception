@@ -253,7 +253,7 @@ type CallBackTowardsFenixType struct {
 
 // Towards Plugin. Used for communicating with functions in Plugins instead of gRPC-call
 type CallBackSendTestInstructionTowardsPluginType func(testInstruction *gRPC.TestInstruction_RT) (*gRPC.AckNackResponse, error)
-type CallackGetSupportedTestDataDomainsTowardsPluginType func(supportedTestDataDomainsRequest *gRPC.SupportedTestDataDomainsRequest)
+type CallackGetSupportedTestDataDomainsTowardsPluginType func(supportedTestDataDomainsRequest *gRPC.SupportedTestDataDomainsRequest) (*gRPC.AckNackResponse, error)
 
 // Towards Fenix Used for communicating with functions in Fenix instead of gRPC-call
 type CallBackRegisterAvailbleTestInstructionsTowardsFenixType func(availbleTestInstructionAtPluginMessage *gRPC.AvailbleTestInstructionAtPluginMessage) (*gRPC.AckNackResponse, error)
