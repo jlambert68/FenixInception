@@ -7,7 +7,7 @@ import (
 )
 
 // **********************************************************************************************************
-// Save 'testInstructionExecutionResultMessage' to Main Database for Fenix Inception
+// Send 'TestInstruction' towards Plugin
 //
 func sendTestInstructionTowardsPlugin(testInstructionId string) (err error) {
 
@@ -31,7 +31,7 @@ func sendTestInstructionTowardsPlugin(testInstructionId string) (err error) {
 }
 
 // **********************************************************************************************************
-// Save 'testInstructionExecutionResultMessage' to Main Database for Fenix Inception
+// Send 'GetSuppertedTestDataDomains' towards Plugin
 //
 func sendGetSupportedTestDataDomainsTowardsPlugin(pluginId string, pluginName string) (err error) {
 

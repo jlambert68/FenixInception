@@ -17,21 +17,35 @@ func CallBackRegisterAvailbleTestInstructions(availbleTestInstructionAtPluginMes
 		"availbleTestInstructionAtPluginMessage": availbleTestInstructionAtPluginMessage,
 	}).Debug("Incoming function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
 
-	// Save availbleTestInstruction-AtPluginMessage in SQL-DB for further processing
-	//TODO använda channel till SQL eller functions-anrop?
-	gatewayChannelPackage.AvailbleTestInstructionAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestInstructionAtPluginMessage
-	logger.WithFields(logrus.Fields{
-		"ID": "827c39fd-e8d6-4ea2-a90d-5a1194f551e2",
-	}).Debug("'availbleTestInstructionAtPluginMessage' was saved in Fenix database")
+	// Save availbleTestInstructionAtPluginMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveAvailbleTestInstructionAtPluginMessageInDB((availbleTestInstructionAtPluginMessage))
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "827c39fd-e8d6-4ea2-a90d-5a1194f551e2",
+		}).Debug("'availbleTestInstructionAtPluginMessage' was saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'availbleTestInstructionAtPluginMessage' was saved in Fenix database"
+		returnMessage.Acknack = true
+	} else {
+
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "e667e9e6-92dc-432e-ad9b-e1c9cb2dbbb5",
+		}).Error("'availbleTestInstructionAtPluginMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'availbleTestInstructionAtPluginMessage' was Not saved in Fenix database"
+		returnMessage.Acknack = true
+	}
 
 	logger.WithFields(logrus.Fields{
 		"ID": "7d2af962-6f59-41cf-9f26-af08f62413af",
 	}).Debug("Leaving function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
 
-	// Create message back to parent Gateway/Plugin
-	returnMessage.Comments = "'availbleTestInstructionAtPluginMessage' was saved in Fenix database"
-	returnMessage.Acknack = true
-
+	// Return message back to Gateway
 	return returnMessage, nil
 }
 
@@ -47,20 +61,35 @@ func CallBackRegistrateAailableTestContainers(availbleTestContainersAtPluginMess
 		"availbleTestContainersAtPluginMessage": availbleTestContainersAtPluginMessage,
 	}).Debug("Incoming function CallBack: 'CallBackRegistrateAailableTestContainers'")
 
-	// Put testExecutionLogMessage on queue for further processing
-	gatewayChannelPackage.AvailbleTestContainersAtPluginMessageTowardsFenixChannelTowardsFenix <- availbleTestContainersAtPluginMessage
-	logger.WithFields(logrus.Fields{
-		"ID": "d7c8ae8a-713e-4502-b3ce-e3427ee5d7d2",
-	}).Debug("'SupportedTestDataDomainsMessage' was saved in Fenix database")
+	// Save availbleTestContainersAtPluginMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveavailbleTestContainersAtPluginMessageInDB(availbleTestContainersAtPluginMessage)
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "a9c9ec6d-fa01-47c9-9f33-f35b136defd8",
+		}).Debug("'availbleTestContainersAtPluginMessage' was saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'availbleTestContainersAtPluginMessage' was saved in Fenix database"
+		returnMessage.Acknack = true
+	} else {
+
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "fcf90b0c-6bf9-4bfe-b282-06ae761d832d",
+		}).Error("'availbleTestContainersAtPluginMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'availbleTestContainersAtPluginMessage' was Not saved in Fenix database"
+		returnMessage.Acknack = true
+	}
 
 	logger.WithFields(logrus.Fields{
-		"ID": "0c721a16-7cb3-415f-8e33-f440d715a65f",
-	}).Debug("Leaving function CallBack: 'CallBackRegistrateAailableTestContainers'")
+		"ID": "2b19cee5-419a-4281-be52-cd18586541f9",
+	}).Debug("Leaving function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
 
-	// Create message back to parent Gateway/Plugin
-	returnMessage.Comments = "'availbleTestContainersAtPluginMessage' was saved in Fenix database"
-	returnMessage.Acknack = true
-
+	// Return message back to Gateway
 	return returnMessage, nil
 }
 
@@ -76,24 +105,83 @@ func CallBackRegistrateAvailableTestDataDomains(supportedTestDataDomainsMessage 
 		"supportedTestDataDomainsMessage": supportedTestDataDomainsMessage,
 	}).Debug("Incoming function CallBack: 'CallBackRegistrateAvailableTestDataDomains'")
 
-	// Put testExecutionLogMessage on queue for further processing
-	gatewayChannelPackage.SupportedTestDataDomainsMessageTowardsFenixChannelTowardsFenix <- supportedTestDataDomainsMessage
-	logger.WithFields(logrus.Fields{
-		"ID": "4d55f441-4e13-41ae-a9eb-e71f288a18e9",
-	}).Debug("'SupportedTestDataDomainsMessage' was saved in Fenix database")
+	// Save supportedTestDataDomainsMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveSupportedTestDataDomainsMessageInDB(supportedTestDataDomainsMessage)
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "2f013533-71ff-4ad8-9b13-3e9808a4f37b",
+		}).Debug("'supportedTestDataDomainsMessage' was saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'supportedTestDataDomainsMessage' was saved in Fenix database"
+		returnMessage.Acknack = true
+	} else {
+
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "20befb0d-cd64-4712-9cfa-a429e83c3e63",
+		}).Error("'supportedTestDataDomainsMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'supportedTestDataDomainsMessage' was Not saved in Fenix database"
+		returnMessage.Acknack = true
+	}
 
 	logger.WithFields(logrus.Fields{
-		"ID": "fb223a31-88d9-4876-964f-a21d1cdb0a2c",
-	}).Debug("Leaving function CallBack: 'CallBackRegistrateAvailableTestDataDomains'")
+		"ID": "77f8516a-7d27-4740-af2f-96a3307950d2",
+	}).Debug("Leaving function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
 
-	// Create message back to parent Gateway/Plugin
-	returnMessage.Comments = "'SupportedTestDataDomainsMessage' was saved in Fenix database"
-	returnMessage.Acknack = true
-
+	// Return message back to Gateway
 	return returnMessage, nil
 }
 
 //TODO MessageToFenix
+
+// ********************************************************************************************
+// Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a SupportedTestDataDomainsMessage toward Fenix
+//
+func CallBackSendMessageToFenix(informationMessage *gRPC.InformationMessage) (*gRPC.AckNackResponse, error) {
+
+	var returnMessage *gRPC.AckNackResponse
+
+	logger.WithFields(logrus.Fields{
+		"ID":                 "cd1c1c36-6677-45de-9b73-e6f7e2238d1f",
+		"informationMessage": informationMessage,
+	}).Debug("Incoming function CallBack: 'CallBackSendMessageToFenix'")
+
+	// Save informationMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveInformationMessageInDB(informationMessage)
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "edfc3792-aa4e-4b5b-b048-1f36bcc74a2f",
+		}).Debug("'informationMessage' was saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'informationMessage' was saved in Fenix database"
+		returnMessage.Acknack = true
+	} else {
+
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "45d0fe22-a7d7-467b-9cac-be67c7c0cb54",
+		}).Error("'informationMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'informationMessage' was Not saved in Fenix database"
+		returnMessage.Acknack = true
+	}
+
+	logger.WithFields(logrus.Fields{
+		"ID": "6001dd10-06e4-4998-8ccf-7c9acc75e431",
+	}).Debug("Leaving function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
+
+	// Return message back to Gateway
+	return returnMessage, nil
+}
 
 // ********************************************************************************************
 // Call from this(bufferd in DB)/child Gateway/Plugin for incoming request for forwarding a InfoMessage toward Fenix
@@ -107,20 +195,35 @@ func CallBackSendTestInstructionTimeOutTowardsFenix(testInstructionTimeOutMessag
 		"testInstructionTimeOutMessage": testInstructionTimeOutMessage,
 	}).Debug("Incoming function CallBack: 'CallBackSendTestInstructionTimeOutTowardsFenix'")
 
-	// Put testInstructionTimeOutMessage on queue for further processing
-	gatewayChannelPackage.TestInstructionTimeOutMessageChannelTowardsFenix <- testInstructionTimeOutMessage
-	logger.WithFields(logrus.Fields{
-		"ID": "8b25dfbe-3105-4991-a61b-c5743cb3f49c",
-	}).Debug("'testInstructionTimeOutMessage' was saved in Fenix database")
+	// Save testInstructionTimeOutMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveTestInstructionTimeOutMessageInDB(testInstructionTimeOutMessage)
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "353a3773-47b5-4eea-baba-59beb44b4320",
+		}).Debug("'testInstructionTimeOutMessage' was saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'testInstructionTimeOutMessage' was saved in Fenix database"
+		returnMessage.Acknack = true
+	} else {
+
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "f53e96cb-1283-4102-bdd7-a084db7dc953",
+		}).Error("'testInstructionTimeOutMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'testInstructionTimeOutMessage' was Not saved in Fenix database"
+		returnMessage.Acknack = true
+	}
 
 	logger.WithFields(logrus.Fields{
-		"ID": "df7ebfce-badc-4a0b-bf29-268e75c3eed6",
-	}).Debug("Leaving function CallBack: 'CallBackSendTestInstructionTimeOutTowardsFenix'")
+		"ID": "f8f33004-be43-443f-bf36-5f945a830a60",
+	}).Debug("Leaving function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
 
-	// Create message back to parent Gateway/Fenix
-	returnMessage.Comments = "'TestInstructionTimeOutMessage' was saved in Fenix database"
-	returnMessage.Acknack = true
-
+	// Return message back to Gateway
 	return returnMessage, nil
 }
 
@@ -136,20 +239,35 @@ func CallBackSendTestExecutionLogTowardsFenix(testExecutionLogMessage *gRPC.Test
 		"testInstructionTimeOutMessage": testExecutionLogMessage,
 	}).Debug("Incoming function CallBack: 'CallBackTestExecutionLogMessage'")
 
-	// Put testExecutionLogMessage on queue for further processing
-	gatewayChannelPackage.TestExecutionLogMessageChannelTowardsFenix <- testExecutionLogMessage
-	logger.WithFields(logrus.Fields{
-		"ID": "b4925021-02aa-4ff8-b314-7a82fb2b19a0",
-	}).Debug("'testExecutionLogMessage' was saved in Fenix database")
+	// Save testExecutionLogMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveTestExecutionLogMessageInDB(testExecutionLogMessage)
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "410e1022-a56a-4b15-8b60-3468776b400a",
+		}).Debug("'testExecutionLogMessage' was saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'testExecutionLogMessage' was saved in Fenix database"
+		returnMessage.Acknack = true
+	} else {
+
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "3ba16e81-8304-4b5e-b6fb-1fb837d61307",
+		}).Error("'testExecutionLogMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = "'testExecutionLogMessage' was Not saved in Fenix database"
+		returnMessage.Acknack = true
+	}
 
 	logger.WithFields(logrus.Fields{
-		"ID": "f2efe405-498f-42d6-9788-3b4397b322dc",
-	}).Debug("Leaving function CallBack: 'CallBackSendTexecutionLogTowardsFenix'")
+		"ID": "8a37b8e2-9ad3-425b-be71-515ffa335d54",
+	}).Debug("Leaving function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
 
-	// Create message back to parent Gateway/Fenix
-	returnMessage.Comments = "'TestExecutionLogMessage' was saved in Fenix database"
-	returnMessage.Acknack = true
-
+	// Return message back to Gateway
 	return returnMessage, nil
 }
 
@@ -160,25 +278,58 @@ func CallBackSupportedTestDataDomains(supportedTestDataDomainsWithHeadersMessage
 
 	var returnMessage *gRPC.AckNackResponse
 
+	var positivReturnMesage = "'supportedTestDataDomainsWithHeadersMessage' was saved in Fenix database"
+	var negativReturnMesage = "'supportedTestDataDomainsWithHeadersMessage' could not be saved in Fenix database"
+	var strangeErrorMessage = "When processing 'supportedTestDataDomainsWithHeadersMessage' an unknown error occured"
+
+	var err error
+
 	logger.WithFields(logrus.Fields{
 		"ID": "218c8382-a6df-4b0e-8bf4-13c2ce327dc0",
 		"supportedTestDataDomainsWithHeadersMessage": supportedTestDataDomainsWithHeadersMessage,
 	}).Debug("Incoming function CallBack: 'CallBackSupportedTestDataDomains'")
 
-	// Put supportedTestDataDomainsWithHeadersMessage on queue for further processing
-	gatewayChannelPackage.SupportedTestDataDomainsWithHeadersMessageTowardsFenixChannelTowardsFenix <- supportedTestDataDomainsWithHeadersMessage
-	logger.WithFields(logrus.Fields{
-		"ID": "58b4643a-600c-48f5-93fe-3638f814863c",
-	}).Debug("'supportedTestDataDomainsWithHeadersMessage' was saved in Fenix database")
+	// Save testInstructionExecutionResultMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveSupportedTestDataDomainsWithHeadersMessageInDB(supportedTestDataDomainsWithHeadersMessage)
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "d5b46485-cfab-42f7-96da-2a90bf1532c3",
+		}).Debug("'testInstructionExecutionResultMessage' was saved in Fenix database")
+
+		// Triggers what to do when messages have been saved
+		// In this case check if next peers of TestInstructions should be executed
+		err = newIncomingTestInstructionExecutionResultMessage(testInstructionExecutionResultMessage.PeerId)
+
+		if err == nil {
+			// OK when triggering more functions
+			// Create message back to parent Gateway/Plugin
+			returnMessage.Comments = positivReturnMesage
+			returnMessage.Acknack = true
+		} else {
+			//Not OK when triggering more functions
+			returnMessage.Comments = strangeErrorMessage
+			returnMessage.Acknack = true
+		}
+
+	} else {
+
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "24aecb02-b758-44e0-9a5d-498ed772acea",
+		}).Error("'testInstructionExecutionResultMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
+		returnMessage.Comments = negativReturnMesage
+		returnMessage.Acknack = false
+	}
 
 	logger.WithFields(logrus.Fields{
-		"ID": "956d8b7d-7ff4-41d2-b050-539805d1a87a",
-	}).Debug("Leaving function CallBack: 'CallBackSupportedTestDataDomains'")
+		"ID": "b09a7d1d-328c-46fe-a83b-9d9e3e073559",
+	}).Debug("Leaving function CallBack: 'CallBackRegisterAvailbleTestInstructions'")
 
-	// Create message back to child Gateway/Plugin
-	returnMessage.Comments = "'supportedTestDataDomainsWithHeadersMessage' was saved in Fenix database"
-	returnMessage.Acknack = true
-
+	// Return message back to Gateway
 	return returnMessage, nil
 }
 
@@ -188,54 +339,58 @@ func CallBackSupportedTestDataDomains(supportedTestDataDomainsWithHeadersMessage
 func CallBackSendTestInstructionResultTowardsFenix(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (*gRPC.AckNackResponse, error) {
 
 	var returnMessage *gRPC.AckNackResponse
+
 	var positivReturnMesage = "'testInstructionExecutionResultMessage' was saved in Fenix database"
 	var negativReturnMesage = "'testInstructionExecutionResultMessage' could not be saved in Fenix database"
 	var strangeErrorMessage = "When processing 'testInstructionExecutionResultMessage' an unknown error occured"
 
-	var testInstructionsThatAreStillExecuting []string
 	var err error
 
-	// Initiate returnMessage, should never be sent though
-	returnMessage.Comments = strangeErrorMessage
-	returnMessage.Acknack = false
-
 	logger.WithFields(logrus.Fields{
-		"ID":                                    "76aef74f-4d2f-4f15-abb8-c179bcc55351",
+		"ID":                                    "0c22dd9e-d829-4a52-8468-ef6e02fa57a7",
 		"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
 	}).Debug("Incoming function CallBack: 'CallBackSendTestInstructionResultTowardsFenix'")
 
-	// Save testInstructionExecutionResultMessage to Fenix database and trigger Fenix for further processing
-	messageSavedInFenixDatabase := saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage)
-	if messageSavedInFenixDatabase == true {
+	// Save testInstructionExecutionResultMessage in SQL-DB for further processing
+	messageSavedWithoutProblem := saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage)
+	if messageSavedWithoutProblem == true {
+
+		// Message saved OK
 		logger.WithFields(logrus.Fields{
-			"ID": "56fe8fb4-05c3-4889-91bb-9fcb9d478276",
-		}).Debug("'testInstructionExecutionResultMessage' was saved in Fenix Database")
+			"ID": "d4a595c4-9622-4bc5-82f9-9711a94ba055",
+		}).Debug("'testInstructionExecutionResultMessage' was saved in Fenix database")
 
-		// Set gRPC returnMessage back to gateway
-		returnMessage.Comments = positivReturnMesage
-		returnMessage.Acknack = true
+		// Triggers what to do when messages have been saved
+		// In this case check if next peers of TestInstructions should be executed
+		err = newIncomingTestInstructionExecutionResultMessage(testInstructionExecutionResultMessage.PeerId)
 
-		// Get all Testinstructions that are a peer to this TestInstruction, and can be run in parallell, and are still executing
-		testInstructionsThatAreStillExecuting, err = listPeerTestInstructionPeersWhichIsExecuting(testInstructionExecutionResultMessage.PeerId)
-
-		// Trigger next TestInstructions that is waiting to be executed if all current peers are finished
-		if err == nil && len(testInstructionsThatAreStillExecuting) == 0 {
-			testInstructionPeersThatShouldBeExecutedNext, err := listNextPeersToBeExecuted(testInstructionExecutionResultMessage.PeerId)
-			if err == nil && len(testInstructionsThatAreStillExecuting) > 0 {
-				err = triggerSendNextPeersForExecution(testInstructionPeersThatShouldBeExecutedNext)
-			}
+		if err == nil {
+			// OK when triggering more functions
+			// Create message back to parent Gateway/Plugin
+			returnMessage.Comments = positivReturnMesage
+			returnMessage.Acknack = true
+		} else {
+			//Not OK when triggering more functions
+			returnMessage.Comments = strangeErrorMessage
+			returnMessage.Acknack = true
 		}
 
 	} else {
 
-		// Set gRPC returnMessage back to gateway
+		// Message not saved OK
+		logger.WithFields(logrus.Fields{
+			"ID": "a681220a-4f42-4602-beaa-84954826a809",
+		}).Error("'testInstructionExecutionResultMessage' was Not saved in Fenix database")
+
+		// Create message back to parent Gateway/Plugin
 		returnMessage.Comments = negativReturnMesage
 		returnMessage.Acknack = false
 	}
 
 	logger.WithFields(logrus.Fields{
-		"ID": "ab5efe48-54e4-43c0-975b-ef186aeb7140",
+		"ID": "3b816bbc-e36f-4612-a62f-83751d1d9fe0",
 	}).Debug("Leaving function CallBack: 'CallBackSendTestInstructionResultTowardsFenix'")
 
+	// Return message back to Gateway
 	return returnMessage, nil
 }

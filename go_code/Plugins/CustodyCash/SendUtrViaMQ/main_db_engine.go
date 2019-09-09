@@ -43,16 +43,16 @@ func initiateMainDB() {
 }
 
 // **********************************************************************************************************
-// Save 'testInstructionExecutionResultMessage' to Main Database for Fenix Inception
+// Update 'testInstructionExecutionResultMessage' in, TestInstructions Outgoing message, to Main Database for Fenix Inception
 //
-func saveTestInstructionExecutionResultMessageInDB(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (messageSavedInDB bool) {
+func updateTestInstructionWithExecutionResultMessageInDB(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (messageSavedInDB bool) {
 	// TODO change from Update to Insert new copy row
 
 	messageSavedInDB = true
 
 	// Prepare SQL
-	var sqlToBeExecuted = "UPDATE testcaseexecutions.executing_testcasesteps "
-	sqlToBeExecuted = sqlToBeExecuted + "SET TestStepExecutionFinished=$1, TestStepExecutionResult=$2, updatedDateTime=$3, ResponsePayload=$4 "
+	var sqlToBeExecuted = "UPDATE testcaseexecutions.Executing_TestInstructions "
+	sqlToBeExecuted = sqlToBeExecuted + "SET TestInstructionExecutionFinished=$1, TestInstructionExecutionResult=$2, updatedDateTime=$3, ResponsePayload=$4 "
 	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionId=$5"
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 
@@ -102,7 +102,7 @@ func listPeerTestInstructionPeersWhichIsExecuting(testInstructionPeerGuid string
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT TestInstructionId "
 	sqlToBeExecuted = sqlToBeExecuted + "FROM testcaseexecutions.Executing_TestInstructions "
-	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestStepExecutionFinished isnull AND "
+	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionExecutionFinished isnull AND "
 	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionPeerId = $1 "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
@@ -165,7 +165,7 @@ func listNextPeersToBeExecuted(testInstructionPeerGuid string) (testInstructionP
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT TestInstructionId "
 	sqlToBeExecuted = sqlToBeExecuted + "FROM testcaseexecutions.Executing_TestInstructions "
-	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestStepExecutionFinished isnull AND "
+	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionExecutionFinished isnull AND "
 	sqlToBeExecuted = sqlToBeExecuted + "PreviousTestInstructionPeerId = $1 "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
@@ -222,7 +222,7 @@ func listNextPeersToBeExecuted(testInstructionPeerGuid string) (testInstructionP
 }
 
 // **********************************************************************************************************
-// Save 'testInstructionExecutionResultMessage' to Main Database for Fenix Inception
+// Update DB that TestInstruction has been sent to Plugin
 //
 func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (messageSavedInDB bool) {
 	// TODO change from Update to Insert new copy row
@@ -231,7 +231,7 @@ func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (m
 
 	// Prepare SQL
 	var sqlToBeExecuted = "UPDATE testcaseexecutions.executing_testcasesteps "
-	sqlToBeExecuted = sqlToBeExecuted + "SET TestStepSentDateTime=$1, updatedDateTime=$2 "
+	sqlToBeExecuted = sqlToBeExecuted + "SET TestInstructionSentDateTime=$1, updatedDateTime=$2 "
 	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionId=$3"
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 
@@ -281,8 +281,8 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT Payload "
 	sqlToBeExecuted = sqlToBeExecuted + "FROM testcaseexecutions.Executing_TestInstructions "
-	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestStepExecutionFinished isnull AND "
-	sqlToBeExecuted = sqlToBeExecuted + "testInstructionGuid = $1 "
+	sqlToBeExecuted = sqlToBeExecuted + "WHERE TestInstructionExecutionFinished isnull AND "
+	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionId = $1 "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 
@@ -350,56 +350,95 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 }
 
 /*
-	fmt.Println("# Inserting values")
+       //TestInstructionResults flows from Plugins towards Fenix Inception
+   x    rpc SendTestInstructionResultTowardsFenix (TestInstructionExecutionResultMessage) returns (AckNackResponse) {
+       }
 
-	var lastInsertId int
-	err = mainDB.QueryRow("INSERT INTO userinfo(username,departname,created) VALUES($1,$2,$3) returning uid;", "astaxie", "研发部门", "2012-12-09").Scan(&lastInsertId)
-	checkErr(err)
-	fmt.Println("last inserted id =", lastInsertId)
+       // Log-posts har sent from Plugins towards Fenix Inception
+   x    rpc SendTestExecutionLogTowardsFenix (TestExecutionLogMessage) returns (AckNackResponse) {
+       }
 
-	fmt.Println("# Updating")
-	stmt, err := mainDB.Prepare("update userinfo set username=$1 where uid=$2")
-	checkErr(err)
+       // TestInstructions Timeouts flows from Plugins towards Fenix.
+       // Used for telling Fenix when a TestInstruction should be have a timeout and execution for Testcase should be stopped
+   x    rpc SendTestInstructionTimeOutTowardsFenix (TestInstructionTimeOutMessage) returns (AckNackResponse) {
+       }
 
-	res, err := stmt.Exec("astaxieupdate", lastInsertId)
-	checkErr(err)
+   x    rpc SupportedTestDataDomains (SupportedTestDataDomainsWithHeadersMessage) returns (AckNackResponse) {
+       }
 
-	affect, err := res.RowsAffected()
-	checkErr(err)
+       // This one will probably be deleted
+   //    rpc TestDataFromFilterValues (TestDataFromFilterValuesMessage) returns (AckNackResponse) {
 
-	fmt.Println(affect, "rows changed")
+       // Register an avalible TestInstruction
+   x    rpc RegisterAvailbleTestInstructions(AvailbleTestInstructionAtPluginMessage) returns (AckNackResponse){
+       }
 
-	fmt.Println("# Querying")
-	rows, err := mainDB.Query("SELECT * FROM userinfo")
-	checkErr(err)
+       // Register the different Testdata Domains that is supported
+   x    rpc RegistrateAvailableTestDataDomains(SupportedTestDataDomainsMessage) returns (AckNackResponse) {
+       }
 
-	for rows.Next() {
-		var uid int
-		var username string
-		var department string
-		var created time.Time
-		err = rows.Scan(&uid, &username, &department, &created)
-		checkErr(err)
-		fmt.Println("uid | username | department | created ")
-		fmt.Printf("%3v | %8v | %6v | %6v\n", uid, username, department, created)
-	}
+       // Register Test Containers that are supported. A Test Container consists of many TestInstructions grouped together into one unit
+   x    rpc RegistrateAailableTestContainers(AvailbleTestContainersAtPluginMessage) returns (AckNackResponse){
+       }
 
-	fmt.Println("# Deleting")
-	stmt, err = mainDB.Prepare("delete from userinfo where uid=$1")
-	checkErr(err)
+       // A Plugin register itself at a distributed gateway or a distributed gateway register itself at Fenix Inception gateway
+       rpc RegisterClientAddress (RegisterClientAddressRequest) returns (RegisterClientAddressResponse) {
 
-	res, err = stmt.Exec(lastInsertId)
-	checkErr(err)
+       // A Plugin can send a INFO- OR WARNING-message to Fenix by this mwethod
+  x     rpc SendMessageToFenix (InformationMessage) returns (AckNackResponse){
+*/
 
-	affect, err = res.RowsAffected()
-	checkErr(err)
+/*
+   	fmt.Println("# Inserting values")
 
-	fmt.Println(affect, "rows changed")
-}
+   	var lastInsertId int
+   	err = mainDB.QueryRow("INSERT INTO userinfo(username,departname,created) VALUES($1,$2,$3) returning uid;", "astaxie", "研发部门", "2012-12-09").Scan(&lastInsertId)
+   	checkErr(err)
+   	fmt.Println("last inserted id =", lastInsertId)
 
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
+   	fmt.Println("# Updating")
+   	stmt, err := mainDB.Prepare("update userinfo set username=$1 where uid=$2")
+   	checkErr(err)
+
+   	res, err := stmt.Exec("astaxieupdate", lastInsertId)
+   	checkErr(err)
+
+   	affect, err := res.RowsAffected()
+   	checkErr(err)
+
+   	fmt.Println(affect, "rows changed")
+
+   	fmt.Println("# Querying")
+   	rows, err := mainDB.Query("SELECT * FROM userinfo")
+   	checkErr(err)
+
+   	for rows.Next() {
+   		var uid int
+   		var username string
+   		var department string
+   		var created time.Time
+   		err = rows.Scan(&uid, &username, &department, &created)
+   		checkErr(err)
+   		fmt.Println("uid | username | department | created ")
+   		fmt.Printf("%3v | %8v | %6v | %6v\n", uid, username, department, created)
+   	}
+
+   	fmt.Println("# Deleting")
+   	stmt, err = mainDB.Prepare("delete from userinfo where uid=$1")
+   	checkErr(err)
+
+   	res, err = stmt.Exec(lastInsertId)
+   	checkErr(err)
+
+   	affect, err = res.RowsAffected()
+   	checkErr(err)
+
+   	fmt.Println(affect, "rows changed")
+   }
+
+   func checkErr(err error) {
+   	if err != nil {
+   		panic(err)
+   	}
+   }
 */
