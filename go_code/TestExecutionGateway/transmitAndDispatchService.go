@@ -787,67 +787,63 @@ func TransmitAndDispatchEngine(channelType string, transmitOrDispatchEngineType 
 					// *** LEVEL 2.3 *** This is  Plugin ***************************************************************
 					// TODO Save incoming mesage to DB and trigger Plugin by calling the function that was sent when initializing
 
-					//  Decide the correct DispatchEngine to use
+					//  Decide the correct Function to use
 					switch channelType {
 					case common_code.ChannelTypeTestInstructionMessageTowardsPlugin:
-						returnMessageAckNackResponse, gRPCerr = gRpcClientTowardPlugin.SendTestInstructionTowardsPlugin(gRpcContexType, testInstructionMessageToBeForwardedTowardsPlugin)
-						returnMessageString = returnMessageAckNackResponse.String()
 
 						returnMessage, err := gatewayOrEndpoint.CallBackTowardsPlugins.
-							CallBackSendTestInstructionTowardsPlugin.(testInstructionMessageToBeForwardedTowardsPlugin)
+							CallBackSendTestInstructionTowardsPlugin(testInstructionMessageToBeForwardedTowardsPlugin)
 						if err != nil {
 							LogErrorAndSendInfoToFenix(
 								"0158e8f2-ec0a-496b-bbe3-4c45f4c7fd6d",
 								gRPC.InformationMessage_ERROR,
-								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								"Got an error back from Plugin when calling 'CallBackSendTestInstructionTowardsPlugin'",
 								channelType,
 								err.Error(),
-								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								"Got an error back from Plugin when calling 'CallBackSendTestInstructionTowardsPlugin'",
 							)
 						} else {
 							if returnMessage.Acknack == false {
 								LogErrorAndSendInfoToFenix(
 									"1549d0e3-1d2a-4f18-b8bb-dff89e807f4d",
 									gRPC.InformationMessage_ERROR,
-									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+									"Got an error back from Plugin when calling 'CallBackSendTestInstructionTowardsPlugin'",
 									channelType,
 									returnMessage.Comments,
-									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+									"Got an error back from Plugin when calling 'CallBackSendTestInstructionTowardsPlugin'",
 								)
 							}
 						}
 
 					case common_code.ChannelTypeSupportedTestDataDomainsRequestMessageTowardsPlugin:
-						returnMessageAckNackResponse, gRPCerr = gRpcClientTowardPlugin.GetSupportedTestDataDomains(gRpcContexType, supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin)
-						returnMessageString = returnMessageAckNackResponse.String()
 
-						returnMessage, err := gatewayOrEndpoint.CallBackTowardsFenix.
-							CallackGetSupportedTestDataDomainsTowardsPlugin(availbleTestContainersAtPluginMessageToBeForwardedTowardsFenix)
+						returnMessage, err := gatewayOrEndpoint.CallBackTowardsPlugins.
+							CallackGetSupportedTestDataDomainsTowardsPlugin(supportedTestDataDomainsRequestMessageToBeForwardedTowardsPlugin)
 						if err != nil {
 							LogErrorAndSendInfoToFenix(
-								"0158e8f2-ec0a-496b-bbe3-4c45f4c7fd6d",
+								"fd91effe-b145-4c08-b9dc-112614c7410b",
 								gRPC.InformationMessage_ERROR,
-								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								"Got an error back from Plugin when calling 'CallackGetSupportedTestDataDomainsTowardsPlugin'",
 								channelType,
 								err.Error(),
-								"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+								"Got an error back from Plugin when calling 'CallackGetSupportedTestDataDomainsTowardsPlugin'",
 							)
 						} else {
 							if returnMessage.Acknack == false {
 								LogErrorAndSendInfoToFenix(
-									"1549d0e3-1d2a-4f18-b8bb-dff89e807f4d",
+									"740dfed0-082e-4f00-82d8-932cabbaea07",
 									gRPC.InformationMessage_ERROR,
-									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+									"Got an error back from Plugin when calling 'CallackGetSupportedTestDataDomainsTowardsPlugin'",
 									channelType,
 									returnMessage.Comments,
-									"Got an error back from Fenix when calling 'CallBackRegistrateAailableTestContainersTowardsFenix'",
+									"Got an error back from Plugin when calling 'CallackGetSupportedTestDataDomainsTowardsPlugin'",
 								)
 							}
 						}
 
 					default:
 						LogErrorAndSendInfoToFenix(
-							"03a585ed-3bc9-46a8-b1b9-55426c4ecc84",
+							"d8a6c2fa-0ad5-49be-a431-9ecd9b0633d0",
 							gRPC.InformationMessage_FATAL,
 							"No know 'channelType'",
 							channelType,
