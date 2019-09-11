@@ -1,4 +1,4 @@
-package FenixGatewayServer
+package SendUtrViaMQ
 
 import (
 	"github.com/jlambert68/FenixInception/go_code/TestExecutionGateway"
@@ -55,7 +55,7 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	gatewayOrEndpoint := common_code.FunctionsInsteadOfgRPCStruct{
 		FenixOrGatewayTypeOrPlugin: common_code.FenixEngine,
 		CallBackTowardsPlugins: common_code.CallBackTowardsPluginsType{
-			CallBackSendTestInstructionTowardsPlugin:        nil,
+			CallBackSendTestInstructionTowardsPlugin:        CallBackSe,
 			CallackGetSupportedTestDataDomainsTowardsPlugin: nil},
 		CallBackTowardsFenix: common_code.CallBackTowardsFenixType{
 			CallBackRegisterAvailbleTestInstructionsTowardsFenix:   CallBackRegisterAvailbleTestInstructions,

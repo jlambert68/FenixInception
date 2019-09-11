@@ -1,4 +1,4 @@
-package FenixGatewayServer
+package SendUtrViaMQ
 
 import (
 	"github.com/BurntSushi/toml"
@@ -15,12 +15,12 @@ func processConfigFile(filename string) {
 	// Decode toml-file
 	if _, err := toml.DecodeFile(filename, &gatewayConfig); err != nil {
 		// Error when decoding toml-file
-		log.Println("2243085a-feee-4ae7-8ccf-03f69c0704a4")
+		log.Println("71bb5630-7358-41ba-a01f-b0cb0baade2f")
 		log.Println("err: ", err)
 		log.Fatalln("Couldn't decode 'toml-file', stopping gateway: ", filename)
 	} else {
 		// OK when decoding toml-file
-		log.Println("2d8a80d96-6c58-4f26-a341-71b15a760569")
+		log.Println("5aed5603-c933-4b16-bea1-e6ad0ea9ee75")
 		log.Println("'toml-file' was decoded: ", filename)
 
 		// Convert logging-level-text into logrus.logginglever

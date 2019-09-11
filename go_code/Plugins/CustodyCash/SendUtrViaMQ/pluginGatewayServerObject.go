@@ -1,4 +1,4 @@
-package FenixGatewayServer
+package SendUtrViaMQ
 
 import (
 	"github.com/jlambert68/FenixInception/go_code/common_code"

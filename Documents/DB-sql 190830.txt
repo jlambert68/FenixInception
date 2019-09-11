@@ -557,7 +557,7 @@ comment on table testInstructions.TestExecutionResult is 'Holds all TestExecutio
 
 comment on column testInstructions.TestExecutionResult.OriginalSenderId is 'The Id of the gateway/plugin that created the message'; -- 1
 comment on column testInstructions.TestExecutionResult.OriginalSenderName is 'The name of the gateway/plugin that created the message'; -- 2
-comment on column testInstructions.TestExecutionResult.TestInstructionGuid is 'TestInstructionGuid is a unique id for identifying the TestInstruction at Plugin'; --3
+comment on column testInstructions.TestExecutionResult.TestInstructionGuid is 'TestInstructionGuid is a unique id created in the Fenix editor'; --3
 comment on column testInstructions.TestExecutionResult.ResultId is 'A unique id created by plugin'; -- 4
 comment on column testInstructions.TestExecutionResult.TestInstructionResultCreatedDateTime is 'The DateTime when the message was created'; -- 5
 comment on column testInstructions.TestExecutionResult.TestInstructionResultSentDateTime is 'The DateTime when the message was sent'; -- 6
@@ -567,5 +567,51 @@ comment on column testInstructions.TestExecutionResult.OriginalSystemDomainId is
 comment on column testInstructions.TestExecutionResult.OriginalSystemDomainName is 'The Domain/system's name where the Sender operates'; -- 10
 comment on column testInstructions.TestExecutionResult.MessageId is 'A unique id for the message created by plugin'; -- 11
 comment on column testInstructions.TestExecutionResult.PeerId is 'A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction'; -- 12
-comment on column testInstructions.TestExecutionResult.updatedDateTime is 'The Datetime when the row was created/updates'; -- 13
+comment on column testInstructions.TestExecutionResult.updatedDateTime is 'The Datetime when the row was created/updates';
+-- 13
 
+-- *****************************************************************************************************************************
+-- Plugin DB
+-- Holds all TestExecution-ResultMessages
+drop table plugins.TestInstructionRT;
+
+create table plugins.TestInstructionRT
+(
+    OriginalSenderId               uuid                     not null, -- The Id of the gateway/Fenix that created the message -- 1
+    OriginalSenderName             varchar default null,              -- The name of the gateway/Fenix that created the message -- 2
+    TestInstructionTypeGuid        uuid                     not null, -- TestInstructionTypeGuid tells Plugin what to do, set by Plugin'; --3
+    TestInstructionTypeName        varchar default null,              -- The name of the type of TestInstruction type'; -- 4
+    TestInstructionGuid            uuid                     not null, -- TestInstructionGuid is a unique id created when TestInstruction is created in TestCase'; -- 5
+    PluginId                       uuid                     not null, -- The unique id of the plugin; -- 6
+    PluginName                     varchar default null,              -- The name of the plugin; -- 7
+    TestInstructionCreatedDateTime timestamp with time zone not null, -- When the TestInstruction, RunTime-version, was created; -- 8
+    TestInstructionSentDateTime    timestamp with time zone not null, -- When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent; -- 9
+    ChoosenLandingZone             varchar default null,              -- Chosen LandingZone for TestInstruction; -- 10
+    OrginalCreateDateTime          timestamp with time zone not null, -- The timestamp when the orignal message was created; -- 11
+    PeerId                         uuid                     not null, -- A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction; -- 12
+    MessageId                      uuid                     not null, -- A unique id for the message gererated by Fenix; -- 13
+    TestInstructionAttributeGuid   uuid                     not null, -- A Unique id for the attribute, set by Plugin; -- 14
+    TestInstructionAttributeName   varchar default null,              -- The name of the Attribute, set by Plugin; -- 15
+    TestInstructionAttributeValue  varchar default null,              -- The value of the attribute; -- 16
+    updatedDateTime                timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 17
+);
+
+comment on table plugins.TestInstructionRT is 'Holds all TestInstructions to be executed by plugin';
+
+comment on column plugins.TestInstructionRT.OriginalSenderId is 'The Id of the gateway/Fenix that created the message'; -- 1
+comment on column plugins.TestInstructionRT.OriginalSenderName is 'The name of the gateway/Fenix that created the message'; -- 2
+comment on column plugins.TestInstructionRT.TestInstructionTypeGuid is 'TestInstructionTypeGuid tells Plugin what to do, set by Plugin'; --3
+comment on column plugins.TestInstructionRT.TestInstructionTypeName is 'The name of the type of TestInstruction type'; -- 4
+comment on column plugins.TestInstructionRT.TestInstructionGuid is 'TestInstructionGuid is a unique id created when TestInstruction is created in TestCase'; -- 5
+comment on column plugins.TestInstructionRT.PluginId is 'The unique id of the plugin'; -- 6
+comment on column plugins.TestInstructionRT.PluginName is 'The name of the plugin'; -- 7
+comment on column plugins.TestInstructionRT.TestInstructionCreatedDateTime is 'When the TestInstruction, RunTime-version, was created'; -- 8
+comment on column plugins.TestInstructionRT.TestInstructionSentDateTime is ' When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent'; -- 9
+comment on column plugins.TestInstructionRT.ChoosenLandingZone is 'Chosen LandingZone fotestInstructionsr TestInstruction'; -- 10
+comment on column plugins.TestInstructionRT.OrginalCreateDateTime is 'The timestamp when the orignal message was created'; -- 11
+comment on column plugins.TestInstructionRT.PeerId is 'A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction'; -- 12
+comment on column plugins.TestInstructionRT.MessageId is 'A unique id for the message gererated by Fenix'; -- 13
+comment on column plugins.TestInstructionRT.TestInstructionAttributeGuid is 'Unique id for the attribute, set by Plugin'; -- 14
+comment on column plugins.TestInstructionRT.TestInstructionAttributeName is 'The name of the Attribute, set by Plugin'; -- 15
+comment on column plugins.TestInstructionRT.TestInstructionAttributeValue is 'The value of the attribute'; -- 16
+comment on column plugins.TestInstructionRT.updatedDateTime is 'The Datetime when the row was created/updates'; -- 17

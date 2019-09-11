@@ -1,4 +1,4 @@
-package FenixGatewayServer
+package SendUtrViaMQ
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestExecutionServerMain(configFileAndPath string, logfileForTest string, databaseFile string) {
+func PluginExecutionServerMain(configFileAndPath string, logfileForTest string, databaseFile string) {
 
 	// Cleanup all gRPC connections
 	defer cleanup()

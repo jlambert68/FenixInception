@@ -1,4 +1,4 @@
-package FenixGatewayServer
+package SendUtrViaMQ
 
 import (
 	"github.com/sirupsen/logrus"

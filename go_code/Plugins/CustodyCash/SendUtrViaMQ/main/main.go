@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 	//	"fmt"
-	"jlambert/FenixInception2/go_code/FenixGatewayServer"
+	"jlambert/FenixInception2/go_code/Plugins/CustodyCash/SendUtrViaMQ"
 	//	"time"
 )
 
@@ -72,5 +72,5 @@ func main() {
 		TestExecutionGateway.GatewayInIntegrationTestMode.StartWithOutAnyParent = *testActAsParent
 	*/
 	// Call Main function for Gateway
-	FenixGatewayServer.TestExecutionServerMain(*configPath, *logPath, *databasePath)
+	SendUtrViaMQ.PluginExecutionServerMain(*configPath, *logPath, *databasePath)
 }

@@ -1,4 +1,4 @@
-package FenixGatewayServer
+package SendUtrViaMQ
 
 import (
 	"database/sql"
@@ -24,7 +24,7 @@ const (
 func initiateMainDB() {
 
 	logger.WithFields(logrus.Fields{
-		"ID": "8be4a508-9584-4ff3-8d97-028591ece5d4",
+		"ID": "c3ad43cc-1ba3-4d93-926f-374c42ddefc0",
 	}).Debug("Initiate connection to Main Database for Fenix Inception")
 
 	var err error
@@ -36,7 +36,7 @@ func initiateMainDB() {
 	// If some error occured then close the application
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"ID":  "8be4a508-9584-4ff3-8d97-028591ece5d4",
+			"ID":  "bbef4597-af3a-4e92-a5c2-a3ff8db6572e",
 			"err": err,
 		}).Fatal("Error when initiateting connection to Main Database for Fenix Inception, closing Fenix Inception")
 	}
@@ -59,7 +59,7 @@ func updateTestInstructionWithExecutionResultMessageInDB(testInstructionExecutio
 	if err != nil {
 		// Execute SQL in DB
 		logger.WithFields(logrus.Fields{
-			"ID":                                    "a4c440ca-e7aa-431d-960c-b8d63e0fd15b",
+			"ID":                                    "e2514308-126d-4764-849c-0bdd4f7a770c",
 			"err":                                   err,
 			"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
 		}).Error("Error when Praparing SQL for updating Main Database with data from testInstructionExecutionResultMessage")
@@ -71,7 +71,7 @@ func updateTestInstructionWithExecutionResultMessageInDB(testInstructionExecutio
 		if err != nil {
 			// Error while executing
 			logger.WithFields(logrus.Fields{
-				"ID":                                    "b0e9a525-a296-4cf7-b8a8-ce5c4049f5b4",
+				"ID":                                    "ef478a07-7c84-4796-afb2-ef361bc464ec",
 				"err":                                   err,
 				"sqlResult":                             sqlResult,
 				"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
@@ -81,7 +81,7 @@ func updateTestInstructionWithExecutionResultMessageInDB(testInstructionExecutio
 		} else {
 			//SQL executed OK
 			logger.WithFields(logrus.Fields{
-				"ID":                                    "b0e9a525-a296-4cf7-b8a8-ce5c4049f5b4",
+				"ID":                                    "39d5f84d-4cae-4478-8927-446f53abd775",
 				"err":                                   err,
 				"sqlResult":                             sqlResult,
 				"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
@@ -110,7 +110,7 @@ func listPeerTestInstructionPeersWhichIsExecuting(testInstructionPeerGuid string
 	if err != nil {
 		// Error while preparing SQL
 		logger.WithFields(logrus.Fields{
-			"ID":                      "f9ba926c-8701-45bc-9e62-694a48188325",
+			"ID":                      "c149f73b-6d41-48f5-8c65-8d72bc190f8b",
 			"err":                     err,
 			"testInstructionPeerGuid": testInstructionPeerGuid,
 			"sqlToBeExecuted":         sqlToBeExecuted,
@@ -123,14 +123,14 @@ func listPeerTestInstructionPeersWhichIsExecuting(testInstructionPeerGuid string
 		if err != nil {
 			// Error while executing the SQL
 			logger.WithFields(logrus.Fields{
-				"ID":        "b0e9a525-a296-4cf7-b8a8-ce5c4049f5b4",
+				"ID":        "1a35b329-f555-4913-94f0-56d542f29371",
 				"err":       err,
 				"sqlResult": sqlResult,
 			}).Error("Error when looking for Test Instructions-peers which has not been finished executing")
 		} else {
 			// Executing SQL was OK
 			logger.WithFields(logrus.Fields{
-				"ID":        "42b5135c-876c-4e0b-9d42-d8c02f612933",
+				"ID":        "63a07711-a460-4fff-98f4-d81d37a0e09a",
 				"sqlResult": sqlResult,
 			}).Debug("Found Test Instruction-peers in Fenix main Database")
 
@@ -140,7 +140,7 @@ func listPeerTestInstructionPeersWhichIsExecuting(testInstructionPeerGuid string
 				err = sqlResult.Scan(&testInstructionId)
 				if err != nil {
 					logger.WithFields(logrus.Fields{
-						"ID":        "98220887-e01c-4b78-9861-7de75f9a4675",
+						"ID":        "e9696b6a-740e-4bbf-947e-9fc8211ef522",
 						"err":       err,
 						"sqlResult": sqlResult,
 					}).Error("Error when processing SQL-result for Test Instructions-peers which has not been finished executing")
@@ -173,7 +173,7 @@ func listNextPeersToBeExecuted(testInstructionPeerGuid string) (testInstructionP
 	if err != nil {
 		// Error while preparing SQL
 		logger.WithFields(logrus.Fields{
-			"ID":                      "497d1bc6-c76c-4300-8f63-8533112a13f8",
+			"ID":                      "815e6471-2108-4fe0-91e5-03a5115b99aa",
 			"err":                     err,
 			"testInstructionPeerGuid": testInstructionPeerGuid,
 			"sqlToBeExecuted":         sqlToBeExecuted,
@@ -186,14 +186,14 @@ func listNextPeersToBeExecuted(testInstructionPeerGuid string) (testInstructionP
 		if err != nil {
 			// Error while executing SQL
 			logger.WithFields(logrus.Fields{
-				"ID":        "1a6dfa6a-de5c-4955-ae7e-084266377169",
+				"ID":        "aae1d603-139b-4e1b-af6f-de32dbc0b2cb",
 				"err":       err,
 				"sqlResult": sqlResult,
 			}).Error("Error when looking for next TestInstructions-peers which should be executed")
 		} else {
 			// Executing SQL was OK
 			logger.WithFields(logrus.Fields{
-				"ID":        "0bc01a85-617a-4d59-a8cd-ffe1078831b7",
+				"ID":        "ec8bd41b-537a-479a-b06e-41bf4ce49aa2",
 				"sqlResult": sqlResult,
 			}).Debug("sqlResult for Test Instruction-peers to be executed in Fenix main Database")
 
@@ -204,7 +204,7 @@ func listNextPeersToBeExecuted(testInstructionPeerGuid string) (testInstructionP
 				if err != nil {
 					// Error while looping through result
 					logger.WithFields(logrus.Fields{
-						"ID":        "a9ed6228-2bd6-4ed8-bd06-789740dd1665",
+						"ID":        "d7a3ae0a-3bf6-4692-8d8d-450593d9b141",
 						"err":       err,
 						"sqlResult": sqlResult,
 					}).Error("Error when processing SQL-result for Test Instructions-peers which has not been finished executing")
@@ -238,7 +238,7 @@ func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (m
 	if err != nil {
 		// Error while preparing SQL
 		logger.WithFields(logrus.Fields{
-			"ID":                "af48db0e-8351-4f6c-99c0-92273aae725c",
+			"ID":                "fd9268d6-5609-4872-8003-8e842236d25a",
 			"err":               err,
 			"testInstructionId": testInstructionId,
 		}).Error("Error when Praparing SQL for updating Main Database with data that TestInstruction was sent to Plugin")
@@ -251,7 +251,7 @@ func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (m
 		if err != nil {
 			// Error while executing SQL
 			logger.WithFields(logrus.Fields{
-				"ID":                "800b9988-e550-4807-9109-10da5c1ef9ca",
+				"ID":                "92f12d44-acc0-4960-9fa2-b0de5637ca88",
 				"err":               err,
 				"sqlResult":         sqlResult,
 				"testInstructionId": testInstructionId,
@@ -261,7 +261,7 @@ func saveInDbThatTestInstructionHasBeenSentToPlugin(testInstructionId string) (m
 		} else {
 			// Executing SQL was OK
 			logger.WithFields(logrus.Fields{
-				"ID":                "47ab1591-8e23-4b69-8e0d-fa1637261b82",
+				"ID":                "8a73dc4a-3b9d-43b2-8282-897b96474c8f",
 				"err":               err,
 				"sqlResult":         sqlResult,
 				"testInstructionId": testInstructionId,
@@ -289,7 +289,7 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 	if err != nil {
 		// Error while preparing SQL
 		logger.WithFields(logrus.Fields{
-			"ID":                  "dfbf3c87-f756-4f97-82d2-9a94e5a87ad2",
+			"ID":                  "56378d2d-19d9-4602-b337-ba5a238ffcd7",
 			"err":                 err,
 			"testInstructionGuid": testInstructionGuid,
 			"sqlToBeExecuted":     sqlToBeExecuted,
@@ -309,7 +309,7 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 		} else {
 			// Executing SQL was OK
 			logger.WithFields(logrus.Fields{
-				"ID":        "8102b4d5-c2ed-493e-918a-3365669d9cba",
+				"ID":        "57e09080-7bf0-4aee-bebc-11b47b2d6222",
 				"sqlResult": sqlResult,
 			}).Debug("sqlResult for TestInstruction-Payload for getting TestInstructions-Payload to be sent for execution")
 
@@ -322,7 +322,7 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 				if err != nil {
 					// Error while looping through result
 					logger.WithFields(logrus.Fields{
-						"ID":        "f03c9fc8-672c-45d2-9874-b7f70f42687a",
+						"ID":        "b30cea6c-5bae-4fe8-bc25-1a98dc3a9c96",
 						"err":       err,
 						"sqlResult": sqlResult,
 					}).Error("Error when processing SQL-result for for TestInstruction-Payload for getting TestInstructions-Payload to be sent for execution")
@@ -335,7 +335,7 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 			if numberOfRowsInResult != 1 {
 				// Error while looping through result
 				logger.WithFields(logrus.Fields{
-					"ID":                   "bf187ebf-ddbd-49f5-ac07-0be1e3251985",
+					"ID":                   "443e2efd-b22e-425b-adbe-593d2f2517eb",
 					"numberOfRowsInResult": numberOfRowsInResult,
 				}).Error("Error, expected exactly one row in result set")
 
