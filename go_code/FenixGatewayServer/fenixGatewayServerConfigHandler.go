@@ -8,7 +8,7 @@ import (
 func processConfigFile(filename string) {
 	// If no filename then use predefine filename
 	if len(filename) == 0 {
-		filename = "gatewayConfig.toml"
+		filename = "pluginDbEngineConfig.toml"
 	}
 
 	//	var gatewayConfig TomlConfigStruct

@@ -109,7 +109,7 @@ func TestMain(m *testing.M) {
 //
 func InitGatewayPart1(configFileAndPath string, logfileForTest string, databaseFile string) {
 
-	// Read 'gatewayConfig.toml' for config parameters
+	// Read 'pluginDbEngineConfig.toml' for config parameters
 	log.Println("Process 'processConfigFile'")
 	processConfigFile(configFileAndPath) // If empty string then use default toml-config-file name
 

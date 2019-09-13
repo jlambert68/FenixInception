@@ -219,7 +219,7 @@ func cleanup() {
 // Start all Services
 //
 func StartAllServices(configFileAndPath string, logfileForTest string, databaseFile string, gatewayOrEndpoint common_code.FunctionsInsteadOfgRPCStruct) {
-	// Read 'gatewayConfig.toml' for config parameters
+	// Read 'pluginDbEngineConfig.toml' for config parameters
 	processConfigFile(configFileAndPath) // Use default toml-config-file name
 
 	// Init logger

@@ -1,0 +1,46 @@
+# This is a TOML document.
+# Config parameters for gateway
+
+# Identification for the gateway
+[gatewayIdentification]
+gatewayId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
+gatewayName = "Gateway #1"
+gatewayIpAddress = "127.0.0.1"
+gatewaParentCallOnThisPort = 7000
+gatewayChildrenCallOnThisPort = 7001
+createdDateTime = ""
+gatewayEngineType = "GatewayEngine"
+# Type of gatwway ("FenixEngine", "GatewayEngine", "PluginEngine"
+
+# Identification of the the domain that this gateway belongs to
+[systemDomain]
+gatewayDomainId = "77a1a1be-52f6-4931-bcfe-b336979c2600"
+gatewayDomainName = "Custody Cash"
+
+# Initial IP and Port for Parent Gateway/Fenix.
+[parentgRPCAddress]
+parentGatewayId ="42744278-1128-4eec-8b75-8817516ca09b"
+parentGatewayName = "This is the name of the Parent  Gateway"
+parentGatewayServerAddress = "127.0.0.1"
+parentGatewayServerPort = 5999
+createdDateTime = ""
+connectionToParentDoneAtLeastOnce = false
+connectionToParentLastConnectionDateTime = ""
+
+# The first port in port range for child-gateways or Plugins, for each ip address
+[initialClientPort]
+initialClientPort = 6660
+
+# The logging level. Inly yse Debug for finding error otherwise use Info as standard logging level
+[loggingLevel]
+loggingLevel = "Debug"
+# loggingLevel = "Info"
+# loggingLevel = "Warning"
+
+# Used for when gateway is used in Integration tests
+[integrationTest]
+usedInIntegrationTest = false
+actAsParentGatewayInTest = false
+actAsMainGatewayInTest = false
+actAsChildGatewayInTest = false
+startWithOutAnyParent = false
