@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	gRPC "github.com/jlambert68/FenixInception/go_code/Plugins/PluginDB"
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"jlambert/FenixInception2/go_code/common_code"
