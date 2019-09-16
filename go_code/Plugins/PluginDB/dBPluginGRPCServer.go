@@ -12,7 +12,7 @@ import (
 // ***************************************************************
 // Start gateways gRPC-server for messages towards Plugins
 //
-func startGatewayGRPCServerForMessagesTowardsPlugins() {
+func startDbPluginGRPCServerForMessagesPlugins() {
 
 	var err error
 

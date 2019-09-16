@@ -1,0 +1,89 @@
+syntax = "proto3";
+package PluginDB_gRPC_api;
+
+// version 3.6.0
+//~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
+//190516
+//protoc_3.7.0.rc2 -I Gateway_gRPC_api --go_out=plugins=grpc:Gateway_gRPC_api Gateway_gRPC_api/gateway_towards_plugin_grpc.proto
+
+
+
+
+
+// ***********************************************************************************
+// Messages
+// ***********************************************************************************
+
+// Used for defining the current version of the proto-file
+enum CurrentVersionEnum {
+    VERSION_0_1_0 = 0; // Current version
+}
+
+// Message used for saving data into KeyValueStore
+message WriteKeyValueMessage {
+    string Key = 1; // The Key for the saved data -- 1
+    string Bucket = 2; // A type definition to be able to group content -- 2
+    string ValueSaveType = 3; // Defines how the value is saved, As ByteArray, String or as both of them -- 3
+    bytes Value = 4; // The value saved as bytearray; -- 4
+    string ValueString = 5; // The value as plain text; -- 5
+    CurrentVersionEnum CurrentVersion =6; // The current version of the gRPC api
+}
+
+// Message used for reading data from KeyValueStore
+message ReadKeyRequestMessage {
+    string Key = 1; // The Key for the saved data -- 1
+    string Bucket = 2; // A type definition to be able to group content -- 2
+    CurrentVersionEnum CurrentVersion = 3; // The current version of the gRPC api
+}
+
+// Message used for returning data from KeyValueStore
+message ValueResponseMessage {
+    string Key = 1; // The Key for the saved data -- 1
+    string Bucket = 2; // A type definition to be able to group content -- 2
+    ValueSaveTypeEnum ValueSaveType = 3; // Defines how the value is saved, As ByteArray, String or as both of them -- 3
+    bytes Value = 4; // The value saved as bytearray; -- 4
+    string ValueString = 5; // The value as plain text; -- 5
+    string updatedDateTime = 6; // The Datetime when the row was created/updates
+}
+
+// How the value should be saved
+enum ValueSaveTypeEnum {
+    BYTEARRAY = 0; // Normal TextBox
+    STRING = 1; // Normal ComboBox
+    BOTH = 2; // A choosen file (Name of the file)
+    //FunctionSelector = 3; Not used for now
+}
+
+
+// Parameter used for Empty inputs
+//message EmptyParameter {
+//}
+
+// Ack/Nack- Response message with comment
+message AckNackResponse {
+    bool acknack = 1; // True=Ack, False=Nack
+    string comments = 2; //Comments if needed
+}
+
+// The Gateservice definition.
+service PluginDB {
+
+    // ***********************************************************************************
+    // Save Data method
+    // ***********************************************************************************
+    rpc WriteToKeyValueStore (WriteKeyValueMessage) returns (AckNackResponse) {
+    }
+
+    // ***********************************************************************************
+    // Read Data Method
+    // ***********************************************************************************
+    rpc ReadFromKeyValueStore (ReadKeyRequestMessage) returns (ValueResponseMessage) {
+    }
+
+    // ***********************************************************************************
+    // Administrative methods
+    // ***********************************************************************************
+
+
+}
+

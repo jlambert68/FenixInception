@@ -592,8 +592,9 @@ create table plugins.TestInstructionRT
     MessageId                      uuid                     not null, -- A unique id for the message gererated by Fenix; -- 13
     TestInstructionAttributeGuid   uuid                     not null, -- A Unique id for the attribute, set by Plugin; -- 14
     TestInstructionAttributeName   varchar default null,              -- The name of the Attribute, set by Plugin; -- 15
-    TestInstructionAttributeValue  varchar default null,              -- The value of the attribute; -- 16
-    updatedDateTime                timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 17
+    TestInstructionAttributeIndex  int                      not null, -- The index for the attrubute; -- 16
+    TestInstructionAttributeValue  varchar default null,              -- The value of the attribute; -- 17
+    updatedDateTime                timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 18
 );
 
 comment on table plugins.TestInstructionRT is 'Holds all TestInstructions to be executed by plugin';
@@ -614,4 +615,31 @@ comment on column plugins.TestInstructionRT.MessageId is 'A unique id for the me
 comment on column plugins.TestInstructionRT.TestInstructionAttributeGuid is 'Unique id for the attribute, set by Plugin'; -- 14
 comment on column plugins.TestInstructionRT.TestInstructionAttributeName is 'The name of the Attribute, set by Plugin'; -- 15
 comment on column plugins.TestInstructionRT.TestInstructionAttributeValue is 'The value of the attribute'; -- 16
-comment on column plugins.TestInstructionRT.updatedDateTime is 'The Datetime when the row was created/updates'; -- 17
+comment on column plugins.TestInstructionRT.TestInstructionAttributeIndex is 'The index for the attrubute'; -- 17
+comment on column plugins.TestInstructionRT.updatedDateTime is 'The Datetime when the row was created/updates';
+-- 18
+
+-- *****************************************************************************************************************************
+-- Plugin KeyValueDB
+-- Save any value for a key, used at plugins
+drop table plugins.TestInstructionRT;
+
+create table plugins.KeyValueStore
+(
+    Key             uuid                     not null, -- The Key for the saved data -- 1
+    Bucket          varchar default null,              -- A type definition to be able to group content -- 2
+    ValueSaveType   varchar                  not null, -- Defines how the value is saved, As ByteArray, String or as both of them -- 3
+    Value           bytea   default null,              -- The value saved as bytearray; -- 4
+    ValueString     varchar default null,              -- The value as plain text; -- 5
+    updatedDateTime timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 6
+);
+
+comment on table plugins.KeyValueStore is 'Holds all TestInstructions to be executed by plugin';
+
+comment on column plugins.KeyValueStore.Key is 'The Key for the saved data'; -- 1
+comment on column plugins.KeyValueStore.Bucket is 'A type definition to be able to group content'; -- 2
+comment on column plugins.KeyValueStore.ValueSaveType is 'Defines how the value is saved, As ByteArray, String or as both of them'; --3
+comment on column plugins.KeyValueStore.Value is 'The value saved as bytearray'; --3
+comment on column plugins.KeyValueStore.ValueString is 'The value as plain text'; --3
+comment on column plugins.TestInstructionRT.updatedDateTime is 'The Datetime when the row was created/updates'; -- 18
+

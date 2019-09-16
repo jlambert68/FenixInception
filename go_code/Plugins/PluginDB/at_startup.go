@@ -236,6 +236,6 @@ func StartAllServices(configFileAndPath string, logfileForTest string, databaseF
 	initiateDB(databaseFile) // If "" then Use default database file name
 
 	// Listen to gRPC-calls from Plugins
-	startGatewayGRPCServerForMessagesFromPlugins()
+	startDbPluginGRPCServerForMessagesPlugins()
 
 }
