@@ -23,10 +23,10 @@ enum CurrentVersionEnum {
 message WriteKeyValueMessage {
     string Key = 1; // The Key for the saved data -- 1
     string Bucket = 2; // A type definition to be able to group content -- 2
-    string ValueSaveType = 3; // Defines how the value is saved, As ByteArray, String or as both of them -- 3
+    ValueSaveTypeEnum ValueSaveType = 3; // Defines how the value is saved, As ByteArray, String or as both of them -- 3
     bytes Value = 4; // The value saved as bytearray; -- 4
     string ValueString = 5; // The value as plain text; -- 5
-    CurrentVersionEnum CurrentVersion =6; // The current version of the gRPC api
+    CurrentVersionEnum CurrentVersion = 6; // The current version of the gRPC api
 }
 
 // Message used for reading data from KeyValueStore

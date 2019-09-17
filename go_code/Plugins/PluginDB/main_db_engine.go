@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	gRPC "github.com/jlambert68/FenixInception/go_code/common_code"
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"jlambert/FenixInception2/go_code/common_code"
@@ -350,85 +350,69 @@ func getTestInstructionPayloadToPlugin(testInstructionGuid string) (testInstruct
 }
 
 // **********************************************************************************************************
-// Save incoming 'TestInstructionExecutionResultMessage' to Main Database for Fenix Inception
+// Save incoming 'WriteKeyValueMessage' to Plugin KeyValue-DB-store
 //
-func saveKeyValuetMessageInDB(testInstructionExecutionResultMessage *gRPC.TestInstructionExecutionResultMessage) (messageSavedInDB bool) {
+func saveKeyValuetMessageInDB(writeKeyValueMessage *gRPC.WriteKeyValueMessage) (messageSavedInDB bool) {
 
 	messageSavedInDB = true
 
 	// Prepare SQL
 	var sqlToBeExecuted = "INSERT INTO testInstructions.TestExecutionResult "
-	sqlToBeExecuted = sqlToBeExecuted + "OriginalSenderId, OriginalSenderName, TestInstructionGuid, ResultId, "
-	sqlToBeExecuted = sqlToBeExecuted + "TestInstructionResultCreatedDateTime, TestInstructionResultSentDateTime, "
-	sqlToBeExecuted = sqlToBeExecuted + "AvailableTestExecutionResultTypeId, AvailableTestExecutionResultTypeName, "
-	sqlToBeExecuted = sqlToBeExecuted + "OriginalSystemDomainId, OriginalSystemDomainName, MessageId, PeerId, updatedDateTime "
-	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) "
+	sqlToBeExecuted = sqlToBeExecuted + "Key, Bucket, ValueSaveType, Value, ValueString, updatedDateTime "
+	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6) "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 	if err != nil {
 		// Execute SQL in DB
 		logger.WithFields(logrus.Fields{
-			"ID":                                    "ac69559d-9b20-482e-b9eb-5c28865d0b29",
-			"err":                                   err,
-			"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
-		}).Error("Error when Praparing SQL for updating Main Database with data from 'testInstructionExecutionResultMessage'")
+			"ID":                   "38fffbaf-ea07-4c77-aa6f-41b827c9767d",
+			"err":                  err,
+			"writeKeyValueMessage": writeKeyValueMessage,
+		}).Error("Error when Praparing SQL for updating Plugin Key-Value storeDB with data from 'writeKeyValueMessage'")
 
 		messageSavedInDB = false
 	} else {
 		//SQL prepared OK
 		/*
-			create table testInstructions.TestExecutionResult
+			create table plugins.KeyValueStore
 			(
-			    OriginalSenderId                     uuid                     not null, -- The Id of the gateway/plugin that created the message -- 1
-			    OriginalSenderName                   varchar default null,              -- The name of the gateway/plugin that created the message -- 2
-			    TestInstructionGuid                  uuid                     not null, --  TestInstructionGuid is a unique id for identifying the TestInstruction at Plugin; --3
-			    ResultId                             uuid                     not null, -- A unique id created by plugin'; -- 4
-			    TestInstructionResultCreatedDateTime timestamp with time zone not null, -- The DateTime when the message was created'; -- 5
-			    TestInstructionResultSentDateTime    timestamp with time zone not null, -- The DateTime when the message was sent''; -- 6
-			    AvailableTestExecutionResultTypeId   uuid                     not null, -- The Domain/system''''s Id where the Sender operates''; -- 7
-			    AvailableTestExecutionResultTypeName varchar                  not null, -- The Domain/system''''s Name where the Sender operates''; -- 8
-			    OriginalSystemDomainId               uuid                     not null, -- A unique id for the message created by plugin''; -- 9
-			    OriginalSystemDomainName             varchar default null,              -- 'The Domain/system''s name where the Sender operates''; -- 10
-			    MessageId                            uuid                     not null, -- A unique id for the message created by plugin''; -- 11
-			    PeerId                               uuid                     not null, --A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction''; -- 12
-			    updatedDateTime                      timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 13
+			    Key             uuid                     not null, -- The Key for the saved data -- 1
+			    Bucket          varchar default null,              -- A type definition to be able to group content -- 2
+			    ValueSaveType   varchar                  not null, -- Defines how the value is saved, As ByteArray, String or as both of them -- 3
+			    Value           bytea   default null,              -- The value saved as bytearray; -- 4
+			    ValueString     varchar default null,              -- The value as plain text; -- 5
+			    updatedDateTime timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 6
 			);
 
 		*/
 		// Values to insert into database
 		sqlResult, err := sqlStatement.Exec(
-			testInstructionExecutionResultMessage.OriginalSenderId,
-			testInstructionExecutionResultMessage.OriginalSenderName,
-			testInstructionExecutionResultMessage.TestInstructionGuid,
-			testInstructionExecutionResultMessage.ResultId,
-			testInstructionExecutionResultMessage.TestInstructionResultCreatedDateTime,
-			testInstructionExecutionResultMessage.TestInstructionResultSentDateTime,
-			testInstructionExecutionResultMessage.TestExecutionResult,
-			gRPC.AvailableTestExecutionResultsEnum_name[int32(testInstructionExecutionResultMessage.TestExecutionResult)],
-			testInstructionExecutionResultMessage.OriginalSystemDomainId,
-			testInstructionExecutionResultMessage.OriginalSystemDomainName,
-			testInstructionExecutionResultMessage.MessageId,
-			testInstructionExecutionResultMessage.PeerId,
+			writeKeyValueMessage.Key,
+			writeKeyValueMessage.Bucket,
+			writeKeyValueMessage.ValueSaveType,
+			gRPC.CurrentVersionEnum_name[int32(writeKeyValueMessage.ValueSaveType)],
+			writeKeyValueMessage.Value,
+			writeKeyValueMessage.ValueString,
 			common_code.GeneraTimeStampUTC())
 
 		if err != nil {
 			// Error while executing
 			logger.WithFields(logrus.Fields{
-				"ID":                                    "5007c17f-eddb-4f45-9fda-24368f670850",
-				"err":                                   err,
-				"sqlResult":                             sqlResult,
-				"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
-			}).Error("Error when updating Main Database with data from 'testInstructionExecutionResultMessage'")
+				"ID":                   "984e10e0-de20-4440-a63a-8bf444ccf831",
+				"err":                  err,
+				"sqlResult":            sqlResult,
+				"writeKeyValueMessage": writeKeyValueMessage,
+			}).Error("Error when updating Plugin Key-Value storeDB with data from 'writeKeyValueMessage'")
 
 			messageSavedInDB = false
 		} else {
 			//SQL executed OK
 			logger.WithFields(logrus.Fields{
-				"ID":                                    "e0ea8ad4-0b78-4de5-b1d2-60a63a3b6df2",
-				"err":                                   err,
-				"sqlResult":                             sqlResult,
-				"testInstructionExecutionResultMessage": testInstructionExecutionResultMessage,
-			}).Debug("Fenix main Database was updated with data from 'testInstructionExecutionResultMessage'")
+				"ID":                   "7c54131a-eeff-41c4-951c-71370e49588b",
+				"err":                  err,
+				"sqlResult":            sqlResult,
+				"writeKeyValueMessage": writeKeyValueMessage,
+			}).Debug("Plugin Key-Value storeDB was updated with data from 'writeKeyValueMessage'")
 		}
 	}
 
