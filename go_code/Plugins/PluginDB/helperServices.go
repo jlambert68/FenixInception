@@ -30,7 +30,7 @@ func SaveMessageToLocalDB(
 		returnChannel}
 
 	// Send message to Database
-	dbMessageQueue <- dbMessage
+	dbReadMessageChannel <- dbMessage
 
 	// Wait for result on result channel and then close returnChannel
 	returnDBMessage := <-returnChannel
@@ -126,6 +126,6 @@ func initiateGatewayChannels() {
 	}).Debug("Initiate local gateway channels")
 
 	// Databasechannel for reading and Writing
-	dbMessageQueue = make(chan common_code.DbMessageStruct, common_code.SuppertedNumberOfMessagesInChannels)
+	dbReadMessageChannel = make(chan common_code.DbMessageStruct, common_code.SuppertedNumberOfMessagesInChannels)
 
 }

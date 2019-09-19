@@ -13,4 +13,4 @@ var (
 
 )
 
-type gRPCServerTowardsPluginStruct struct{}
+type gRPCServerForDbKeyValueStoreStruct struct{}

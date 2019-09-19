@@ -44,6 +44,8 @@ message ValueResponseMessage {
     bytes Value = 4; // The value saved as bytearray; -- 4
     string ValueString = 5; // The value as plain text; -- 5
     string updatedDateTime = 6; // The Datetime when the row was created/updates
+    bool acknack = 8; // True=Ack, False=Nack
+    string comments = 9; //Comments if needed
 }
 
 // How the value should be saved
