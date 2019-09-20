@@ -17,7 +17,7 @@ var (
 	// Database queue used for sending Read questions to database
 	dbReadMessageChannel chan DbReadMessageStruct
 	// Database queue used for sending Write questions to database
-	dbWritewMessageChannel chan gRPC.WriteKeyValueMessage
+	dbWritewMessageChannel chan DbWriteMessageStruct
 
 	// Channel for informationMessage initiated in this gateway
 	// removed becasue it resides in object for messages towards Fenix
@@ -42,11 +42,13 @@ type DbWriteMessageStruct struct {
 // Message used for sending back Read-instructions from Database
 type DbResultReadMessageStruct struct {
 	Err               error  // Error message
+	Key               string // Key that was Read
 	Bucket            string // The Bucket for the message
 	ValueSaveTypeId   int    // Defines how the value is saved, As ByteArray, String or as both of them -- 3
 	ValueSaveTypeName string // Defines how the value is saved, As ByteArray, String or as both of them
 	Value             []byte // The value to be stored as byte array
 	ValueString       string // The value to be stored as string
+	UpdatedDateTime   string // THe DateTime when the KeyValue was saved in DB
 }
 
 // Message used for sending back Write-instructions from Database
