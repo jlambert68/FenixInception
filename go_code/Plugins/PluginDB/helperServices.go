@@ -1,12 +1,10 @@
 package PluginKeyValueDBStore
 
 import (
-	"encoding/json"
 	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	"net"
-	"strconv"
 )
 
 // *********************************************************************************
@@ -59,16 +57,15 @@ func channelSinaling(
 	numberOfMessagesInChannel int,
 	channelName string,
 	id string) {
+
 	// if channel items is greater than upper warning levels then lg warning
 	if numberOfMessagesInChannel >= common_code.UpperBounderyForSignalingMessagesInChannel {
 
-		LogErrorAndSendInfoToFenix(
-			id,
-			gRPC.InformationMessage_WARNING,
-			"Number of message in Channel '"+channelName+"'",
-			string(numberOfMessagesInChannel),
-			"",
-			"Upper WARNING level reached for number of items in channel")
+		logger.WithFields(logrus.Fields{
+			"ID": id,
+			"Number of message in Channel '" + channelName + "'": numberOfMessagesInChannel,
+		}).Warn("Upper WARNING level reached for number of items in channel")
+
 	} else {
 		if numberOfMessagesInChannel >= common_code.LowerBounderyForSignalingMessagesInChannel {
 			logger.WithFields(logrus.Fields{

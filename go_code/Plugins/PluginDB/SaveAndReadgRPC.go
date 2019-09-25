@@ -5,12 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )
-WriteToKeyValueStore (WriteKeyValueMessage) returns (AckNackResponse) {
-}
 
-
-rpc ReadFromKeyValueStore (ReadKeyRequestMessage) returns (ValueResponseMessage) {
-}
 // ********************************************************************************************
 // Call from Plugin that need to store Values in KeyValueStore
 //
