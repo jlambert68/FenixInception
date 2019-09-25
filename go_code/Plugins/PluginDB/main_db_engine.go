@@ -19,7 +19,7 @@ const (
 )
 
 // **********************************************************************************************************
-// Initiate connection to Main Database for Fenix Inception
+// Initiate connection to Main Database for KeyValueStore
 //
 func initiateMainDB() {
 
@@ -39,6 +39,28 @@ func initiateMainDB() {
 			"ID":  "8be4a508-9584-4ff3-8d97-028591ece5d4",
 			"err": err,
 		}).Fatal("Error when initiateting connection to Main Database for Fenix Inception, closing Fenix Inception")
+	}
+}
+
+// **********************************************************************************************************
+// Close connection connection to Main Database for KeyValueStore
+//
+func closeMainDB() {
+
+	logger.WithFields(logrus.Fields{
+		"ID": "8be4a508-9584-4ff3-8d97-028591ece5d4",
+	}).Debug("Close connection to Main Database for KeyValueStore")
+
+	var err error
+
+	err = mainDB.Close()
+
+	// some error occured when closing connection to Database
+	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"ID":  "faf440bc-d94c-4521-8cd1-193e15874bdf",
+			"err": err,
+		}).Error("Error when closing connection to Main Database for KeyValueStore")
 	}
 }
 

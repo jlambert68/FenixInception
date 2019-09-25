@@ -1,7 +1,6 @@
 package PluginKeyValueDBStore
 
 import (
-	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
@@ -25,7 +24,7 @@ var (
 )
 
 // All config parameter will be stored in the following parameter
-var keyValueStoreConfig common_code.TomlConfigStruct
+var keyValueStoreConfig TomlConfigStruct
 
 // Defines the Read-message sent to Database Engine
 type DbReadMessageStruct struct {

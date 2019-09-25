@@ -1,15 +1,5 @@
 package PluginKeyValueDBStore
 
-import (
-	"encoding/json"
-	"github.com/jlambert68/FenixInception/go_code/common_code"
-	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
-	"github.com/sirupsen/logrus"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"strconv"
-)
-
 // *******************************************************************
 // Cleanup before closing down
 //
@@ -22,13 +12,10 @@ func cleanup() {
 		cleanupProcessed = true
 
 		// CLose database
-		CloseDB()
-
-		// Stop gRPC-relateds listing and close towards Fenix
-		stopGatewayGRPCServerForMessagesTowardsFenix()
+		closeMainDB()
 
 		// Stop gRPC-relateds listing and close towards Plugins
-		stopGatewayGRPCServerForMessagesTowardsPlugins()
+		stopDbPluginGRPCServerForMessagesFromPlugins()
 
 	}
 }
