@@ -10,29 +10,29 @@ import (
 func initLogger(filename string) {
 	logger = logrus.StandardLogger()
 
-	switch gatewayConfig.LoggingLevel.LoggingLevel {
+	switch keyValueStoreConfig.LoggingLevel.LoggingLevel {
 
 	case logrus.DebugLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", keyValueStoreConfig.LoggingLevel.LoggingLevel)
 
 	case logrus.InfoLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", keyValueStoreConfig.LoggingLevel.LoggingLevel)
 
 	case logrus.WarnLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", keyValueStoreConfig.LoggingLevel.LoggingLevel)
 
 	case logrus.FatalLevel:
-		log.Println("'common_config.LoggingLevel': ", gatewayConfig.LoggingLevel.LoggingLevel)
+		log.Println("'common_config.LoggingLevel': ", keyValueStoreConfig.LoggingLevel.LoggingLevel)
 
 	default:
 		log.Println("fea6e90c-c1cd-478a-b423-9008e2463608")
-		log.Println("Not correct value for debugging-level, this was used: ", gatewayConfig.LoggingLevel.LoggingLevel)
-		log.Println("'gatewayConfig': ", gatewayConfig)
+		log.Println("Not correct value for debugging-level, this was used: ", keyValueStoreConfig.LoggingLevel.LoggingLevel)
+		log.Println("'keyValueStoreConfig': ", keyValueStoreConfig)
 		os.Exit(0)
 
 	}
 
-	logrus.SetLevel(gatewayConfig.LoggingLevel.LoggingLevel)
+	logrus.SetLevel(keyValueStoreConfig.LoggingLevel.LoggingLevel)
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,

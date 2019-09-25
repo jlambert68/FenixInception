@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	registerGatewayTowardsPluginerver *grpc.Server
-	gatewayTowardsPluginListener      net.Listener
+	registerKeyValueStoreServer *grpc.Server
+	keyValueStoreListener       net.Listener
 
 	// gRPC server used to handle all traffic Towards the Plugins
 

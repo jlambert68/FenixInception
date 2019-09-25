@@ -25,7 +25,7 @@ var (
 )
 
 // All config parameter will be stored in the following parameter
-var gatewayConfig common_code.TomlConfigStruct
+var keyValueStoreConfig common_code.TomlConfigStruct
 
 // Defines the Read-message sent to Database Engine
 type DbReadMessageStruct struct {
@@ -56,4 +56,31 @@ type DbResultWriteMessageStruct struct {
 	Err    error  // Error message
 	Key    string // Key that was Read or Written
 	Bucket string // The Bucket for the message
+}
+
+// The number of items the channel can support
+var suppertedNumberOfMessagesInChannels int = 100
+
+// *******************************************************************
+// Information read from TOML-file
+//
+
+// Main struct for toml-file
+type TomlConfigStruct struct {
+	KeyValueStoreIdentification KeyValueStoreIdentificationStruct
+	LoggingLevel                LoggingLevelStruct
+}
+
+// local KeyValueStore information in toml-file
+type KeyValueStoreIdentificationStruct struct {
+	KeyValueStoreId        string
+	KeyValueStoreName      string
+	KeyValueStoreIpAddress string
+	PluginsCallOnThisPort  int32
+	CreatedDateTime        string
+}
+
+// The logging level that the KeyValueStore will use during runtime
+type LoggingLevelStruct struct {
+	LoggingLevel logrus.Level
 }

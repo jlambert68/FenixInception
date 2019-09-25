@@ -11,50 +11,22 @@ func processConfigFile(filename string) {
 		filename = "pluginDbEngineConfig.toml"
 	}
 
-	//	var gatewayConfig TomlConfigStruct
+	//	var keyValueStoreConfig TomlConfigStruct
 	// Decode toml-file
-	if _, err := toml.DecodeFile(filename, &gatewayConfig); err != nil {
+	if _, err := toml.DecodeFile(filename, &keyValueStoreConfig); err != nil {
 		// Error when decoding toml-file
-		log.Println("045bcaee-eefe-419d-8c3d-51ca5adac22e")
+		log.Println("cbd5e603-ae31-437b-9139-eaeece355b95")
 		log.Println("err: ", err)
-		log.Fatalln("Couldn't decode 'toml-file', stopping gateway: ", filename)
+		log.Fatalln("Couldn't decode 'toml-file': ", filename, ". Stopping KeyValueStoreDB")
 	} else {
 		// OK when decoding toml-file
-		log.Println("7706838d-72d8-4311-ba39-4efebef75dcf")
-		log.Println("'toml-file' was decoded: ", filename)
+		log.Println("483dea7d-85d3-4009-93ed-be418a5048e1")
+		log.Println("'toml-file':", filename, " was decoded")
 
 		// Convert logging-level-text into logrus.logginglever
-		log.Println(gatewayConfig)
-		//log.Println(gatewayConfig.LoggingLevel.LoggingLevel.String())
+		log.Println(keyValueStoreConfig)
+		//log.Println(keyValueStoreConfig.LoggingLevel.LoggingLevel.String())
 
 	}
 
 }
-
-// *****************************************************************
-// Convert logging-level-text into logrus.logginglever
-//
-/*
-func convertLoggingLevel() {
-	switch gatewayConfig.LoggingLevel.LoggingLevel {
-	case "Debug":
-
-
-	case "Info":
-
-	case "Warning":
-
-	default:
-
-	}
-
-*/
-
-/*
-
-func (d *logrus.Level) UnmarshalText(text []byte) error {
-	var err error
-	d, err = time.ParseDuration(string(text))
-	return err
-}
-*/

@@ -90,7 +90,7 @@ func GetOutboundIP() string {
 		logger.WithFields(logrus.Fields{
 			"ID":                      "118517f0-6839-49b5-9f8f-850e82d3de23",
 			"err":                     err,
-			"clientAddresAndPortInfo": gatewayConfig.InitialClientPort.InitialClientPort,
+			"clientAddresAndPortInfo": keyValueStoreConfig.InitialClientPort.InitialClientPort,
 		}).Fatal("Error when getting this gateways own IP-address")
 	}
 
@@ -116,13 +116,16 @@ func GetOutboundIP() string {
 // *********************************************************************************
 //  Initiate channels used within gatway
 //
-func initiateGatewayChannels() {
+func initiateKeyValueStoreDbChannels() {
 
 	logger.WithFields(logrus.Fields{
-		"ID": "",
-	}).Debug("Initiate local gateway channels")
+		"ID": "1d0e73b4-03ef-4f9f-82ec-db3207ec7508",
+	}).Debug("Initiate local read/write channels")
 
-	// Databasechannel for reading and Writing
-	dbReadMessageChannel = make(chan common_code.DbMessageStruct, common_code.SuppertedNumberOfMessagesInChannels)
+	// Databasechannel for reading
+	dbReadMessageChannel = make(chan DbReadMessageStruct, suppertedNumberOfMessagesInChannels)
+
+	// Databasechannel for writing
+	dbWritewMessageChannel = make(chan DbWriteMessageStruct, suppertedNumberOfMessagesInChannels)
 
 }

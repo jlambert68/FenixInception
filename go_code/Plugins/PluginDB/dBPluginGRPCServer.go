@@ -1,7 +1,6 @@
 package PluginKeyValueDBStore
 
 import (
-	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -10,60 +9,60 @@ import (
 )
 
 // ***************************************************************
-// Start gateways gRPC-server for messages towards Plugins
+// Start gateways gRPC-server for messages from Plugins to be read or saved from/to DB
 //
-func startDbPluginGRPCServerForMessagesPlugins() {
+func startDbPluginGRPCServerForMessagesFromPlugins() {
 
 	var err error
 
 	// Start gRPC serve
 	logger.WithFields(logrus.Fields{
-		"ID": "225c2b2e-1891-4175-8950-a1c5b721be17",
-	}).Debug("Gateway gRPC server towards plugin tries to start")
+		"ID": "5829f8f0-5ceb-47b7-948b-c8b61936806a",
+	}).Debug("KeyValueStore gRPC server for read/write requests from Plugins tries to start")
 
 	logger.WithFields(logrus.Fields{
-		"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
-		"ID": "e6eacb4e-1ac4-4b75-87bb-e9bb05e728e1",
-	}).Info("Trying to listening on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
+		"keyValueStoreConfig.GatewayIdentification.GatewaParentCallOnThisPort": keyValueStoreConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+		"ID": "200ef98f-503f-4d9c-acc2-6eb1a57477b7",
+	}).Info("Trying to listening on port: " + strconv.FormatInt(int64(keyValueStoreConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 
-	gatewayTowardsPluginListener, err = net.Listen("tcp", ":"+strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
+	keyValueStoreListener, err = net.Listen("tcp", ":"+strconv.FormatInt(int64(keyValueStoreConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err: ": err,
-			"ID":    "2bb724a4-efbf-4d86-b120-735e82d9b920",
+			"ID":    "07af7302-4e94-4bcf-bde3-f3a209b23428",
 		}).Fatal("failed to listen:")
 
 	} else {
 		logger.WithFields(logrus.Fields{
-			"gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort": gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort,
-			"ID": "c36912f1-54ce-458a-b2c3-f64209692ede",
-		}).Info("Success in listening on port " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
+			"keyValueStoreConfig.GatewayIdentification.GatewaParentCallOnThisPort": keyValueStoreConfig.GatewayIdentification.GatewaParentCallOnThisPort,
+			"ID": "113dfc08-115c-43d3-a946-dddd866822ac",
+		}).Info("Success in listening on port " + strconv.FormatInt(int64(keyValueStoreConfig.GatewayIdentification.GatewaParentCallOnThisPort), 10))
 
 	}
 
-	// Creates a new registerGatewayTowardsPluginerver gRPC server
+	// Creates a new registerKeyValueStoreServer gRPC server
 	go func() {
 		logger.WithFields(logrus.Fields{
-			"ID": "025e810f-90ed-4418-ad99-93734e4d0e3f",
-		}).Info("Starting Gateway gRPC Server towards Plugin")
+			"ID": "9244f3dc-b4dc-4354-9a15-70d97d173c40",
+		}).Info("Starting KeyValueStore gRPC Server")
 
-		registerGatewayTowardsPluginerver = grpc.NewServer()
-		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &common_code.GRPCServerTowardsPluginStruct{})
+		registerKeyValueStoreServer = grpc.NewServer()
+		gRPC.RegisterGatewayTowayPluginServer(registerKeyValueStoreServer, &gRPCServerForDbKeyValueStoreStruct{})
 
 		logger.WithFields(logrus.Fields{
-			"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",
-		}).Debug("registerGatewayTowardsPluginerver for Gateway started")
+			"ID": "0a65f2da-bb18-42e6-8a51-a16ae2fd158f",
+		}).Debug("registerKeyValueStoreServer for Gateway started")
 
-		err := registerGatewayTowardsPluginerver.Serve(gatewayTowardsPluginListener)
+		err := registerKeyValueStoreServer.Serve(keyValueStoreListener)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
-				"ID":  "33aff438-cd24-462c-b609-003459b3fecd",
+				"ID":  "014f2a52-8332-4249-b653-8051f6cef7a7",
 				"err": err,
-			}).Fatal("Couldn't serve 'registerGatewayTowardsPluginerver.Serve(gatewayTowardsPluginListener)'")
+			}).Fatal("Couldn't serve 'registerKeyValueStoreServer.Serve(keyValueStoreListener)'")
 		} else {
 			logger.WithFields(logrus.Fields{
-				"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",
-			}).Debug("Success in serving 'registerGatewayTowardsPluginerver.Serve(gatewayTowardsPluginListener)'")
+				"ID": "5324b052-c93e-4783-b025-2f4430f34fe2",
+			}).Debug("Success in serving 'registerKeyValueStoreServer.Serve(keyValueStoreListener)'")
 		}
 	}()
 
@@ -75,21 +74,21 @@ func startDbPluginGRPCServerForMessagesPlugins() {
 func stopGatewayGRPCServerForMessagesTowardsPlugins() {
 
 	// Close gRPC connection to Children
-	registerGatewayTowardsPluginerver.GracefulStop()
+	registerKeyValueStoreServer.GracefulStop()
 
 	logger.WithFields(logrus.Fields{
 		"ID": "a7ee0eea-3bf2-44b7-a5e1-942a15d0d7fd",
-	}).Info("Gracefull stop for: 'registerGatewayTowardsPluginerver'")
+	}).Info("Gracefull stop for: 'registerKeyValueStoreServer'")
 
 	// Stop listening towards clients
 	err := gatewayTowardsFenixListener.Close()
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"ID": "35b35f32-7e5b-420c-8544-072e868e5bbb",
-		}).Error("Couldn't Stop listening, from Children, on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
+		}).Error("Couldn't Stop listening, from Children, on port: " + strconv.FormatInt(int64(keyValueStoreConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 	} else {
 		logger.WithFields(logrus.Fields{
 			"ID": "35b35f32-7e5b-420c-8544-072e868e5bbb",
-		}).Info("Stop listening, from Children, on port: " + strconv.FormatInt(int64(gatewayConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
+		}).Info("Stop listening, from Children, on port: " + strconv.FormatInt(int64(keyValueStoreConfig.GatewayIdentification.GatewayChildrenCallOnThisPort), 10))
 	}
 }
