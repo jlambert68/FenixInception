@@ -622,24 +622,26 @@ comment on column plugins.TestInstructionRT.updatedDateTime is 'The Datetime whe
 -- *****************************************************************************************************************************
 -- Plugin KeyValueDB
 -- Save any value for a key, used at plugins
-drop table plugins.TestInstructionRT;
+drop table plugins.KeyValueStore;
 
 create table plugins.KeyValueStore
 (
-    Key             uuid                     not null, -- The Key for the saved data -- 1
-    Bucket          varchar default null,              -- A type definition to be able to group content -- 2
-    ValueSaveType   varchar                  not null, -- Defines how the value is saved, As ByteArray, String or as both of them -- 3
-    Value           bytea   default null,              -- The value saved as bytearray; -- 4
-    ValueString     varchar default null,              -- The value as plain text; -- 5
-    updatedDateTime timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 6
+    Key               uuid                     not null, -- The Key for the saved data -- 1
+    Bucket            varchar default null,              -- A type definition to be able to group content -- 2
+    ValueSaveTypeId   int                      not null, -- Defines how the value is saved, As ByteArray, String or as both of them -- 3
+    ValueSaveTypeName varchar                  not null, -- Defines how the value is saved, As ByteArray, String or as both of them -- 4
+    Value             bytea   default null,              -- The value saved as bytearray; -- 5
+    ValueString       varchar default null,              -- The value as plain text; -- 6
+    updatedDateTime   timestamp with time zone not null  -- The Datetime when the row was created/updates''; -- 7
 );
 
 comment on table plugins.KeyValueStore is 'Holds all TestInstructions to be executed by plugin';
 
 comment on column plugins.KeyValueStore.Key is 'The Key for the saved data'; -- 1
 comment on column plugins.KeyValueStore.Bucket is 'A type definition to be able to group content'; -- 2
-comment on column plugins.KeyValueStore.ValueSaveType is 'Defines how the value is saved, As ByteArray, String or as both of them'; --3
-comment on column plugins.KeyValueStore.Value is 'The value saved as bytearray'; --3
-comment on column plugins.KeyValueStore.ValueString is 'The value as plain text'; --3
-comment on column plugins.TestInstructionRT.updatedDateTime is 'The Datetime when the row was created/updates'; -- 18
+comment on column plugins.KeyValueStore.ValueSaveTypeId is 'Id of the Definition how the value is saved, As ByteArray, String or as both of them'; --3
+comment on column plugins.KeyValueStore.ValueSaveTypeName is 'Neme of the Definition how the value is saved, As ByteArray, String or as both of them'; --4
+comment on column plugins.KeyValueStore.Value is 'The value saved as bytearray'; --5
+comment on column plugins.KeyValueStore.ValueString is 'The value as plain text'; --6
+comment on column plugins.TestInstructionRT.updatedDateTime is 'The Datetime when the row was created/updates'; -- 7
 

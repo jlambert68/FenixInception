@@ -19,7 +19,7 @@ func initiateReadANdWriteServices() {
 	go writeToDbService()
 }
 
-// **********************************************************************************************************
+// *************************************************DbReadMessage*********************************************************
 // Service for checking channel incoming 'WriteKeyValueMessage'. Is run as a go-routine
 //
 func writeToDbService() {

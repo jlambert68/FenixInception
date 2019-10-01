@@ -23,7 +23,7 @@ func cleanup() {
 // *******************************************************************
 // Start all Services
 //
-func StartAllServices(configFileAndPath string, logfileForTest string, databaseFile string) {
+func StartAllServices(configFileAndPath string, logfileForTest string) {
 	// Read 'pluginDbEngineConfig.toml' for config parameters
 	processConfigFile(configFileAndPath) // Use default toml-config-file name
 
@@ -41,6 +41,9 @@ func StartAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 	// Initiate the Database used by the KeyValueStore
 	initiateMainDB()
+
+	// Initiate the read and write channels services
+	initiateReadANdWriteServices()
 
 	// Listen to gRPC-calls from Plugins
 	startDbPluginGRPCServerForMessagesFromPlugins()

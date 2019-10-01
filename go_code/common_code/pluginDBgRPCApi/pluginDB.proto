@@ -1,6 +1,12 @@
 syntax = "proto3";
 package pluginDBgRPCApi;
 
+//import "./../../vendor/github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+//import "vendor/github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+//import "google/protobuf/timestamp.proto";
+import "timestamp.proto";
+
+
 // version 3.6.0
 //~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
 //190516
@@ -43,7 +49,7 @@ message ValueResponseMessage {
     ValueSaveTypeEnum ValueSaveType = 3; // Defines how the value is saved, As ByteArray, String or as both of them -- 3
     bytes Value = 4; // The value saved as bytearray; -- 4
     string ValueString = 5; // The value as plain text; -- 5
-    string updatedDateTime = 6; // The Datetime when the row was created/updates
+    google.protobuf.Timestamp updatedDateTime = 6; // The Datetime when the row was created/updates
     bool acknack = 8; // True=Ack, False=Nack
     string comments = 9; //Comments if needed
 }

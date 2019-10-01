@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-func DbPluginMain(configFileAndPath string, logfileForTest string, databaseFile string) {
+func DbPluginMain(configFileAndPath string, logfileForTest string) {
 
 	// Cleanup all gRPC connections
 	defer cleanup()
 
-	StartAllServices(configFileAndPath, logfileForTest, databaseFile)
+	StartAllServices(configFileAndPath, logfileForTest)
 
 	// Just waiting to quit
 	c := make(chan os.Signal, 2)

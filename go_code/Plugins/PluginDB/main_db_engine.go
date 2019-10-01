@@ -1,21 +1,23 @@
 package PluginKeyValueDBStore
 
 import (
-	"database/sql"
+	//"database/sql"
 	"errors"
 	"fmt"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"jlambert/FenixInception2/go_code/common_code"
+	"time"
 )
 
-var mainDB *sql.DB
+var mainDB *sqlx.DB
 
 const (
 	DB_USER     = "postgres"
 	DB_PASSWORD = "postgres"
-	DB_NAME     = "fenixinception"
+	DB_NAME     = "pluginkeyvaluestore"
 )
 
 // **********************************************************************************************************
@@ -31,7 +33,8 @@ func initiateMainDB() {
 
 	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
 		DB_USER, DB_PASSWORD, DB_NAME)
-	mainDB, err = sql.Open("postgres", dbinfo)
+	//mainDB, err = sql.Open("postgres", dbinfo)
+	mainDB, err = sqlx.Connect("postgres", dbinfo)
 
 	// If some error occured then close the application
 	if err != nil {
@@ -71,7 +74,7 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 
 	// Prepare SQL
 	var sqlToBeExecuted = "SELECT Key, Bucket, ValueSaveTypeId, ValueSaveTypeName, Value, ValueString, updatedDateTime "
-	sqlToBeExecuted = sqlToBeExecuted + "FROM plugins.KeyValueStore "
+	sqlToBeExecuted = sqlToBeExecuted + "FROM keyvaluestore.keyvaluestore "
 	sqlToBeExecuted = sqlToBeExecuted + "WHERE Key = $1 "
 	sqlToBeExecuted = sqlToBeExecuted + "ORDER BY updatedDateTime DESC "
 
@@ -108,14 +111,15 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 			//var testInstructionId string
 			var numberOfRowsInResult int
 			type savedKeyValueStruct struct {
-				Key               string
-				Bucket            string
-				ValueSaveTypeId   int32
-				ValueSaveTypeName string
-				Value             []byte
-				ValueString       string
-				UpdatedDateTime   string
+				Key               string    `db:"key"`
+				Bucket            string    `db:"bucket"`
+				ValueSaveTypeId   int32     `db:"valuesavetypeid"`
+				ValueSaveTypeName string    `db:"valuesavetypename"`
+				Value             []byte    `db:"value"`
+				ValueString       string    `db:"valuestring"`
+				UpdatedDateTime   time.Time `db:"updateddatetime"`
 			}
+
 			var savedKeyValue savedKeyValueStruct
 
 			numberOfRowsInResult = 0
@@ -172,8 +176,8 @@ func saveKeyValuetMessageInDB(writeKeyValueMessage *gRPC.WriteKeyValueMessage) (
 	messageSavedInDB = true
 
 	// Prepare SQL
-	var sqlToBeExecuted = "INSERT INTO plugins.KeyValueStore "
-	sqlToBeExecuted = sqlToBeExecuted + "Key, Bucket, ValueSaveTypeId, ValueSaveTypeName, Value, ValueString, updatedDateTime "
+	var sqlToBeExecuted = "INSERT INTO keyvaluestore.keyvaluestore "
+	sqlToBeExecuted = sqlToBeExecuted + "(Key, Bucket, ValueSaveTypeId, ValueSaveTypeName, Value, ValueString, updatedDateTime) "
 	sqlToBeExecuted = sqlToBeExecuted + "VALUES($1,$2,$3,$4,$5,$6,$7) "
 
 	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)

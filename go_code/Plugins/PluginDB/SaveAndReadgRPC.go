@@ -20,10 +20,14 @@ func (gRPCServerForDbKeyValueStore *gRPCServerForDbKeyValueStoreStruct) WriteToK
 
 	// Verify gRPC-proto-message-version in incoming message
 	var maxProtoVersionNumner int32 = int32(len(gRPC.CurrentVersionEnum_name) - 1)
-	if string(writeKeyValueMessage.GetCurrentVersion()) != gRPC.CurrentVersionEnum_name[maxProtoVersionNumner] {
+	gRPCincomingVersion := writeKeyValueMessage.GetCurrentVersion().String()
+	gRPCcurrentVersion := gRPC.CurrentVersionEnum_name[maxProtoVersionNumner]
+	if gRPCincomingVersion != gRPCcurrentVersion {
 		// Request from plugin has wrong version, can not execute request
-		returnMessage.Comments = "Can't execute request due to wrong gRPC-proto-version. KeyValue store is using version: " + gRPC.CurrentVersionEnum_name[maxProtoVersionNumner]
-		returnMessage.Acknack = false
+		returnMessage = &gRPC.AckNackResponse{
+			Comments: "Can't execute request due to wrong gRPC-proto-version. KeyValue store is using version: " + gRPCcurrentVersion,
+			Acknack:  false,
+		}
 	} else {
 		// Correct gRPC-proto-version
 
@@ -80,10 +84,15 @@ func (gRPCServerForDbKeyValueStore *gRPCServerForDbKeyValueStoreStruct) ReadFrom
 
 	// Verify gRPC-proto-message-version in incoming message
 	var maxProtoVersionNumner int32 = int32(len(gRPC.CurrentVersionEnum_name) - 1)
-	if string(readKeyRequestMessage.GetCurrentVersion()) != gRPC.CurrentVersionEnum_name[maxProtoVersionNumner] {
+	gRPCincomingVersion := readKeyRequestMessage.GetCurrentVersion().String()
+	gRPCcurrentVersion := gRPC.CurrentVersionEnum_name[maxProtoVersionNumner]
+	if gRPCincomingVersion != gRPCcurrentVersion {
 		// Request from plugin has wrong version, can not execute request
-		returnMessage.Comments = "Can't execute request due to wrong gRPC-proto-version. KeyValue store is using version: " + gRPC.CurrentVersionEnum_name[maxProtoVersionNumner]
-		returnMessage.Acknack = false
+		returnMessage = &gRPC.ValueResponseMessage{
+			Comments: "Can't execute request due to wrong gRPC-proto-version. KeyValue store is using version: " + gRPCcurrentVersion,
+			Acknack:  false,
+		}
+
 	} else {
 		// Correct gRPC-proto-version
 

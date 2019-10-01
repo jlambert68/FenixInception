@@ -30,9 +30,11 @@ func GenerateUUID(logger *logrus.Logger) string {
 // *********************************************************************************
 // Genrerate UTC DateTime timestamp
 //
-func GeneraTimeStampUTC() string {
+func GeneraTimeStampUTC() time.Time {
 	now := time.Now()
-	return now.String()
+	nowLocal := now.Local()
+	return nowLocal
+	//return nowLocal.String()
 }
 
 // *********************************************************************************
