@@ -92,31 +92,41 @@ func readFromDbService() {
 			"dbWritewMessageChannel",
 			"2258db93-2b91-4dce-a812-542e33cc7f61")
 
-		messageSavedInDB, err := readKeyValuetMessageFromDB(keyToBeRead.ReadMessage)
+		messageReadFromDB, err := readKeyValuetMessageFromDB(keyToBeRead.ReadMessage)
 
-		if messageSavedInDB.Acknack == true && err == nil {
+		if messageReadFromDB.Acknack == true && err == nil {
 			// Message saved in KeyValueStore
 
 			// Create returnMessgae
 			returnMessage = DbResultReadMessageStruct{
 				err,
-				messageSavedInDB.GetKey(),
-				messageSavedInDB.GetBucket(),
-				int(messageSavedInDB.GetValueSaveType()),
-				gRPC.ValueSaveTypeEnum_name[int32(messageSavedInDB.GetValueSaveType())],
-				messageSavedInDB.GetValue(),
-				messageSavedInDB.GetValueString(),
-				messageSavedInDB.GetUpdatedDateTime(),
+				*messageReadFromDB,
+				/*
+					messageReadFromDB.GetKey(),
+					messageReadFromDB.GetBucket(),
+					int(messageReadFromDB.GetValueSaveType()),
+					gRPC.ValueSaveTypeEnum_name[int32(messageReadFromDB.GetValueSaveType())],
+					messageReadFromDB.GetValue(),
+					messageReadFromDB.GetValueString(),
+					messageReadFromDB.GetUpdatedDateTime(),
+				*/
 			}
 
 		} else {
 			// Message NOT saved in KeyValueStore
 
+			// Return the original key and bucket values
+			coreValueResponseMessage := gRPC.ValueResponseMessage{
+				Key:      keyToBeRead.ReadMessage.Key,
+				Bucket:   keyToBeRead.ReadMessage.Bucket,
+				Acknack:  false,
+				Comments: "Couldn't read key in KeyValueStore-DB",
+			}
+
 			// Create returnMessgae
 			returnMessage = DbResultReadMessageStruct{
-				Err:    errors.New("Couldn't read key in KeyValueStore-DB"),
-				Key:    keyToBeRead.ReadMessage.Key,
-				Bucket: keyToBeRead.ReadMessage.Bucket,
+				Err:                  errors.New("Couldn't read key in KeyValueStore-DB"),
+				valueResponseMessage: coreValueResponseMessage,
 			}
 		}
 

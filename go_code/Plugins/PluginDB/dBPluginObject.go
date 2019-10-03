@@ -40,14 +40,17 @@ type DbWriteMessageStruct struct {
 
 // Message used for sending back Read-instructions from Database
 type DbResultReadMessageStruct struct {
-	Err               error  // Error message
-	Key               string // Key that was Read
-	Bucket            string // The Bucket for the message
-	ValueSaveTypeId   int    // Defines how the value is saved, As ByteArray, String or as both of them -- 3
-	ValueSaveTypeName string // Defines how the value is saved, As ByteArray, String or as both of them
-	Value             []byte // The value to be stored as byte array
-	ValueString       string // The value to be stored as string
-	UpdatedDateTime   string // THe DateTime when the KeyValue was saved in DB
+	Err                  error                     // Error message
+	valueResponseMessage gRPC.ValueResponseMessage // The stored KeyValue data
+	/*
+	   Key               string // Key that was Read
+	   	Bucket            string // The Bucket for the message
+	   	ValueSaveTypeId   int    // Defines how the value is saved, As ByteArray, String or as both of them -- 3
+	   	ValueSaveTypeName string // Defines how the value is saved, As ByteArray, String or as both of them
+	   	Value             []byte // The value to be stored as byte array
+	   	ValueString       string // The value to be stored as string
+	   	UpdatedDateTime   string // THe DateTime when the KeyValue was saved in DB
+	*/
 }
 
 // Message used for sending back Write-instructions from Database

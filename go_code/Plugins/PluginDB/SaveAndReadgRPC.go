@@ -117,25 +117,17 @@ func (gRPCServerForDbKeyValueStore *gRPCServerForDbKeyValueStoreStruct) ReadFrom
 
 		if databaseReturnMessage.Err == nil {
 			// OK respons then convert result into returnMessage
-			returnMessage = &gRPC.ValueResponseMessage{
-				Key:             databaseReturnMessage.Key,
-				Bucket:          databaseReturnMessage.Bucket,
-				ValueSaveType:   gRPC.ValueSaveTypeEnum(databaseReturnMessage.ValueSaveTypeId),
-				Value:           databaseReturnMessage.Value,
-				ValueString:     databaseReturnMessage.ValueString,
-				UpdatedDateTime: databaseReturnMessage.UpdatedDateTime,
-				Acknack:         true,
-				Comments:        "Value found in KeyValue-store",
-			}
+			returnMessage = &databaseReturnMessage.valueResponseMessage
+
 		} else {
 			// Error in Response, put that into returnMessage
 			returnMessage = &gRPC.ValueResponseMessage{
-				Key:             "",
-				Bucket:          "",
+				Key:             readKeyRequestMessage.Key,
+				Bucket:          readKeyRequestMessage.Bucket,
 				ValueSaveType:   0,
 				Value:           nil,
 				ValueString:     "",
-				UpdatedDateTime: "",
+				UpdatedDateTime: nil,
 				Acknack:         false,
 				Comments:        databaseReturnMessage.Err.Error(),
 			}

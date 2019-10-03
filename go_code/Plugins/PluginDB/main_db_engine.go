@@ -4,6 +4,8 @@ import (
 	//"database/sql"
 	"errors"
 	"fmt"
+	"github.com/golang/protobuf/ptypes"
+	_ "github.com/golang/protobuf/ptypes"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -76,9 +78,9 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 	var sqlToBeExecuted = "SELECT Key, Bucket, ValueSaveTypeId, ValueSaveTypeName, Value, ValueString, updatedDateTime "
 	sqlToBeExecuted = sqlToBeExecuted + "FROM keyvaluestore.keyvaluestore "
 	sqlToBeExecuted = sqlToBeExecuted + "WHERE Key = $1 "
-	sqlToBeExecuted = sqlToBeExecuted + "ORDER BY updatedDateTime DESC "
+	sqlToBeExecuted = sqlToBeExecuted + "ORDER BY updatedDateTime ASC "
 
-	sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
+	//sqlStatement, err := mainDB.Prepare(sqlToBeExecuted)
 
 	if err != nil {
 		// Error while preparing SQL
@@ -92,7 +94,7 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 	} else {
 		// Preparing SQL was OK
 		// Now Execute SQL in DB
-		sqlResult, err := sqlStatement.Query(readKeyRequestMessage.Key)
+		sqlResult, err := mainDB.Queryx(sqlToBeExecuted, readKeyRequestMessage.Key)
 		if err != nil {
 			// Error while executing SQL
 			logger.WithFields(logrus.Fields{
@@ -126,7 +128,7 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 			for sqlResult.Next() {
 				// Only get the latest object, if there are more rows
 				if numberOfRowsInResult == 0 {
-					err = sqlResult.Scan(&savedKeyValue)
+					err = sqlResult.StructScan(&savedKeyValue)
 					if err != nil {
 						// Error while looping through result
 						logger.WithFields(logrus.Fields{
@@ -142,7 +144,7 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 
 			// If the SQL gave a result that differs from 1 row then something is wrong
 			if numberOfRowsInResult != 0 {
-				// Error while looping through result
+				// Eimport "github.com/golang/protobuf/ptypes"rror while looping through result
 				logger.WithFields(logrus.Fields{
 					"ID":                   "bf187ebf-ddbd-49f5-ac07-0be1e3251985",
 					"numberOfRowsInResult": numberOfRowsInResult,
@@ -152,13 +154,45 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 				err = errors.New("Error, expected exactly one row in result set but got " + string(numberOfRowsInResult))
 			} else {
 				// Transfer result into correct return-structure
-				valueResponseMessage = &gRPC.ValueResponseMessage{
-					Key:             savedKeyValue.Key,
-					Bucket:          savedKeyValue.Key,
-					ValueSaveType:   gRPC.ValueSaveTypeEnum(savedKeyValue.ValueSaveTypeId), //(gRPC.CurrentVersionEnum).gR [savedKeyValue.ValueSaveTypeId]
-					Value:           savedKeyValue.Value,
-					ValueString:     savedKeyValue.ValueString,
-					UpdatedDateTime: savedKeyValue.UpdatedDateTime,
+				protoTimeStamp, err := ptypes.TimestampProto(savedKeyValue.UpdatedDateTime)
+				if err != nil {
+					// Could not convert from Proto Time stamp
+					logger.WithFields(logrus.Fields{
+						"ID":            "97a45e34-ed25-4907-a2ab-e6e6e752e527",
+						"err":           err,
+						"savedKeyValue": savedKeyValue,
+					}).Error("Could not convert from Proto Time stamp after reading KeyValue Store")
+					valueResponseMessage = &gRPC.ValueResponseMessage{
+						Key:             savedKeyValue.Key,
+						Bucket:          savedKeyValue.Key,
+						ValueSaveType:   gRPC.ValueSaveTypeEnum(savedKeyValue.ValueSaveTypeId), //(gRPC.CurrentVersionEnum).gR [savedKeyValue.ValueSaveTypeId]
+						Value:           savedKeyValue.Value,
+						ValueString:     savedKeyValue.ValueString,
+						UpdatedDateTime: nil,
+						Acknack:         false,
+						Comments:        "Could not convert from Proto Time stamp after reading KeyValue Store",
+					}
+				} else {
+
+					/*
+						//TODO Remove the code below
+						tempTime, _ := ptypes.Timestamp(protoTimeStamp)
+						fmt.Println(tempTime)
+						fmt.Println(savedKeyValue.UpdatedDateTime.In(time.Local))
+						fmt.Println(tempTime.String())
+					*/
+
+					// OK in convert from Proto Time stamp
+					valueResponseMessage = &gRPC.ValueResponseMessage{
+						Key:             savedKeyValue.Key,
+						Bucket:          savedKeyValue.Bucket,
+						ValueSaveType:   gRPC.ValueSaveTypeEnum(savedKeyValue.ValueSaveTypeId), //(gRPC.CurrentVersionEnum).gR [savedKeyValue.ValueSaveTypeId]
+						Value:           savedKeyValue.Value,
+						ValueString:     savedKeyValue.ValueString,
+						UpdatedDateTime: protoTimeStamp,
+						Acknack:         true,
+						Comments:        "Readable  UTC timestamp: " + ptypes.TimestampString(protoTimeStamp),
+					}
 				}
 			}
 		}
