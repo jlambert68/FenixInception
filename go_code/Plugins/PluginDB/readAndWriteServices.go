@@ -4,6 +4,7 @@ import (
 	"errors"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 // **********************************************************************************************************
@@ -25,10 +26,16 @@ func initiateReadANdWriteServices() {
 func writeToDbService() {
 
 	var returnMessage DbResultWriteMessageStruct
+	var startTimeForDbProcess time.Time
+	var stopTimeForDbProcess time.Time
+	var durationForDbProcess time.Duration
 
 	// Loop and wait for incoming message from channel
 	for {
 		keyValueToBeSaved := <-dbWritewMessageChannel
+
+		// Check start time for DB process
+		startTimeForDbProcess = time.Now()
 
 		logger.WithFields(logrus.Fields{
 			"ID":                "26782f27-2001-43fb-8e03-f1ce406aaf5a",
@@ -64,6 +71,16 @@ func writeToDbService() {
 			}
 		}
 
+		// Check start time for DB process
+		stopTimeForDbProcess = time.Now()
+
+		// Calculate DB processing duration
+		durationForDbProcess = stopTimeForDbProcess.Sub(startTimeForDbProcess)
+		logger.WithFields(logrus.Fields{
+			"ID":                   "b7b553af-63a7-4a20-bbf6-0f5b4c173010",
+			"durationForDbProcess": durationForDbProcess,
+		}).Debug("It took " + durationForDbProcess.String() + "to write value to databaswe")
+
 		// Put returnMessage on channel back to sender
 		keyValueToBeSaved.ResultsChannel <- returnMessage
 	}
@@ -76,10 +93,16 @@ func writeToDbService() {
 func readFromDbService() {
 
 	var returnMessage DbResultReadMessageStruct
+	var startTimeForDbProcess time.Time
+	var stopTimeForDbProcess time.Time
+	var durationForDbProcess time.Duration
 
 	// Loop and wait for incoming message from channel
 	for {
 		keyToBeRead := <-dbReadMessageChannel
+
+		// Check start time for DB process
+		startTimeForDbProcess = time.Now()
 
 		logger.WithFields(logrus.Fields{
 			"ID":          "aa032c6f-fbfe-4168-8a9e-e5e7f0088729",
@@ -129,6 +152,16 @@ func readFromDbService() {
 				valueResponseMessage: coreValueResponseMessage,
 			}
 		}
+
+		// Check start time for DB process
+		stopTimeForDbProcess = time.Now()
+
+		// Calculate DB processing duration
+		durationForDbProcess = stopTimeForDbProcess.Sub(startTimeForDbProcess)
+		logger.WithFields(logrus.Fields{
+			"ID":                   "6e69dc7d-18d2-40cc-bdd0-f21467d66b1c",
+			"durationForDbProcess": durationForDbProcess,
+		}).Debug("It took " + durationForDbProcess.String() + "to read value from databaswe")
 
 		// Put returnMessage on channel back to sender
 		keyToBeRead.ResultsChannel <- returnMessage
