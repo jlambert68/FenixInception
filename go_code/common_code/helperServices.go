@@ -47,7 +47,16 @@ func generaTimeStampDateDateTime() string {
 
 // *********************************************************************************
 // Get highest gRPC version
+//// *********************************************************************************
+// Get highest gRPC version
 //
+
+func GetHighestGRPCVersion() (currentVersion string) {
+	maxVersionCount := int32(len(gRPC.CurrentVersionEnum_name) - 1)
+
+	maxVersion := gRPC.CurrentVersionEnum_name[maxVersionCount]
+	return maxVersion
+}
 
 func GetHighestGRPCVersion() (currentVersion string) {
 	maxVersionCount := int32(len(gRPC.CurrentVersionEnum_name) - 1)

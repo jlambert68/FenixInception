@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	//"jlambert/FenixInception2/go_code/common_code"
 	gRPC_DB "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
+	"github.com/jlambert68/FenixInception/go_code/common_code/pluginDB"
 )
 
 // **********************************************************************************************************
@@ -61,11 +62,11 @@ func saveTestInstructionRTMessageInDB(testInstructionRT *gRPC.TestInstruction_RT
 		// TODO Prepare message to be sent to KeyValue-DB
 		messageTBeSavedInDB := & gRPC_DB.WriteKeyValueMessage{
 			testInstructionRT.TestInstructionGuid,
-			common_code.
-			ValueSaveType
-			Value
-			ValueString
-			CurrentVersion       CurrentVersionEnum
+			pluginDB.DbBucketForTestInstructionToBeExecutedMEssages
+			gRPC_DB.ValueSaveTypeEnum_BYTEARRAY
+			messageToBeSavedInDbAsByteArray
+			""
+			gRPC_DB.CurrentVersionEnum_VERSION_0_1_0
 		}
 
 		// Send message, to be sent to KeyValue-DB, via channel
