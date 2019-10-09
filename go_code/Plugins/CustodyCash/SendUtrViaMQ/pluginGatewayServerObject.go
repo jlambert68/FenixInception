@@ -2,6 +2,7 @@ package SendUtrViaMQ
 
 import (
 	"github.com/jlambert68/FenixInception/go_code/common_code"
+	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
 	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
 )
@@ -15,6 +16,12 @@ var (
 
 	// Database queue used for sending questions to database
 	dbMessageQueue chan common_code.DbMessageStruct
+
+	// Channel for sending Save-message to KeyValue-DB
+	dbSaveMessageChannel chan gRPC.WriteKeyValueMessage
+
+	// Channel for sending Read-message to KeyValue-DB
+	dbReadMessageChannel chan gRPC.ReadKeyRequestMessage
 
 	// Channel for informationMessage initiated in this gateway
 	// removed becasue it resides in object for messages towards Fenix

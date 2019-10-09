@@ -51,23 +51,24 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 	//TODO Change this into a function-call instead
 	//TestExecutionGateway.SetGatewayMustStopProcessingFlag(true)
 
-	// Start all Dispatch- and Transmit-Engines as a Gateway Engine inside Fenix and use function references instead of gRPC-calls
+	// Start all Dispatch- and Transmit-Engines as a Plugin Engine inside a Plugin and use function references instead of gRPC-calls
 	gatewayOrEndpoint := common_code.FunctionsInsteadOfgRPCStruct{
-		FenixOrGatewayTypeOrPlugin: common_code.FenixEngine,
+		FenixOrGatewayTypeOrPlugin: common_code.PluginEngine,
 		CallBackTowardsPlugins: common_code.CallBackTowardsPluginsType{
-			CallBackSendTestInstructionTowardsPlugin:        CallBackSe,
-			CallackGetSupportedTestDataDomainsTowardsPlugin: nil},
+			CallBackSendTestInstructionTowardsPlugin:        CallBackSendTestInstructionTowardsPluginType,
+			CallackGetSupportedTestDataDomainsTowardsPlugin: CallBackSupportedTestDataDomainsRequestTowardsPluginType},
 		CallBackTowardsFenix: common_code.CallBackTowardsFenixType{
-			CallBackRegisterAvailbleTestInstructionsTowardsFenix:   CallBackRegisterAvailbleTestInstructions,
-			CallBackRegistrateAailableTestContainersTowardsFenix:   CallBackRegistrateAailableTestContainers,
-			CallBackRegistrateAvailableTestDataDomainsTowardsFenix: CallBackRegistrateAvailableTestDataDomains,
-			CallBackSendMessageToFenixTowardsFenix:                 CallBackSendMessageToFenix,
-			CallBackSendTestInstructionTimeOutTowardsFenix:         CallBackSendTestInstructionTimeOutTowardsFenix,
-			CallBackSendTestExecutionLogTowardsFenix:               CallBackSendTestExecutionLogTowardsFenix,
-			CallBackSupportedTestDataDomainsTowardsFenix:           CallBackSupportedTestDataDomains,
-			CallBackSendTestInstructionResultTowardsFenixType:      CallBackSendTestInstructionResultTowardsFenix,
+			CallBackRegisterAvailbleTestInstructionsTowardsFenix:   nil,
+			CallBackRegistrateAailableTestContainersTowardsFenix:   nil,
+			CallBackRegistrateAvailableTestDataDomainsTowardsFenix: nil,
+			CallBackSendMessageToFenixTowardsFenix:                 nil,
+			CallBackSendTestInstructionTimeOutTowardsFenix:         nil,
+			CallBackSendTestExecutionLogTowardsFenix:               nil,
+			CallBackSupportedTestDataDomainsTowardsFenix:           nil,
+			CallBackSendTestInstructionResultTowardsFenixType:      nil,
 		},
 	}
+	// Start TestExecutionGateway in Plugin
 	TestExecutionGateway.StartAllServices(configFileAndPath, logfileForTest, databaseFile, gatewayOrEndpoint)
 
 	// Start all services at the same time

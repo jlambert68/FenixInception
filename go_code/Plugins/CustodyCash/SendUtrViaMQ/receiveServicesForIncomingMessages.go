@@ -29,6 +29,10 @@ func CallBackSupportedTestDataDomainsRequestTowardsPluginType(supportedTestDataD
 		// Create message back to parent Gateway/Fenix
 		returnMessage.Comments = "'supportedTestDataDomainsRequest' was saved in Plugin database"
 		returnMessage.Acknack = true
+
+		// Start up processing of SupportedTestDataDomainsRequest as a goroutine
+		go newIncomingSupportedTestDataDomainsRequest()
+
 	} else {
 
 		// Message not saved OK
@@ -73,6 +77,10 @@ func CallBackSendTestInstructionTowardsPluginType(testInstructionMessage *gRPC.T
 		// Create message back to parent Gateway/Fenix
 		returnMessage.Comments = "'testInstructionMessage' was saved in Plugin database"
 		returnMessage.Acknack = true
+
+		// Start up processing of TestInstructionMessage as a goroutine
+		go newIncomingTestInstructionMessage()
+
 	} else {
 
 		// Message not saved OK
