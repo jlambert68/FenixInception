@@ -3,19 +3,19 @@
 
 # Identification for the Fenix
 [gatewayIdentification]
-gatewayId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
-gatewayName = "Fenix Execution Server"
+gatewayId = "4d056923-d6a1-4144-8e77-9fece586d1e1"
+gatewayName = "Plugin - Send UTR via MQ"
 gatewayIpAddress = "127.0.0.1"
 gatewaParentCallOnThisPort = 6999
 gatewayChildrenCallOnThisPort = 7001
 createdDateTime = ""
-gatewayEngineType = "FenixEngine"
+gatewayEngineType = "PluginEngine"
 # Type of gatwway ("FenixEngine", "GatewayEngine", "PluginEngine"
 
 # Identification of the the domain that Fenix belongs to
 [systemDomain]
-gatewayDomainId = "eac522c7-d01c-4f05-b348-841edbfdcb2f"
-gatewayDomainName = "Fenix Execution Server"
+gatewayDomainId = "49cacb25-c754-416d-8db9-6e050a1e0ab3"
+gatewayDomainName = "CUstody Cash"
 
 # Initial IP and Port for Parent Gateway/Fenix.
 [parentgRPCAddress]
@@ -44,3 +44,11 @@ actAsParentGatewayInTest = false
 actAsMainGatewayInTest = false
 actAsChildGatewayInTest = false
 startWithOutAnyParent = false
+
+# Identification for the KeyValueStore
+[keyValueStoreIdentification]
+keyValueStoreId = "b82015ff-aaaf-4e1e-8c82-4fc5049520e0"
+KeyValueStoreName = "KeyValueStore Database"
+KeyValueStoreIpAddress = "127.0.0.1"
+PluginsCallOnThisPort = 7777
+createdDateTime = ""

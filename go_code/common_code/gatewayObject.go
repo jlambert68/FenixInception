@@ -80,12 +80,13 @@ type TomlConfigStruct struct {
 */
 
 type TomlConfigStruct struct {
-	GatewayIdentification GatewayIdentificationStruct
-	SystemDomain          SystemDomainStruct
-	ParentgRPCAddress     ParentgRPCAddressStruct
-	InitialClientPort     InitialClientPortStruct
-	LoggingLevel          LoggingLevelStruct
-	IntegrationTest       IntegrationTestStruct
+	GatewayIdentification       GatewayIdentificationStruct
+	SystemDomain                SystemDomainStruct
+	ParentgRPCAddress           ParentgRPCAddressStruct
+	InitialClientPort           InitialClientPortStruct
+	LoggingLevel                LoggingLevelStruct
+	IntegrationTest             IntegrationTestStruct
+	KeyValueStoreIdentification KeyValueStoreIdentificationStruct
 }
 
 // local gateway information for toml-file
@@ -136,7 +137,14 @@ type IntegrationTestStruct struct {
 	StartWithOutAnyParent    bool
 }
 
-//
+// Identification for the KeyValueStore
+type KeyValueStoreIdentificationStruct struct {
+	KeyValueStoreId        string
+	KeyValueStoreName      string
+	KeyValueStoreIpAddress string
+	KeyValueStorePort      int32
+}
+
 // *******************************************************************
 
 // Bucket name, and some keys used in DB
