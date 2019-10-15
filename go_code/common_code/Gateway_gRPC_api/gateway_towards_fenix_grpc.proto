@@ -1,6 +1,8 @@
 syntax = "proto3";
 package Gateway_gRPC_api;
 
+import "timestamp.proto";
+
 // version 3.6.0
 //~/protobuf/bin/protoc -I Gateway_Towards_Fenix_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Fenix_gRPC_api Gateway_Towards_Fenix_gRPC_api/gateway_towards_fenix_grpc.proto
 //~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
@@ -29,8 +31,8 @@ message TestInstructionExecutionResultMessage {
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id for identifying the TestInstruction at Plugin
     string ResultId = 6; // A unique id created by plugin
-     string TestInstructionResultCreatedDateTime = 7; // The DateTime when the message was created
-    string TestInstructionResultSentDateTime = 8; // The DateTime when the message was sent
+    google.protobuf.Timestamp TestInstructionResultCreatedDateTime = 7; // The DateTime when the message was created
+    google.protobuf.Timestamp TestInstructionResultSentDateTime = 8; // The DateTime when the message was sent
     AvailableTestExecutionResultsEnum TestExecutionResult = 9; // THe current execution status
     string OriginalSystemDomainId = 10; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 11; // The Domain/system's Name where the Sender operates
@@ -65,8 +67,8 @@ message TestExecutionLogMessage {
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string TestInstructionGuid = 5; //  TestInstructionGuid is a unique id created when TestInstruction is created in TestCase
     string LogMessageId = 6; // A unique id created by plugin
-    string TestInstructionLogCreatedDateTime = 7; // The DateTime when the message was created
-    string TestInstructionLogSentDateTime = 8; // The DateTime when the message was sent
+    google.protobuf.Timestamp TestInstructionLogCreatedDateTime = 7; // The DateTime when the message was created
+    google.protobuf.Timestamp TestInstructionLogSentDateTime = 8; // The DateTime when the message was sent
     string LogMessage = 9; // The log message
     LogMessageTypeEnum LogMessageType = 10; // The type of the log message, text or json
     string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
@@ -98,7 +100,7 @@ message TestInstructionTimeOutMessage {
     string OriginalMessageId = 5; // A unique id from the TestInstruction request sent from Fenix
     string MessageId = 6; // A unique id generated when sent from Plugin
     string TimeOut = 7; // The time for timeout informat 'YYYY-MM-DD hh:mm:ss' w
-    string OrginalCreateDateTime = 8; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 8; // The timestamp when the orignal message was created
     string OriginalSystemDomainId = 9; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 10; // The Domain/system's Name where the Sender operates
 
@@ -154,7 +156,7 @@ message SupportedTestDataDomainsWithHeadersMessage {
         repeated TestDataFilterHeader TestDataFilterHeaders = 5; // All headers, keys, that is used for filter testdata
     }
     repeated TestDataDomainWithHeaders TestDataDomains = 7; // All supported Testdata domains from plugin
-    string OrginalCreateDateTime = 8; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 8; // The timestamp when the orignal message was created
     string OriginalSystemDomainId = 9; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 10; // The Domain/system's Name where the Sender operates
 }
@@ -188,7 +190,7 @@ message TestDataFromFilterValuesMessage {
         OtherFileObject TestDataAsOtherFile = 4; // Object containing Testdata in a non standard form
     }
     TestDataObject TestData = 9; // The object containing the testdata
-    string OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
     string OriginalSystemDomainId = 11; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 12; // The Domain/system's Name where the Sender operates
 }
@@ -274,7 +276,7 @@ message AvailbleTestInstructionAtPluginMessage {
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string MessageId = 5; // A unique id generated when sent from Plugin
-    string OrginalCreateDateTime = 6; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 6; // The timestamp when the orignal message was created
     string OriginalSystemDomainId = 7; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 8; // The Domain/system's Name where the Sender operates
 
@@ -373,7 +375,7 @@ message AvailbleTestContainersAtPluginMessage {
     string SenderId = 3; // Then Id of the gateway/plugin that was the last forwarder
     string SenderName = 4; // Then name of the gateway/plugin that was the last forwarder
     string MessageId = 5; // A unique id generated when sent from Plugin
-    string OrginalCreateDateTime = 6; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 6; // The timestamp when the orignal message was created
     string OriginalSystemDomainId = 7; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 8; // The Domain/system's Name where the Sender operates
     repeated TestContainerMessage TestContainerMessages = 9;
@@ -391,7 +393,7 @@ message TestContainerMessage {
     }
 
     repeated TestContainerChildMessage TestContainerChildMessages = 10; // An object containing child-TesContainers and TestInstructions
-    string OrginalCreateDateTime = 11; // The timestamp when the container was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 11; // The timestamp when the container was created
 
     message TestContainerChildMessage {
         TestInstructionChildTypeEnum ChildType = 1;
@@ -430,7 +432,7 @@ message SupportedTestDataDomainsMessage {
         string TestDataDomainMouseOver = 4; // A mouse over description of the testdata domain
     }
     repeated TestDataDomain TestDataDomains = 6; // All supported Testdata domains from plugin
-    string OrginalCreateDateTime = 7; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 7; // The timestamp when the orignal message was created
     string OriginalSystemDomainId = 8; // The Domain/system's Id where the Sender operates
     string OriginalSystemDomainName = 9; // The Domain/system's Name where the Sender operates
 }
@@ -460,7 +462,7 @@ message InformationMessage {
     }
     InformationType MessageType = 8; // The type of information message
     string message = 9; // The message from Gateway or Plugin to Fenix
-    string OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
 }
 
 /*

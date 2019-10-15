@@ -1,6 +1,8 @@
 syntax = "proto3";
 package Gateway_gRPC_api;
 
+import "timestamp.proto";
+
 
 // version 3.6.0
 //~/protobuf/bin/protoc -I Gateway_Towards_Plugin_gRPC_api --go_out=plugins=grpc:Gateway_Towards_Plugin_gRPC_api Gateway_Towards_Plugin_gRPC_api/gateway_towards_plugin_grpc.proto
@@ -34,11 +36,11 @@ message TestInstruction_RT {
     string PluginName = 9; // The name of the plugin
     string TestMainGroupGuid_RT = 10; // Reference to TestManinGroupGuid_RT which is top object ????Needed????
     repeated TestInstructionAttribute_RT TestInstructionAttributes = 11; // All attributes with values for TestInstruction
-    string TestInstructionCreatedDateTime = 12; // When the TestInstruction, RunTime-version, was created
-    repeated string TestInstructionSentDateTime = 13; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
+    google.protobuf.Timestamp TestInstructionCreatedDateTime = 12; // When the TestInstruction, RunTime-version, was created
+    repeated google.protobuf.Timestamp TestInstructionSentDateTime = 13; //  When the TestInstruction, RunTime-version, was sent from Fenix. Can be resent if errors accours after sent.
     string ChoosenLandingZone = 14; // Chosen LandingZone for TestInstruction
     TestInstructionRTMetadata Metadata = 15; // Metadata around The TestInstruction, used for Send-DateTimes and DB-handling
-    string OrginalCreateDateTime = 16; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 16; // The timestamp when the orignal message was created
     string MessageId = 17; // A unique id for the message gererated by Fenix
     string PeerId = 18; // A unique id for all peer TestInstructions that can be processed in parallell with current TestInstruction
 }
@@ -63,9 +65,9 @@ enum TestInstructionAttributeTypeEnum {
 
 // Metadata used for sending the the TestInstruction to correct receiver
 message TestInstructionRTMetadata {
-    string CreatedDateTimeFenix = 1; // The DateTime when the TestInstruction was sent from Fenix
-    string CreatedDateTimePlugin = 2; // The DateTime when the TestExecution Result was sent from Plugin
-    string LastUpdatedDateTimeInDB = 3; // Updated evey time a TestInstruction is updated or saved in local Database
+    google.protobuf.Timestamp CreatedDateTimeFenix = 1; // The DateTime when the TestInstruction was sent from Fenix
+    google.protobuf.Timestamp CreatedDateTimePlugin = 2; // The DateTime when the TestExecution Result was sent from Plugin
+    google.protobuf.Timestamp LastUpdatedDateTimeInDB = 3; // Updated evey time a TestInstruction is updated or saved in local Database
     DbStatusEnum  DbStatusEnum = 4; // Used for status in local DB in Gateway
 }
 
@@ -100,7 +102,7 @@ message SupportedTestDataDomainsRequest {
     string PluginId = 5; // The unique id of the plugin
     string PluginName = 6; // The name of the plugin
     string MessageId = 7; // A unique id generated when sent from Fenix
-    string CreatedDateTime = 8; // The TimeStamp when the message was created at Fenix
+    google.protobuf.Timestamp CreatedDateTime = 8; // The TimeStamp when the message was created at Fenix
 }
 
 // **********
@@ -122,7 +124,7 @@ message TestDataFilterValuesRequest {
     int64 MaxNumberOffLinesInResult = 7; // This is the number of Test Data Rows that should be sent back to Fenix
     TestDataFormatTypeEnum TestDataType = 8; // THe format the testdata will be delivered
     repeated TestDataFilterHeader TestDataFIlterHeaders = 9; // All column headers for testdata
-    string OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
+    google.protobuf.Timestamp OrginalCreateDateTime = 10; // The timestamp when the orignal message was created
 }
 
 
@@ -157,7 +159,7 @@ message ReRegisterToGatewayMessage {
     int32 GatewayPort = 2; // The Port of the gateway where reRegistration should take place
     string GatewayId = 3; // The gateways unique Id
     string GatewayName = 4; //The gateways name
-    string CreatedDateTime = 5; // The Timestamp when this information was created
+    google.protobuf.Timestamp CreatedDateTime = 5; // The Timestamp when this information was created
 }
 
 
