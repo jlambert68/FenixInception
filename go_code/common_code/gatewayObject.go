@@ -96,7 +96,7 @@ type GatewayIdentificationStruct struct {
 	GatewayIpAddress              string
 	GatewaParentCallOnThisPort    int32
 	GatewayChildrenCallOnThisPort int32
-	CreatedDateTime               string
+	CreatedDateTime               time.Time
 	GatewayEngineType             string
 }
 
@@ -112,9 +112,9 @@ type ParentgRPCAddressStruct struct {
 	ParentGatewayName                        string
 	ParentGatewayServerAddress               string
 	ParentGatewayServerPort                  int32
-	CreatedDateTime                          string
+	CreatedDateTime                          time.Time
 	ConnectionToParentDoneAtLeastOnce        bool
-	ConnectionToParentLastConnectionDateTime string
+	ConnectionToParentLastConnectionDateTime time.Time
 }
 
 // The first client, for every ip address, must listen on this port, toml-file
