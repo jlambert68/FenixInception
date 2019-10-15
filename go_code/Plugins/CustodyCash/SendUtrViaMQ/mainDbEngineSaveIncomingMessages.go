@@ -2,18 +2,21 @@ package SendUtrViaMQ
 
 import (
 	"encoding/json"
+	"errors"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/jlambert68/FenixInception/go_code/common_code/pluginDB"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"net"
+	"strconv"
 
 	//"jlambert/FenixInception2/go_code/common_code"
 	gRPC_DB "github.com/jlambert68/FenixInception/go_code/common_code/pluginDBgRPCApi"
 )
 
-// **********************************************************************************************************
+// ******************gRPC_DB****************************************************************************************
 // Save incoming 'SupportedTestDataDomainsRequest' to Main Database for Fenix Inception
 //
 
@@ -104,12 +107,12 @@ func SaveMessageUsingGRPC(messageTBeSavedInDB gRPC_DB.WriteKeyValueMessage) (mes
 	var (
 		addressToDial                  string
 		remotePluginDbServerConnection *grpc.ClientConn
-		gRpcClientTowardPluginDB       gRPC.GatewayTowayPluginClient
+		gRpcClientTowardPluginDB       gRPC_DB.PluginDBClient
+		//gRPCresponse                   gRPC_DB.AckNackResponse
 
 		gRpcContexType context.Context
-		dialSuccess    = false
 	)
-	var gRPCerr error
+	//var gRPCerr error
 	var err error
 
 	messageSavedInDB = true
@@ -121,29 +124,97 @@ func SaveMessageUsingGRPC(messageTBeSavedInDB gRPC_DB.WriteKeyValueMessage) (mes
 	addressToDial, err = getPluginDBAddressAndPort()
 
 	if err != nil {
-	// Couldn't get Address to PluginDB
+		// Couldn't get Address to PluginDB
 		messageSavedInDB = false
 
 		logger.WithFields(logrus.Fields{
-			"ID": "6b3d5eb4-8bcf-43ce-a3d7-0b6fb8578ea3",
+			"ID":            "6b3d5eb4-8bcf-43ce-a3d7-0b6fb8578ea3",
+			"addressToDial": addressToDial,
+			"err":           err,
 		}).Error("Couldn't get gRPC-address to KeyValue-DB")
 	} else {
 		// Got gRPC-address to PluginDB
 
 		// Set up connection to Plugin
+		// logger.WithFields(logrus.Fields{
+		//"ID": "6b3d5eb4-8bcf-43ce-a3d7-0b6fb8578ea3",
+		//	"addressToDial": addressToDial,
+
 		remotePluginDbServerConnection, err = grpc.Dial(addressToDial, grpc.WithInsecure())
 
 		// Check if the dial was a success
 		if err != nil {
 			// Could not dial PluginDB
+
+			messageSavedInDB = false
+
+			logger.WithFields(logrus.Fields{
+				"ID":  "1cb7cdf1-c17e-4b62-9f2d-611d4e865f79",
+				"err": err,
+			}).Error("Error when dialing KeyValue-DB")
+
 		} else {
 			// Dial was successful towards PluginDB
 
 			// Creates a new gateway gRPC-Client towards Plugin
-			gRpcClientTowardPluginDB = gRPC.NewGatewayTowayPluginClient(remotePluginDbServerConnection)
+			gRpcClientTowardPluginDB = gRPC_DB.NewPluginDBClient(remotePluginDbServerConnection)
 
-			messageSavedInDB =
-			return messageSavedInDB
+			// Send message to KeyValue-DB using gRPC-call
+			gRPCresponse, gRPCerr := gRpcClientTowardPluginDB.WriteToKeyValueStore(gRpcContexType, &messageTBeSavedInDB)
+
+			// Chek of there was an error in the gRPC-call
+			if gRPCerr != nil {
+				messageSavedInDB = false
+
+				logger.WithFields(logrus.Fields{
+					"ID":           "9fc03ecb-a25c-4fe7-9d8f-029521883125",
+					"gRPCresponse": gRPCresponse,
+					"gRPCerr":      gRPCerr,
+				}).Error("Error when doing gRPC-call to KeyValue-DB")
+			} else {
+				// SUccess in doing the gRPC-call
+
+				// Check if the the message was saved
+				if gRPCresponse.Acknack == false {
+					// Message was not saved
+					messageSavedInDB = false
+					logger.WithFields(logrus.Fields{
+						"ID":           "549a16be-e85a-4456-bc67-c3e14852275e",
+						"gRPCresponse": gRPCresponse,
+					}).Error("THe message was not saved in the KeyValue-DB")
+				} else {
+					// Message was saved in KeyValue-DB
+					logger.WithFields(logrus.Fields{
+						"ID":           "1012a125-7dbb-43cb-86a1-4ab2b36d1396",
+						"gRPCresponse": gRPCresponse,
+					}).Debug("Message was saved in KeyValue-DB")
+				}
+			}
 		}
 	}
+	return messageSavedInDB
+}
+
+// **********************************************************************************************************
+// Get address and port for KeyValue-DB
+//
+func getPluginDBAddressAndPort() (addressAndPort string, err error) {
+
+	err = nil
+	addressAndPort = ""
+
+	// Check if KeyValueStoreIpAddress is a correct formated ip addess
+	if net.ParseIP(gatewayConfig.KeyValueStoreIdentification.KeyValueStoreIpAddress) != nil {
+		err = errors.New("KeyValueStore IpAddress is not correc formated: '" + gatewayConfig.KeyValueStoreIdentification.KeyValueStoreIpAddress + "'")
+	} else {
+		// Correct formated
+		// Check if port is bigger than 999, just th be sure that the port was correct typed
+		if gatewayConfig.InitialClientPort.InitialClientPort < 1000 {
+			err = errors.New("KeyValueStore port is less then 1000: '" + strconv.FormatInt(int64(gatewayConfig.InitialClientPort.InitialClientPort), 10) + "'")
+		}
+
+		addressAndPort = gatewayConfig.KeyValueStoreIdentification.KeyValueStoreIpAddress + ":" + strconv.FormatInt(int64(gatewayConfig.InitialClientPort.InitialClientPort), 10)
+	}
+
+	return addressAndPort, err
 }

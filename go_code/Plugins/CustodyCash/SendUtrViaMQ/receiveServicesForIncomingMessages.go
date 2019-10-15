@@ -17,33 +17,12 @@ func CallBackSupportedTestDataDomainsRequestTowardsPluginType(supportedTestDataD
 		"supportedTestDataDomainsRequest": supportedTestDataDomainsRequest,
 	}).Debug("Incoming function CallBack: 'CallBackSupportedTestDataDomainsRequestTowardsPluginType'")
 
-	// Save supportedTestDataDomainsRequest in SQL-DB for further processing
-	messageSavedWithoutProblem := saveSupportedTestDataDomainsRequestInDB(supportedTestDataDomainsRequest)
-	if messageSavedWithoutProblem == true {
+	// Create message back to parent Gateway/Fenix
+	returnMessage.Comments = "'supportedTestDataDomainsRequest' was processed"
+	returnMessage.Acknack = true
 
-		// Message saved OK
-		logger.WithFields(logrus.Fields{
-			"ID": "fd5d1c94-2100-4b59-b8f1-8ba393d11450",
-		}).Debug("'supportedTestDataDomainsRequest' was saved in Plugin database")
-
-		// Create message back to parent Gateway/Fenix
-		returnMessage.Comments = "'supportedTestDataDomainsRequest' was saved in Plugin database"
-		returnMessage.Acknack = true
-
-		// Start up processing of SupportedTestDataDomainsRequest as a goroutine
-		go newIncomingSupportedTestDataDomainsRequest()
-
-	} else {
-
-		// Message not saved OK
-		logger.WithFields(logrus.Fields{
-			"ID": "459dd9d5-1514-4644-aa33-7c73ddf6b25e",
-		}).Error("'supportedTestDataDomainsRequest' was Not saved in Plugin database")
-
-		// Create message back to parent Gateway/Fenix
-		returnMessage.Comments = "'supportedTestDataDomainsRequest' was Not saved in Fenix database"
-		returnMessage.Acknack = true
-	}
+	// Start up processing of SupportedTestDataDomainsRequest as a goroutine
+	go newIncomingSupportedTestDataDomainsRequest()
 
 	logger.WithFields(logrus.Fields{
 		"ID": "41d65996-3ba9-4108-ab62-4482fb2a1989",
@@ -66,7 +45,7 @@ func CallBackSendTestInstructionTowardsPluginType(testInstructionMessage *gRPC.T
 	}).Debug("Incoming function CallBack: 'CallBackSendTestInstructionTowardsPluginType'")
 
 	// Save testInstructionMessage in SQL-DB for further processing
-	messageSavedWithoutProblem := saveTestInstructionMessageInDB(testInstructionMessage)
+	messageSavedWithoutProblem := saveTestInstructionRTMessageInDB(testInstructionMessage)
 	if messageSavedWithoutProblem == true {
 
 		// Message saved OK
