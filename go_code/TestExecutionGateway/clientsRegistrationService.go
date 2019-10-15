@@ -2,6 +2,7 @@ package TestExecutionGateway
 
 import (
 	"encoding/json"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
@@ -24,6 +25,8 @@ func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClient
 	// Check if calling client is using an old gRPC-version-defitnition file (wrong version)
 	// TODO Denna jämförelse är troligen som Äpplen och Päron
 	if registerClientAddressRequest.GRPCVersion.String() != common_code.GetHighestGRPCVersion() {
+		protoTimeStamp, err := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         registerClientAddressRequest.CallingSystemId,
@@ -33,7 +36,7 @@ func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClient
 			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Child gateway/Plugin is using wrong version of gRPC-defition",
-			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
