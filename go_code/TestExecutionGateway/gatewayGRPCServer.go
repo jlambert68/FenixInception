@@ -1,7 +1,6 @@
 package TestExecutionGateway
 
 import (
-	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -48,7 +47,7 @@ func startGatewayGRPCServerForMessagesTowardsPlugins() {
 		}).Info("Starting Gateway gRPC Server towards Plugin")
 
 		registerGatewayTowardsPluginerver = grpc.NewServer()
-		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &common_code.GRPCServerTowardsPluginStruct{})
+		gRPC.RegisterGatewayTowayPluginServer(registerGatewayTowardsPluginerver, &gRPCServerTowardsPluginStruct{})
 
 		logger.WithFields(logrus.Fields{
 			"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",
@@ -142,7 +141,7 @@ func startGatewayGRPCServerForMessagesTowardsFenix() {
 		}).Info("Starting Gateway gRPC Server towards Fenix")
 
 		registerGatewayTowardsFenixServer = grpc.NewServer()
-		gRPC.RegisterGatewayTowardsFenixServer(registerGatewayTowardsFenixServer, &common_code.GRPCServerTowardsFenixStruct{})
+		gRPC.RegisterGatewayTowardsFenixServer(registerGatewayTowardsFenixServer, &gRPCServerTowardsFenixStruct{})
 
 		logger.WithFields(logrus.Fields{
 			"ID": "0bb9fe6a-aff6-4a4e-827e-63b4dbd8d85d",

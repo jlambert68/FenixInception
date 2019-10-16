@@ -2,6 +2,7 @@ package TestExecutionGateway
 
 import (
 	"encoding/json"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
@@ -26,7 +27,7 @@ func (gRPCServerTowardsPlugin *gRPCServerTowardsPluginStruct) PleaseReRegisterCl
 	parentgRPCAddress.ParentGatewayName = reRegisterToGatewayMessage.GatewayName
 	parentgRPCAddress.ParentGatewayServerAddress = reRegisterToGatewayMessage.GatewayAddress
 	parentgRPCAddress.ParentGatewayServerPort = reRegisterToGatewayMessage.GatewayPort
-	parentgRPCAddress.CreatedDateTime = generaTimeStampUTC()
+	parentgRPCAddress.CreatedDateTime = common_code.GeneraTimeStampUTC()
 
 	// Convert Parent Gateway address info-struct into a byte array
 	parentgRPCAddressByteArray, err := json.Marshal(reRegisterToGatewayMessage)
@@ -37,16 +38,19 @@ func (gRPCServerTowardsPlugin *gRPCServerTowardsPluginStruct) PleaseReRegisterCl
 			"err":               err,
 		}).Error("Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration.")
 
+		// Convert timestamp into proto-format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
-			MessageId:                generateUUID(),
+			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Error when converting 'ParentgRPCAddress' into a byte array, stopping futher processing of Reregistration.",
-			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
@@ -81,16 +85,19 @@ func (gRPCServerTowardsPlugin *gRPCServerTowardsPluginStruct) PleaseReRegisterCl
 			"err": err,
 		}).Error("Got an error when Saveing to local DB")
 
+		// Convert timestamp into proto-format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
 			OriginalSenderName:       gatewayConfig.GatewayIdentification.GatewayName,
 			SenderId:                 gatewayConfig.GatewayIdentification.GatewayId,
 			SenderName:               gatewayConfig.GatewayIdentification.GatewayName,
-			MessageId:                generateUUID(),
+			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Got an error when Saveing to local DB",
-			OrginalCreateDateTime:    generaTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}

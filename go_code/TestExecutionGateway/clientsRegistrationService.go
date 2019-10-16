@@ -25,7 +25,9 @@ func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClient
 	// Check if calling client is using an old gRPC-version-defitnition file (wrong version)
 	// TODO Denna jämförelse är troligen som Äpplen och Päron
 	if registerClientAddressRequest.GRPCVersion.String() != common_code.GetHighestGRPCVersion() {
-		protoTimeStamp, err := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
+		// Convert time into proto-time format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
 
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
@@ -68,6 +70,9 @@ func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClient
 			"err":                       err,
 		}).Error("Error when converting 'childgRPCAddressByteArray' into a byte array, stopping futher processing of RegisterClientAddress.")
 
+		// Convert time into proto-time format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -77,7 +82,7 @@ func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClient
 			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Error when converting 'clientRPCAddress' into a byte array, stopping futher processing of RegisterClientAddress.",
-			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
@@ -116,6 +121,9 @@ func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClient
 			"err": err,
 		}).Error("Got an error when Saveing to local DB")
 
+		// Convert timestamp into proto-format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -125,7 +133,7 @@ func (gRPCServerTowardsFenixStruct *gRPCServerTowardsFenixStruct) RegisterClient
 			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  "Got an error when Saveing to local DB",
-			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}

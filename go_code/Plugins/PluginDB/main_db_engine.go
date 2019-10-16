@@ -155,6 +155,7 @@ func readKeyValuetMessageFromDB(readKeyRequestMessage gRPC.ReadKeyRequestMessage
 			} else {
 				// Transfer result into correct return-structure
 				protoTimeStamp, err := ptypes.TimestampProto(savedKeyValue.UpdatedDateTime)
+
 				if err != nil {
 					// Could not convert from Proto Time stamp
 					logger.WithFields(logrus.Fields{

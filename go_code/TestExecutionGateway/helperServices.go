@@ -2,6 +2,7 @@ package TestExecutionGateway
 
 import (
 	"encoding/json"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
@@ -88,6 +89,9 @@ func updateMemoryAddressForParentAddressInfo() {
 				"databaseReturnMessage,": databaseReturnMessage,
 			}).Error("Can't unmarshal gRPCParent-address object from database")
 
+			// Convert timestamp into proto-format
+			protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 			// Send FATAL information to Fenix
 			gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 				OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -97,7 +101,7 @@ func updateMemoryAddressForParentAddressInfo() {
 				MessageId:                common_code.GenerateUUID(logger),
 				MessageType:              gRPC.InformationMessage_FATAL,
 				Message:                  "Can't unmarshal gRPCParent-address object from database",
-				OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+				OrginalCreateDateTime:    protoTimeStamp,
 				OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 				OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 			}
@@ -112,6 +116,9 @@ func updateMemoryAddressForParentAddressInfo() {
 					"gatewayConfig.ParentgRPCAddress.parentGatewayInitialServer_address": gatewayConfig.ParentgRPCAddress.ParentGatewayServerAddress,
 				}).Info("Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
+				// Convert timestamp into proto-format
+				protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 				//Send Warning information to Fenix
 				gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -121,7 +128,7 @@ func updateMemoryAddressForParentAddressInfo() {
 					MessageId:                common_code.GenerateUUID(logger),
 					MessageType:              gRPC.InformationMessage_INFO,
 					Message:                  "Ip-address for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
-					OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+					OrginalCreateDateTime:    protoTimeStamp,
 					OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 					OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 				}
@@ -138,6 +145,9 @@ func updateMemoryAddressForParentAddressInfo() {
 					"gatewayConfig.ParentgRPCAddress.parentGatewayInitialServer_port": gatewayConfig.ParentgRPCAddress.ParentGatewayServerPort,
 				}).Info("Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version")
 
+				// Convert timestamp into proto-format
+				protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 				//Send Warning information to Fenix
 				gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 					OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -147,7 +157,7 @@ func updateMemoryAddressForParentAddressInfo() {
 					MessageId:                common_code.GenerateUUID(logger),
 					MessageType:              gRPC.InformationMessage_WARNING,
 					Message:                  "Port for Parent Gateway/Fenix differs for saved in DB and memory object, use DB-version",
-					OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+					OrginalCreateDateTime:    protoTimeStamp,
 					OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 					OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 				}
@@ -188,6 +198,9 @@ func LogErrorAndSendInfoToFenix(
 			"error":              errorMessageForLogging,
 		}).Info(messageToFenix)
 
+		// Convert timestamp into proto-format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -197,7 +210,7 @@ func LogErrorAndSendInfoToFenix(
 			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_INFO,
 			Message:                  messageToFenix,
-			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
@@ -210,6 +223,9 @@ func LogErrorAndSendInfoToFenix(
 			"error":              errorMessageForLogging,
 		}).Warning(messageToFenix)
 
+		// Convert timestamp into proto-format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send Warning information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -219,7 +235,7 @@ func LogErrorAndSendInfoToFenix(
 			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_WARNING,
 			Message:                  messageToFenix,
-			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}
@@ -232,6 +248,9 @@ func LogErrorAndSendInfoToFenix(
 			"error":              errorMessageForLogging,
 		}).Error(messageToFenix)
 
+		// Convert timestamp into proto-format
+		protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+
 		// Send Error information to Fenix
 		gatewayChannelPackage.InformationMessageChannelTowardsFenix <- &gRPC.InformationMessage{
 			OriginalSenderId:         gatewayConfig.GatewayIdentification.GatewayId,
@@ -241,7 +260,7 @@ func LogErrorAndSendInfoToFenix(
 			MessageId:                common_code.GenerateUUID(logger),
 			MessageType:              gRPC.InformationMessage_ERROR,
 			Message:                  messageToFenix,
-			OrginalCreateDateTime:    common_code.GeneraTimeStampUTC(),
+			OrginalCreateDateTime:    protoTimeStamp,
 			OriginalSystemDomainId:   gatewayConfig.SystemDomain.GatewayDomainId,
 			OriginalSystemDomainName: gatewayConfig.SystemDomain.GatewayDomainName,
 		}

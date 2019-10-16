@@ -2,11 +2,11 @@ package TestExecutionGateway
 
 import (
 	"encoding/json"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/jlambert68/FenixInception/go_code/common_code"
 	gRPC "github.com/jlambert68/FenixInception/go_code/common_code/Gateway_gRPC_api"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"time"
 )
 
 // ********************************************************************************************
@@ -23,7 +23,8 @@ func (gRPCServerTowardsPlugin *gRPCServerTowardsPluginStruct) SendTestInstructio
 
 	// Set New Database Status and Timestamp on TestInstruction
 	testInstruction.Metadata.DbStatusEnum = gRPC.DbStatusEnum_TESTINSTRUCTION_RECEIVED_FROM_PARENT
-	testInstruction.Metadata.LastUpdatedDateTimeInDB = time.Now().String()
+	protoTimeStamp, _ := ptypes.TimestampProto(common_code.GeneraTimeStampUTC())
+	testInstruction.Metadata.LastUpdatedDateTimeInDB = protoTimeStamp
 
 	// Convert TestInstruction struct into a byte array
 	testInstructionByteArray, err := json.Marshal(*testInstruction)
