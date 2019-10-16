@@ -1166,7 +1166,7 @@ func checkForOneSavedTemporaryObjectsInDbAndPutOnChannel(channelType string, tra
 	dbMessage := common_code.DbMessageStruct{
 		common_code.DBGetFirstObjectFromBucket,
 		bucket,
-		nil,
+		"",
 		nil,
 		returnChannel}
 
