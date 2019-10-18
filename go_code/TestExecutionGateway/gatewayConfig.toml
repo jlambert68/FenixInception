@@ -44,3 +44,11 @@ actAsParentGatewayInTest = false
 actAsMainGatewayInTest = false
 actAsChildGatewayInTest = false
 startWithOutAnyParent = false
+
+# Identification for the KeyValueStore
+[keyValueStoreIdentification]
+keyValueStoreId = ""
+KeyValueStoreName = ""
+KeyValueStoreIpAddress = ""
+PluginsCallOnThisPort = -1
+createdDateTime = ""

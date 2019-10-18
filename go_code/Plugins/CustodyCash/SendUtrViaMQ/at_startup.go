@@ -44,9 +44,6 @@ func startAllServices(configFileAndPath string, logfileForTest string, databaseF
 		initLogger(logfileForTest)
 	}
 
-	// Initiate connection for Fenix Inceptions Main Database
-	initiateMainDB()
-
 	// Ensure that all services don't start before everything has been started
 	//TODO Change this into a function-call instead
 	//TestExecutionGateway.SetGatewayMustStopProcessingFlag(true)

@@ -234,27 +234,39 @@ func StartAllServices(configFileAndPath string, logfileForTest string, databaseF
 	switch gatewayOrEndpoint.FenixOrGatewayTypeOrPlugin {
 	case common_code.GatewayEngine:
 
+		// #1
 		initiateGatewayChannels()
 
+		// #2
 		initiateClientAddressMemoryDB()
 
+		// # 3
 		gatewayMustStopProcessing = true
 
+		// #4
 		initiateDB(databaseFile) // If "" then Use default database file name
 
+		// #5
 		InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint)
 
+		// #6
 		tryToRegisterGatewayAtParent()
-		// Listen to gRPC-calls from parent gateway/Fenix
-		//startGatewayGRPCServerForMessagesTowardsFenix()
 
-		// Listen to gRPC-calls from parent gateway/Fenix
-		startGatewayGRPCServerForMessagesTowardsPlugins()
-
+		// #7
+		// Listen to gRPC-calls from Plugin
 		startGatewayGRPCServerForMessagesTowardsFenix()
 
+		// #8
+		// Listen to gRPC-calls from parent gateway/Fenix
+		//startGatewayGRPCServerForMessagesTowardsPlugins()
+
+		// #9
+		startGatewayGRPCServerForMessagesTowardsFenix()
+
+		// #10
 		updateMemoryAddressForParentAddressInfo()
 
+		// #11
 		gatewayMustStopProcessing = false
 
 	// Release all saved messages to channls
@@ -274,29 +286,92 @@ func StartAllServices(configFileAndPath string, logfileForTest string, databaseF
 
 	case common_code.FenixEngine:
 
+		// #1
 		initiateGatewayChannels()
 
+		// #2
 		initiateClientAddressMemoryDB()
 
+		// #3
 		gatewayMustStopProcessing = true
 
+		// #4
 		initiateDB(databaseFile) // If "", empty string, then Use default database file name
 
+		// #5
 		InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint)
 
+		// #6
 		tryToRegisterGatewayAtParent()
-		// Listen to gRPC-calls from parent gateway/Fenix
+
+		//// #7
+		// Listen to gRPC-calls from Plugin
 		//startGatewayGRPCServerForMessagesTowardsFenix()
 
+		// #8
 		// Listen to gRPC-calls from parent gateway/Fenix
 		startGatewayGRPCServerForMessagesTowardsPlugins()
 
+		// #9
 		startGatewayGRPCServerForMessagesTowardsFenix()
 
+		// #10
 		updateMemoryAddressForParentAddressInfo()
 
-		// Let Fenix Start processing when everything is up
-		// = false
+	// #11
+	// Let Fenix Start processing when everything is up
+	// = false
+
+	// Release all saved messages to channls
+	// TODO Make all Clients ReRegister them self
+	// Ask clients to ReRegister them self to this gateway
+	// Start all services at the same time
+	// Update Memory information about parent address and port with that saved in database, database overrule config-file
+	// Listen to gRPC-calls from child gateway/plugin
+	// Try to Register this Gateway At Parent
+	// Start all Dispatch- and Transmit-Engines
+	// Initiate Database
+	// Ensure that all services don't start before everything has been started
+	//  Initiate the memory structure to hold all client gateway/plugin's address information
+	// Initiate internal gatewau channels
+
+	// TODO Release all massages to channels
+
+	case common_code.PluginEngine:
+		// #1
+		initiateGatewayChannels()
+
+		// #2
+		initiateClientAddressMemoryDB()
+
+		// # 3
+		gatewayMustStopProcessing = true
+
+		// #4
+		initiateDB(databaseFile) // If "" then Use default database file name
+
+		// #5
+		InitiateAllTransmitAndDispatchEngines(gatewayOrEndpoint)
+
+		// #6
+		tryToRegisterGatewayAtParent()
+
+		// #7
+		// Listen to gRPC-calls from Plugin
+		//startGatewayGRPCServerForMessagesTowardsFenix()
+
+		// #8
+		// Listen to gRPC-calls from parent gateway/Fenix
+		startGatewayGRPCServerForMessagesTowardsPlugins()
+
+		// #9
+		startGatewayGRPCServerForMessagesTowardsFenix()
+
+		// #10
+		updateMemoryAddressForParentAddressInfo()
+
+		// #11
+		gatewayMustStopProcessing = false
 
 		// Release all saved messages to channls
 		// TODO Make all Clients ReRegister them self
@@ -312,7 +387,5 @@ func StartAllServices(configFileAndPath string, logfileForTest string, databaseF
 		// Initiate internal gatewau channels
 
 		// TODO Release all massages to channels
-
-		//case common_code.PluginEngine:
 	}
 }

@@ -13,9 +13,6 @@ func PluginExecutionServerMain(configFileAndPath string, logfileForTest string, 
 	// Cleanup all gRPC connections
 	defer cleanup()
 
-	// Close database when closing program
-	defer mainDB.Close()
-
 	startAllServices(configFileAndPath, logfileForTest, databaseFile)
 
 	// Just waiting to quit

@@ -42,11 +42,24 @@ func initLogger(filename string) {
 
 	//If no file then set standard out
 
+	var file *os.File
+	var err error
+
 	if filename == "" {
 		logger.Out = os.Stdout
 
 	} else {
-		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0666) //os.O_CREATE
+		// Check if file exist, and if not hten creat if otherwise just append to it
+		exists := fileOrDirecoryExists(filename)
+		if exists == true {
+
+			// Exist then open with append
+			file, err = os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0666) //os.O_CREATE
+		} else {
+			// Doesn't exist then open with create
+			file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666) //os.O_CREATE
+		}
+
 		if err == nil {
 			logger.Out = file
 
@@ -59,10 +72,23 @@ func initLogger(filename string) {
 			logger.Info("********* *************** *********")
 		} else {
 			log.Println("Failed to log to file, using default stderr")
+			logger.Out = os.Stdout
 		}
 	}
 
 	// Should only be done from init functions
 	//grpclog.SetLoggerV2(grpclog.NewLoggerV2(logger.Out, logger.Out, logger.Out))
 
+}
+
+// *******************************************************************************************
+// Exists reports whether the named file or directory exists.
+//
+func fileOrDirecoryExists(name string) bool {
+	if _, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
 }

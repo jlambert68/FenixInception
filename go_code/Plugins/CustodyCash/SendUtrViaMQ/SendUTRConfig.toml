@@ -7,29 +7,29 @@ gatewayId = "4d056923-d6a1-4144-8e77-9fece586d1e1"
 gatewayName = "Plugin - Send UTR via MQ"
 gatewayIpAddress = "127.0.0.1"
 gatewaParentCallOnThisPort = 6999
-gatewayChildrenCallOnThisPort = 7001
-createdDateTime = ""
+gatewayChildrenCallOnThisPort = 7002
+#createdDateTime = 0
 gatewayEngineType = "PluginEngine"
 # Type of gatwway ("FenixEngine", "GatewayEngine", "PluginEngine"
 
 # Identification of the the domain that Fenix belongs to
 [systemDomain]
-gatewayDomainId = "49cacb25-c754-416d-8db9-6e050a1e0ab3"
+gatewayDomainId = "77a1a1be-52f6-4931-bcfe-b336979c2600"
 gatewayDomainName = "CUstody Cash"
 
 # Initial IP and Port for Parent Gateway/Fenix.
 [parentgRPCAddress]
-parentGatewayId =""
-parentGatewayName = ""
-parentGatewayServerAddress = ""
-parentGatewayServerPort = -1
-createdDateTime = ""
+parentGatewayId ="eac522c7-d01c-4f05-b348-841edbfdcb2f"
+parentGatewayName = "Gateway #1"
+parentGatewayServerAddress = "127.0.0.1"
+parentGatewayServerPort = 6999
+#createdDateTime = 0
 connectionToParentDoneAtLeastOnce = false
-connectionToParentLastConnectionDateTime = ""
+#connectionToParentLastConnectionDateTime = 0
 
 # The first port in port range for child-gateways or Plugins, for each ip address
 [initialClientPort]
-initialClientPort = 6660
+initialClientPort = -1
 
 # The logging level. Inly yse Debug for finding error otherwise use Info as standard logging level
 [loggingLevel]
@@ -51,4 +51,4 @@ keyValueStoreId = "b82015ff-aaaf-4e1e-8c82-4fc5049520e0"
 KeyValueStoreName = "KeyValueStore Database"
 KeyValueStoreIpAddress = "127.0.0.1"
 PluginsCallOnThisPort = 7777
-createdDateTime = ""
+#createdDateTime = 0

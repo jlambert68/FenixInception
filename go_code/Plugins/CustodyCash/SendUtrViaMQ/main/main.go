@@ -13,7 +13,7 @@ func main() {
 	// Declare flags
 	var (
 		gatewayUsedInIntegrationTest = flag.Bool("gatewayUsedInIntegrationTest", false, "True/False, deciding if hte gateway should be ran in IntegrationTest mode or not.")
-		databasePath                 = flag.String("datbasePath", "", "Relative path to database. This is a mandatory value, when running in Integration test mode, and must include database-name ending with '.db'.")
+		databasePath                 = flag.String("databasePath", "", "Relative path to database. This is a mandatory value, when running in Integration test mode, and must include database-name ending with '.db'.")
 		logPath                      = flag.String("logdPath", "", "Relative path to log. This is a mandatory value, when running in Integration test mode, and must include config-name ending with '.log'.")
 		configPath                   = flag.String("configPath", "", "Relative path to toml-config. This is a mandatory value, when running in Integration test mode, and must include config-name ending with '.toml'.")
 	)
