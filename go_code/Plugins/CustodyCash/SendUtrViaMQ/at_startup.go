@@ -32,7 +32,7 @@ func cleanup() {
 // Start all Services
 //
 func startAllServices(configFileAndPath string, logfileForTest string, databaseFile string) {
-	// Read 'pluginDbEngineConfig.toml' for config parameters
+	// Read 'pluginDbEngineConfig.toml' for config parameters.
 	processConfigFile(configFileAndPath) // Use default toml-config-file name
 
 	// Init logger
